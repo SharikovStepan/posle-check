@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ededed;
+  --foreground: #0a0a0a;
 }
 
 @theme inline {
@@ -10,13 +10,62 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-indigo-velvet-50: #f2edf8;
+  --color-indigo-velvet-100: #e6daf1;
+  --color-indigo-velvet-200: #cdb5e3;
+  --color-indigo-velvet-300: #b490d5;
+  --color-indigo-velvet-400: #9b6bc7;
+  --color-indigo-velvet-500: #8146b9;
+  --color-indigo-velvet-600: #683894;
+  --color-indigo-velvet-700: #4e2a6f;
+  --color-indigo-velvet-800: #341c4a;
+  --color-indigo-velvet-900: #1a0e25;
+  --color-indigo-velvet-950: #120a1a;
+   
+  --color-grey-olive-50: #f1f3f2;
+  --color-grey-olive-100: #e4e7e6;
+  --color-grey-olive-200: #c9cfcc;
+  --color-grey-olive-300: #aeb7b3;
+  --color-grey-olive-400: #939f99;
+  --color-grey-olive-500: #788780;
+  --color-grey-olive-600: #606c66;
+  --color-grey-olive-700: #48514d;
+  --color-grey-olive-800: #303633;
+  --color-grey-olive-900: #181b1a;
+  --color-grey-olive-950: #111312;
+  
+  --color-muted-olive-50: #f0f6ef;
+  --color-muted-olive-100: #e2ecdf;
+  --color-muted-olive-200: #c5dabe;
+  --color-muted-olive-300: #a7c79e;
+  --color-muted-olive-400: #8ab57d;
+  --color-muted-olive-500: #6da25d;
+  --color-muted-olive-600: #57824a;
+  --color-muted-olive-700: #416138;
+  --color-muted-olive-800: #2c4125;
+  --color-muted-olive-900: #162013;
+  --color-muted-olive-950: #0f170d;
+  
+  --color-light-green-50: #effbea;
+  --color-light-green-100: #dff6d5;
+  --color-light-green-200: #bfedab;
+  --color-light-green-300: #9fe481;
+  --color-light-green-400: #7edb57;
+  --color-light-green-500: #5ed22d;
+  --color-light-green-600: #4ba824;
+  --color-light-green-700: #397e1b;
+  --color-light-green-800: #265412;
+  --color-light-green-900: #132a09;
+  --color-light-green-950: #0d1d06;
+  
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-  }
+  } */
 }
 
 body {
