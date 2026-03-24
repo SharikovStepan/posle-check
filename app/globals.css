@@ -22,7 +22,7 @@
   --color-indigo-velvet-800: #341c4a;
   --color-indigo-velvet-900: #1a0e25;
   --color-indigo-velvet-950: #120a1a;
-   
+
   --color-grey-olive-50: #f1f3f2;
   --color-grey-olive-100: #e4e7e6;
   --color-grey-olive-200: #c9cfcc;
@@ -34,7 +34,7 @@
   --color-grey-olive-800: #303633;
   --color-grey-olive-900: #181b1a;
   --color-grey-olive-950: #111312;
-  
+
   --color-muted-olive-50: #f0f6ef;
   --color-muted-olive-100: #e2ecdf;
   --color-muted-olive-200: #c5dabe;
@@ -46,7 +46,7 @@
   --color-muted-olive-800: #2c4125;
   --color-muted-olive-900: #162013;
   --color-muted-olive-950: #0f170d;
-  
+
   --color-light-green-50: #effbea;
   --color-light-green-100: #dff6d5;
   --color-light-green-200: #bfedab;
@@ -58,7 +58,6 @@
   --color-light-green-800: #265412;
   --color-light-green-900: #132a09;
   --color-light-green-950: #0d1d06;
-  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -72,4 +71,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.button {
+  @apply rounded-md md:px-3 px-1 py-1 cursor-pointer;
+}
+
+.button-filter {
+  @apply border-2 border-indigo-velvet-600 w-fit;
 }
