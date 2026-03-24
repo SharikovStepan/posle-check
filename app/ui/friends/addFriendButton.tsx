@@ -13,14 +13,14 @@ export default function AddFriendButton({ friendId, children }: { friendId: stri
   const [state, formAction, isPending] = useActionState<FriendshipState, FormData>(sendFriendRequestByUsers, {});
 
   return (
-    <form action={formAction}>
-      <input type="hidden" name="currentUserId" value={PROFILE_UUID} />
-      <input type="hidden" name="targetUserId" value={friendId} />
-      <input type="hidden" name="currentPath" value={pathname} />
-      <input type="hidden" name="searchParams" value={searchParams.toString()} />
-      <SubmitButton disabled={isPending} className="bg-light-green-500 text-grey-olive-900 hover:bg-light-green-700">
-        {children}
-      </SubmitButton>
-    </form>
+<form action={formAction}>
+  <input type="hidden" name="currentUserId" value={PROFILE_UUID} />
+  <input type="hidden" name="targetUserId" value={friendId} />
+  <input type="hidden" name="currentPath" value={pathname} />
+  <input type="hidden" name="searchParams" value={searchParams.toString()} />
+  <SubmitButton disabled={isPending} className="bg-success text-success-foreground hover:bg-success/90 shadow-sm transition-all duration-200">
+    {children}
+  </SubmitButton>
+</form>
   );
 }

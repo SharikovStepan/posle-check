@@ -16,17 +16,18 @@ export default function SingleSearchParamButton({ filterType, filterValue, icon,
 
   return (
     <>
-      <button
-        disabled={searchParams.get(filterType) === filterValue}
-        onClick={handleClick}
-        className={`${
-          searchParams.get(filterType) === filterValue ? "bg-indigo-velvet-500 text-grey-olive-100 pointer-events-none" : "text-indigo-velvet-600 hover:bg-indigo-velvet-300"
-        } button button-filter`}>
-        <div>
-          {icon}
-          <p>{text}</p>
-        </div>
-      </button>
-    </>
+<button
+  disabled={searchParams.get(filterType) === filterValue}
+  onClick={handleClick}
+  className={`${
+    searchParams.get(filterType) === filterValue
+      ? "bg-primary text-primary-foreground pointer-events-none shadow-sm"
+      : "bg-surface text-foreground hover:bg-surface-strong hover:shadow-sm"
+  } button button-filter transition-all duration-200`}>
+  <div>
+    {icon}
+    <p>{text}</p>
+  </div>
+</button>  </>
   );
 }

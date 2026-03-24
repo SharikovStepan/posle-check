@@ -25,42 +25,43 @@ export default function Pagination({ totalPages, currentPage }: { totalPages: nu
 
   return (
     <>
-      <div className="flex gap-2">
-        {totalPages > VIVISBLE_NUMBER_BUTTONS_COUNT && (
-          <button
-            onClick={() => changeCurrentPage(currentPage - 1)}
-            disabled={currentPage == 1}
-            className={`${
-              currentPage == 1 ? "pointer-events-none opacity-55" : ""
-            } cursor-pointer border border-violet-500 rounded-sm w-6 h-8 flex justify-center items-center hover:bg-indigo-velvet-400 bg-indigo-velvet-200`}>
-            <ArrowLeftIcon className="text-grey-olive-800 w-4 h-4" />
-          </button>
-        )}
+<div className="flex gap-2">
+  {totalPages > VIVISBLE_NUMBER_BUTTONS_COUNT && (
+ <button
+ onClick={() => changeCurrentPage(currentPage - 1)}
+ disabled={currentPage == 1}
+ className={`${
+	currentPage == 1 ? "pointer-events-none opacity-55" : ""
+ } cursor-pointer border border-border rounded-sm w-6 h-8 flex justify-center items-center hover:bg-surface-strong bg-secondary text-secondary-foreground shadow-sm transition-all duration-200`}>
+ <ArrowLeftIcon className="text-muted-foreground w-4 h-4" />
+</button>
+  )}
 
-        <div className="flex gap-1">
-          {visibleNumberButtons.map((buttonNum, index) => (
-            <button
-              onClick={() => changeCurrentPage(buttonNum)}
-              className={`${
-                currentPage == buttonNum ? "bg-indigo-velvet-500 text-grey-olive-200 pointer-events-none" : "hover:bg-indigo-velvet-400 bg-indigo-velvet-200"
-              } cursor-pointer border border-violet-500 rounded-sm w-8 h-8 flex justify-center items-center`}
-              key={`pagination-button-${buttonNum}-${index}`}>
-              <p>{buttonNum}</p>
-            </button>
-          ))}
-        </div>
+  <div className="flex gap-1">
+    {visibleNumberButtons.map((buttonNum, index) => (
+		<button
+  onClick={() => changeCurrentPage(buttonNum)}
+  className={`${
+    currentPage == buttonNum
+      ? "bg-primary text-primary-foreground pointer-events-none shadow-sm"
+      : "hover:bg-surface-strong bg-secondary text-secondary-foreground hover:shadow-sm"
+  } cursor-pointer border border-border rounded-sm w-8 h-8 flex justify-center items-center transition-all duration-200`}>
+  <p>{buttonNum}</p>
+</button>
+    ))}
+  </div>
 
-        {totalPages > VIVISBLE_NUMBER_BUTTONS_COUNT && (
-          <button
-            onClick={() => changeCurrentPage(currentPage + 1)}
-            disabled={currentPage == totalPages}
-            className={`${
-              currentPage == totalPages ? "pointer-events-none opacity-55" : ""
-            } cursor-pointer border border-violet-500 rounded-sm w-6 h-8 flex justify-center items-center hover:bg-indigo-velvet-400 bg-indigo-velvet-200`}>
-            <ArrowRightIcon className="text-grey-olive-800 w-4 h-4" />
-          </button>
-        )}
-      </div>
+  {totalPages > VIVISBLE_NUMBER_BUTTONS_COUNT && (
+    <button
+	 onClick={() => changeCurrentPage(currentPage + 1)}
+	 disabled={currentPage == totalPages}
+	 className={`${
+		currentPage == totalPages ? "pointer-events-none opacity-55" : ""
+	 } cursor-pointer border border-border rounded-sm w-6 h-8 flex justify-center items-center hover:bg-surface-strong bg-secondary text-secondary-foreground shadow-sm transition-all duration-200`}>
+	 <ArrowRightIcon className="text-muted-foreground w-4 h-4" />
+  </button>
+  )}
+</div>
     </>
   );
 }

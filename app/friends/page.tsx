@@ -57,44 +57,44 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
 
   return (
     <>
-      <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3 w-full">
-        <PageHeader title={"Друзья"} />
-        <div className="rounded-md h-full p-3 bg-grey-olive-300 flex flex-col gap-3 items-center jus">
-          <div className="w-full h-10 flex justify-between gap-2">
-            <Search placeholder={`${filterType == "search" ? "Введите полный email..." : "Найти друга..."}`} />
-            <SingleSearchParamButton filterType={"filter"} filterValue={"search"} icon={""} text={"Добавить..."} />
-          </div>
+    <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3 w-full">
+  <PageHeader title={"Друзья"} />
+  <div className="rounded-md h-full p-3 bg-surface-elevated border border-border shadow-card flex flex-col gap-3 items-center jus">
+    <div className="w-full h-10 flex justify-between gap-2">
+      <Search placeholder={`${filterType == "search" ? "Введите полный email..." : "Найти друга..."}`} />
+      <SingleSearchParamButton filterType={"filter"} filterValue={"search"} icon={""} text={"Добавить..."} />
+    </div>
 
-          {filterType !== "search" ? (
-            <div className="flex justify-between w-full gap-1">
-              <div className="flex justify-between gap-1 lg:gap-3">
-                <FilterButtons filters={friendsFilters} />
-              </div>
-              <OrderSettings />
-            </div>
-          ) : (
-            <div className="w-full flex justify-end">
-              <SingleSearchParamButton filterType={"filter"} filterValue={"friends"} icon={""} text={"Выйти из поиска"} />
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3 grow w-full">
-            {filterType == "search" ? (
-              searchedUser ? (
-                <UserCard userData={searchedUser} friendshipId={searchedUser.friendship_id} />
-              ) : (
-                <EmptyNotification>Не найдено</EmptyNotification>
-              )
-            ) : (
-              <FriendList filterType={filterType} usersData={friendsListResult.users} />
-            )}
-          </div>
-
-          <div className={`${friendsListResult.totalPages == 1 ? "hidden" : "block "}`}>
-            <Pagination totalPages={friendsListResult.totalPages} currentPage={currentPage} />
-          </div>
+    {filterType !== "search" ? (
+      <div className="flex justify-between w-full gap-1">
+        <div className="flex justify-between gap-1 lg:gap-3">
+          <FilterButtons filters={friendsFilters} />
         </div>
+        <OrderSettings />
       </div>
+    ) : (
+      <div className="w-full flex justify-end">
+        <SingleSearchParamButton filterType={"filter"} filterValue={"friends"} icon={""} text={"Выйти из поиска"} />
+      </div>
+    )}
+
+    <div className="flex flex-col gap-3 grow w-full">
+      {filterType == "search" ? (
+        searchedUser ? (
+          <UserCard userData={searchedUser} friendshipId={searchedUser.friendship_id} />
+        ) : (
+          <EmptyNotification>Не найдено</EmptyNotification>
+        )
+      ) : (
+        <FriendList filterType={filterType} usersData={friendsListResult.users} />
+      )}
+    </div>
+
+    <div className={`${friendsListResult.totalPages == 1 ? "hidden" : "block "}`}>
+      <Pagination totalPages={friendsListResult.totalPages} currentPage={currentPage} />
+    </div>
+  </div>
+</div>
     </>
   );
 }

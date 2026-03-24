@@ -38,19 +38,17 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }, [value]);
 
   return (
-    <div className="relative flex border-2 border-indigo-velvet-500 rounded-md h-full w-full">
-      <label htmlFor="search" className="sr-only">
-        Search
-      </label>
-      <input
-        className="peer border-0 focus:border-0 outline-0 outline-indigo-velvet-600 focus:outline-2 block w-full rounded-md pl-10 text-sm text-indigo-velvet-700 placeholder:text-indigo-velvet-500"
-        placeholder={placeholder}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-        value={value}
-      />
-      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-full w-4.5 -translate-y-1/2 text-indigo-velvet-600 peer-focus:text-indigo-velvet-800" />
-    </div>
+<div className="relative flex border-2 border-border bg-surface rounded-md h-full w-full shadow-sm">
+  <label htmlFor="search" className="sr-only">
+    Search
+  </label>
+  <input
+    className="peer border-0 focus:border-0 outline-0 outline-ring focus:outline-2 block w-full rounded-md pl-10 text-sm text-foreground placeholder:text-muted-foreground bg-transparent"
+    placeholder={placeholder}
+    onChange={(e) => setValue(e.target.value)}
+    value={value}
+  />
+  <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-full w-4.5 -translate-y-1/2 text-muted-foreground peer-focus:text-foreground" />
+</div>
   );
 }
