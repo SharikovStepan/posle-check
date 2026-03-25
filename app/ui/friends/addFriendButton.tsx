@@ -18,7 +18,7 @@ export default function AddFriendButton({ friendId, children }: { friendId: stri
   <input type="hidden" name="targetUserId" value={friendId} />
   <input type="hidden" name="currentPath" value={pathname} />
   <input type="hidden" name="searchParams" value={searchParams.toString()} />
-  <SubmitButton disabled={isPending} className="bg-success text-success-foreground hover:bg-success/90 shadow-sm transition-all duration-200">
+  <SubmitButton disabled={isPending} className="bg-success text-text-primary hover:bg-success/70 shadow-sm transition-all duration-200">
     {children}
   </SubmitButton>
 </form>

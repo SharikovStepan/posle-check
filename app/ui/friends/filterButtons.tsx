@@ -22,22 +22,19 @@ export default function FilterButtons<T extends string>({ filters }: { filters: 
   return (
     <>
       {filters.map((filter) => {
-        const ButtonIcon = filter.icon;
         return (
-<button
-  key={filter.filterType}
-  disabled={filterState === filter.filterType}
-  onClick={() => setFilterState(filter.filterType)}
-  className={`${
-    filterState === filter.filterType
-      ? "bg-primary text-primary-foreground pointer-events-none shadow-sm"
-      : "bg-surface text-foreground hover:bg-surface-strong hover:shadow-sm"
-  } button button-filter transition-all duration-200`}>
-  <div>
-    <div className="md:hidden w-10 flex justify-center items-center" dangerouslySetInnerHTML={{ __html: filter.icon }} />
-    <p className="hidden md:block">{filter.text}</p>
-  </div>
-</button>
+          <button
+            key={filter.filterType}
+            disabled={filterState === filter.filterType}
+            onClick={() => setFilterState(filter.filterType)}
+            className={`${
+              filterState === filter.filterType ? " bg-accent text-text-inverted pointer-events-none shadow-sm" : "bg-surface text-text-tertiary hover:bg-surface-hover"
+            } cursor-pointer w-full h-full rounded-lg transition-all duration-200`}>
+            <div className="flex items-center justify-center gap-1">
+              <div className="w-fit flex justify-center items-center" dangerouslySetInnerHTML={{ __html: filter.icon }} />
+              <p className="hidden md:block text-xs md:text-md">{filter.text}</p>
+            </div>
+          </button>
         );
       })}
     </>

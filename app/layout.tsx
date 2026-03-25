@@ -24,16 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<html lang="ru" className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-  <body className="min-h-full flex flex-col md:grid md:grid-cols-[220_auto] gap-3 p-4 bg-background text-foreground">
-    <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3">
-      <h1 className="p-4 rounded-md text-4xl flex justify-center items-center bg-primary text-primary-foreground shadow-sm border border-border">
-        ПослеЧек
-      </h1>
-      <SideNav />
-    </div>
-    {children}
-  </body>
-</html>
+    <html lang="ru" className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col md:grid md:grid-cols-[220_auto] gap-3 p-4 bg-bg-primary text-text-primary">
+        <div className="fixed z-50 md:static bottom-0 md:bottom-auto md:left-auto left-0 w-full md:w-auto md:grid md:grid-rows-[100_auto] gap-3 md:col-[1/2]">
+          <h1 className="hidden p-4 h-(--header-height) rounded-md text-4xl md:flex justify-center items-center bg-accent text-primary shadow-sm border border-border">ПослеЧек</h1>
+          <SideNav />
+        </div>
+        {children}
+      </body>
+    </html>
   );
 }

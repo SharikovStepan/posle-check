@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
-export default function SingleSearchParamButton({ filterType, filterValue, icon, text }: { filterType: string; icon: string; text: string; filterValue: string }) {
+export default function SingleSearchParamButton({ filterType, filterValue, className, children }: { children: React.ReactNode; filterType: string; filterValue: string; className?: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -16,18 +16,14 @@ export default function SingleSearchParamButton({ filterType, filterValue, icon,
 
   return (
     <>
-<button
-  disabled={searchParams.get(filterType) === filterValue}
-  onClick={handleClick}
-  className={`${
-    searchParams.get(filterType) === filterValue
-      ? "bg-primary text-primary-foreground pointer-events-none shadow-sm"
-      : "bg-surface text-foreground hover:bg-surface-strong hover:shadow-sm"
-  } button button-filter transition-all duration-200`}>
-  <div>
-    {icon}
-    <p>{text}</p>
-  </div>
-</button>  </>
+      <button
+        disabled={searchParams.get(filterType) === filterValue}
+        onClick={handleClick}
+        className={`${
+          searchParams.get(filterType) === filterValue ? "bg-accent text-text-primary pointer-events-none shadow-sm" : "bg-surface text-text-secondary hover:bg-surface-hover hover:shadow-sm"
+        }  transition-all duration-200 ${className}`}>
+        {children}
+      </button>
+    </>
   );
 }

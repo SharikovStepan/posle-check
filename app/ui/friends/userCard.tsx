@@ -13,13 +13,13 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
   const friendStatusDesc = userData.id === PROFILE_UUID ? "Это вы" : friendText(userData.friendship_status);
   return (
     <>
-      <div className="relative p-2 rounded-md bg-surface-elevated h-20 flex gap-3 justify-between items-center border border-border shadow-md">
-        <div className="h-full">
+      <div className="relative p-2 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
+        <div className="h-full flex flex-col justify-between">
           <div className={`${friendStatusDesc == "" ? "h-full" : ""} flex items-center gap-3`}>
             {!userData.avatar_url ? <UserCircleIcon className={`${friendStatusDesc == "" ? "h-15" : "h-10"} text-foreground`} /> : ""}
-            <p className="text-foreground text-lg">{userData.full_name || userData.username}</p>
+            <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
           </div>
-          {friendStatusDesc != "" && <div className="text-muted-foreground">{friendStatusDesc}</div>}
+          {friendStatusDesc != "" && <div className="text-text-tertiary text-xs">{friendStatusDesc}</div>}
         </div>
 
         <div className="flex w-fit flex-col md:flex-row gap-2 justify-end items-center">
@@ -29,32 +29,32 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
             </AddFriendButton>
           ) : userData.friendship_status == "pending" && friendshipId ? (
             <>
-              <RequestFriendButton action={"accept"} friendshipId={friendshipId} className="bg-success text-success-foreground w-full hover:bg-success/90">
+              <RequestFriendButton action={"accept"} friendshipId={friendshipId} className="cursor-pointer bg-success text-text-primary w-full hover:bg-success/70 ">
                 <p className="">Принять</p>
               </RequestFriendButton>
-              <RequestFriendButton action={"decline"} friendshipId={friendshipId} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              <RequestFriendButton action={"decline"} friendshipId={friendshipId} className="cursor-pointer bg-error text-text-tertiary hover:bg-error/70">
                 <p>Отклонить</p>
               </RequestFriendButton>
             </>
           ) : userData.friendship_status == "awaiting_confirm" && friendshipId ? (
-            <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer bg-error text-text-secondary hover:bg-error/70">
               <p>Удалить заявку</p>
             </RequestFriendButton>
           ) : userData.friendship_status == "declined" && friendshipId ? (
             <>
-              <RequestFriendButton action={"send"} friendshipId={friendshipId} className="bg-success text-success-foreground hover:bg-success/90">
+              <RequestFriendButton action={"send"} friendshipId={friendshipId} className="cursor-pointer bg-success text-success-foreground hover:bg-success/70">
                 <p>Отправить ещё раз</p>
               </RequestFriendButton>
-              <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="bg-destructive w-full text-destructive-foreground hover:bg-destructive/90">
+              <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer bg-error w-full text-text-secondary hover:bg-destructive/70">
                 <p>Удалить заявку</p>
               </RequestFriendButton>
             </>
           ) : userData.friendship_status == "friendly" && friendshipId ? (
-            <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="border-destructive border-2 text-destructive hover:bg-destructive/10 hover:border-destructive">
-              <XMarkIcon className="h-6 w-6 text-destructive hover:text-destructive" />
+            <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer border-error/70 border-2 text-error hover:bg-error/10 hover:border-error/90">
+              <XMarkIcon className="h-6 w-6 text-error hover:text-error/70" />
             </RequestFriendButton>
           ) : userData.id == PROFILE_UUID ? (
-            <Link href={"/profile"} className={`p-2 border-2 rounded-md border-border text-foreground w-full h-10 flex justify-center items-center hover:bg-accent hover:text-accent-foreground`}>
+            <Link href={"/profile"} className={`p-2 border-2 rounded-md border-border text-text-primary w-full h-10 flex justify-center items-center hover:bg-accent hover:text-accent-foreground`}>
               <p className="">{"Открыть профиль"}</p>
             </Link>
           ) : (

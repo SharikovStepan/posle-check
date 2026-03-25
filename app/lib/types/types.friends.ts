@@ -19,5 +19,5 @@ export interface GetFriendsOptions {
   order?: SortOrder;
 
   limit?: number;
-  currentPage?: number;
+  currentPage: number;
 }

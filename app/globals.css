@@ -4,135 +4,156 @@
 /* ================= LIGHT ================= */
 :root {
   /* Базовые цвета */
-  --background: #bfc0c0; /* светло-серый фон */
-  --foreground: #2d3142; /* тёмный текст */
+  --color-bg-primary: #ebebeb;
+  --color-text-primary: #121212;
 
-  /* Поверхности (от самого низкого к самому высокому) */
-  --surface: #e9eaec; /* сайдбар, панели – чуть светлее фона */
-  --surface-elevated: #ffffff; /* карточки, контент – белый */
-  --surface-hover: #f8f9fa; /* лёгкий ховер на поверхностях */
-  --surface-strong: #e2e4e8; /* более тёмный фон для акцентов */
+  --color-bg-secondary: #e0e0e0;
+  --color-text-secondary: #1f1f1f;
 
-  /* Акцентные цвета */
-  --primary: #ef8353; /* тёплый оранжевый */
-  --primary-foreground: #ffffff;
+  --color-bg-tertiary: #d6d6d6;
+  --color-text-tertiary: #3d3d3d;
 
-  --secondary: #4f5d75; /* сине-серый */
-  --secondary-foreground: #ffffff;
+  --color-text-inverted: #ebebeb;
 
-  --accent: #6b8c74; /* можно использовать тот же, что и secondary */
-  --accent-foreground: #ffffff;
+  --color-surface: #e0e0e0;
+  --color-surface-hover: #d6d6d6;
 
-  --success: #6b8c74; /* для единообразия */
-  --success-foreground: #ffffff;
+  --color-accent: #4dbd58;
+  --color-accent-hover: #3da447;
+  --color-accent-light: #79cd81;
 
-  --destructive: #92140c; /* оставим как было */
-  --destructive-foreground: #ffffff;
+  --color-border: #e0e0e0;
+  --color-border-strong: #a6dda9;
+  --color-border-focus: #4dbd58;
 
-  /* Границы */
-  --border: #d1d5db;
-  --border-strong: #9ca3af;
+  --color-success: #005c14;
+  --color-error: #5c0000;
+  --color-warning: #5c3f00;
 
-  /* Тени – заметные, но не агрессивные */
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.12);
   --shadow-md: 0 6px 12px -4px rgb(0 0 0 / 0.15);
   --shadow-lg: 0 12px 24px -8px rgb(0 0 0 / 0.2);
 
-  --muted-foreground: #6b5e4e;
-  --ring: #ef8353;
+  --ring: #4dbd58;
+
+  --sidebar-width: 220px;
+
+  --header-height: 100px;
 }
 
 /* ================= DARK ================= */
 html.dark {
-  --background: #121218;
-  --foreground: #f0ede8;
+  --color-bg-primary: #121212;
+  --color-text-primary: #ebebeb;
 
-  --surface: #1f1f28; /* тёмный фон для сайдбара */
-  --surface-elevated: #2a2a34; /* карточки, контент */
-  --surface-hover: #33333e; /* ховер */
-  --surface-strong: #3a3a46; /* более светлый акцент */
+  --color-bg-secondary: #1f1f1f;
+  --color-text-secondary: #e0e0e0;
 
-  --card: var(--surface-elevated);
-  --sidebar: var(--surface);
+  --color-bg-tertiary: #292929;
+  --color-text-tertiary: #c2c2c2;
 
-  --primary: #ef8353;
-  --primary-foreground: #1e1e24;
+  --color-text-inverted: #292929;
 
-  /* --secondary: #2f2f3a; */
-  --secondary: #4f5d75;
+  --color-surface: #1f1f1f;
+  --color-surface-hover: #292929;
 
-  
-  --secondary-foreground: #f0ede8;
+  --color-accent: #4dbd58;
+  --color-accent-hover: #3da447;
+  --color-accent-light: #79cd81;
 
-  --accent: #6b8c74;
-  --accent-foreground: #ffffff;
+  --color-border: #1f1f1f;
+  --color-border-strong: #0b1e0c;
+  --color-border-focus: #4dbd58;
 
-  --success: #6b8c74;
-  --success-foreground: #ffffff;
+  --color-success: #005c14;
+  --color-error: #5c0000;
+  --color-warning: #5c3f00;
 
-  --destructive: #c04238;
-  --destructive-foreground: #ffffff;
+  --shadow-sm: 0 1px 3px rgb(50 50 50 / 0.2);
+  --shadow-md: 0 6px 12px -4px rgb(50 50 50 / 0.3);
+  --shadow-lg: 0 12px 24px -8px rgb(50 50 50 / 0.4);
 
-  --border: #3a3a46;
-  --border-strong: #5a5a6a;
-
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.25);
-  --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.35);
-
-  --muted-foreground: #a0a0a8;
-
-  --ring: #ef8353;
+  --ring: #4dbd58;
 }
 /* ================= TAILWIND ================= */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg-primary: var(--color-bg-primary);
+  --color-text-primary: var(--color-text-primary);
 
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-surface-hover: var(--surface-hover);
-  --color-surface-strong: var(--surface-strong);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-text-secondary: var(--color-text-secondary);
 
-  --color-card: var(--card);
-  --color-sidebar: var(--sidebar);
+  --color-bg-tertiary: var(--color-bg-tertiary);
+  --color-text-tertiary: var(--color-text-tertiary);
 
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
+  --color-text-inverted: var(--color-text-inverted);
 
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
 
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-light: var(--color-accent-light);
 
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-border-focus: var(--color-border-focus);
 
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-muted-foreground: var(--muted-foreground);
-
-  --color-border: var(--border);
-  --color-border-strong: var(--border-strong);
-
-  --color-ring: var(--ring);
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
 
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+
+  --ring: var(--ring);
 }
 
 /* ================= BASE ================= */
 body {
-  @apply bg-background text-foreground;
+  @apply bg-bg-primary text-text-primary;
 }
 
-* {
+/* * {
   border-color: var(--border);
-}
+} */
 
 .button {
   @apply px-2 py-1 rounded-md;
+}
+
+.page-header {
+  @apply h-(--header-height) md:h-10;
+}
+
+.main-div {
+  @apply flex flex-col md:grid md:grid-rows-[var(--header-height)_auto_1fr] gap-4 md:gap-3 w-full mb-15 md:mb-0;
+}
+
+.shimmer {
+  background: linear-gradient(105deg, var(--color-accent-light) 0%, var(--color-accent-hover) 50%, var(--color-accent-light) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 0.8s infinite;
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
