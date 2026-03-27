@@ -2,8 +2,8 @@ import UserCard from "./userCard";
 import EmptyNotification from "./emptyNotification";
 import { User } from "@/app/lib/types/types.user";
 import { FriendsListType } from "@/app/lib/types/types.filters";
-import { FriendsListResult, getFriendsList } from "@/app/lib/data/data.friendship";
-import { GetFriendsOptions } from "@/app/lib/types/types.friends";
+import { getFriendsList } from "@/app/lib/data/data.friendship";
+import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
 import Pagination from "../paginaton";
 import FriendListSkeleton from "@/app/lib/skeletons/friendsListSkeleton";
 
@@ -24,7 +24,7 @@ export default async function FriendList({ options, filterType }: { options: Get
         )}
 
         <div className={`${friendsListResult.totalPages == 1 ? "hidden" : "block self-center"}`}>
-          <Pagination totalPages={friendsListResult.totalPages} currentPage={options.currentPage} />
+          <Pagination totalPages={friendsListResult.totalPages} currentPage={options.currentPage || 1} />
         </div>
       </div>
     </>

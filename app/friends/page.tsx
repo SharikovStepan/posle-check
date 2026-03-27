@@ -1,4 +1,4 @@
-import { FriendsListResult, getFriendsList, searchUserByEmail } from "../lib/data/data.friendship";
+import { getFriendsList, searchUserByEmail } from "../lib/data/data.friendship";
 import { PROFILE_UUID } from "../lib/placeholders-data";
 import FriendList from "../ui/friends/friendList";
 import PageHeader from "../ui/pageHeader";

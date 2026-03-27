@@ -24,7 +24,9 @@ export default async function Page() {
 
       <div className="h-full">
         <MembersProvider>
-          <CreateGroupForm initialFriendsData={friendsListResult} />
+          <Suspense fallback={<div>Загрузка...</div>}>
+            <CreateGroupForm initialFriendsData={friendsListResult} />
+          </Suspense>
         </MembersProvider>
       </div>
     </main>
