@@ -1,20 +1,22 @@
 "use client";
 
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { SortBy, SortOrder } from "../lib/types/types.filters";
 
-export default function OrderSettings() {
+export default function OrderSettings({ mode = "navigation", onOrderChange }: { mode?: "navigation" | "state"; onOrderChange?: (sortBy: SortBy, order: SortOrder) => void }) {
   const searchParams = useSearchParams();
 
-  const [sortBy, setSortBy] = useState<SortBy>("date");
-  const [order, setOrder] = useState<SortOrder>("asc");
+  const [sortBy, setSortBy] = useState<SortBy>((searchParams.get("sortBy")?.toString() as SortBy) || "date");
+  const [order, setOrder] = useState<SortOrder>((searchParams.get("order")?.toString() as SortOrder) || "asc");
 
   const pathname = usePathname();
   const { replace } = useRouter();
 
   const isFirstRender = useRef<boolean>(true);
+
+  const debounceTmr = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -22,12 +24,27 @@ export default function OrderSettings() {
       return;
     }
 
+    if (debounceTmr.current) {
+      clearTimeout(debounceTmr.current);
+    }
+
     const params = new URLSearchParams(searchParams);
     params.set("order", order);
     params.set("sortBy", sortBy);
-    console.log("Replace!!! SORTS");
 
-    replace(`${pathname}?${params.toString()}`);
+    debounceTmr.current = setTimeout(() => {
+      if (mode == "navigation") {
+        replace(`${pathname}?${params.toString()}`, { scroll: false });
+      } else if (mode == "state" && onOrderChange) {
+        onOrderChange(sortBy, order);
+      }
+    }, 100);
+
+    return () => {
+      if (debounceTmr.current) {
+        clearTimeout(debounceTmr.current);
+      }
+    };
   }, [order, sortBy]);
 
   return (
@@ -46,13 +63,13 @@ export default function OrderSettings() {
         rounded-md
         cursor-pointer
         font-medium
-        text-foreground
+        text-text-primary
         hover:bg-surface-hover
-        focus:border-border-focus
+        focus
         shadow-sm
         transition-all duration-200
       ">
-          <option value="date" className="py-2">
+          <option value="date" className="py-2 w-full">
             По дате
           </option>
           <option value="name" className="py-2">
@@ -68,6 +85,7 @@ export default function OrderSettings() {
       </div>
 
       <button
+        type="button"
         onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
         className="
 		  w-10
@@ -76,6 +94,7 @@ export default function OrderSettings() {
       border border-border
       rounded-md
       hover:bg-surface-hover
+		focus
       font-medium
       flex
       items-center

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type FilterButton<T extends string> = { filterType: T; text: string; icon: any };
 
@@ -12,10 +12,19 @@ export default function FilterButtons<T extends string>({ filters }: { filters: 
   const pathname = usePathname();
   const { replace } = useRouter();
 
+  const isFirstRender = useRef<boolean>(true);
+
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const params = new URLSearchParams(searchParams);
+
     params.set("filter", filterState);
     params.delete("page");
+
     replace(`${pathname}?${params.toString()}`);
   }, [filterState]);
 

@@ -26,7 +26,7 @@
   --color-border-strong: #a6dda9;
   --color-border-focus: #4dbd58;
 
-  --color-success: #005c14;
+  --color-success: #4dbd58;
   --color-error: #5c0000;
   --color-warning: #5c3f00;
 
@@ -65,7 +65,7 @@ html.dark {
   --color-border-strong: #0b1e0c;
   --color-border-focus: #4dbd58;
 
-  --color-success: #005c14;
+  --color-success: #4dbd58;
   --color-error: #5c0000;
   --color-warning: #5c3f00;
 
@@ -107,7 +107,7 @@ html.dark {
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
 
-  --ring: var(--ring);
+  --ring: var(--ringg);
 }
 
 /* ================= BASE ================= */
@@ -156,4 +156,9 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.focus{
+	@apply focus:outline-0 focus:ring-1 focus:ring-(--ring)  focus:ring-offset-0;
 }

@@ -1,4 +1,5 @@
 import { FriendsListType, SortBy, SortOrder } from "./types.filters";
+import { User } from "./types.user";
 
 export type FriendshipUiStatus = "friendly" | "pending" | "awaiting_confirm" | "none" | "declined" | "youDecline";
 
@@ -11,7 +12,7 @@ export interface Friendship {
 
 export interface GetFriendsOptions {
   currentUserId: string;
-  filter: FriendsListType;
+  filter?: FriendsListType;
 
   search?: string;
 
@@ -19,5 +20,13 @@ export interface GetFriendsOptions {
   order?: SortOrder;
 
   limit?: number;
-  currentPage: number;
+  currentPage?: number;
 }
+
+
+export interface FriendsListResult {
+	users: User[];
+	total: number; // всего друзей/заявок
+	totalPages: number; // всего страниц
+	page: number; // текущая страница (offset / limit + 1)
+ }

@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import { dbUserRow, User } from "../types/types.user";
-import { Friendship, FriendshipUiStatus, GetFriendsOptions } from "../types/types.friends";
+import { Friendship, FriendshipUiStatus, FriendsListResult, GetFriendsOptions } from "../types/types.friends";
 import { FriendsListType } from "../types/types.filters";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
@@ -123,15 +123,9 @@ function getFriendshipUiStatusByQueryStatus(queryStatus: FriendsListType, userFr
   return "none";
 }
 
-export interface FriendsListResult {
-  users: User[];
-  total: number; // всего друзей/заявок
-  totalPages: number; // всего страниц
-  page: number; // текущая страница (offset / limit + 1)
-}
 
 export async function getFriendsList(options: GetFriendsOptions): Promise<FriendsListResult> {
-  const { currentUserId, filter = "friends", search, sortBy = "date", order = "desc", limit = 5, currentPage = 1 } = options;
+  const { currentUserId, filter = "friends", search, sortBy = "date", order = "asc", limit = 5, currentPage = 1 } = options;
 
   try {
     let joinCondition;
