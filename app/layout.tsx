@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SideNav from "./ui/sidenav/sidenav";
 import SideNavWrapper from "./ui/sidenav/sidenavWrapper";
 
 const geistSans = Geist({
@@ -25,7 +24,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="ru" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            try {
+              const stored = localStorage.getItem("theme");
+              const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+              const theme = stored || (systemDark ? "dark" : "light");
+
+              if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+              } else {
+                document.documentElement.classList.remove("dark");
+              }
+            } catch (e) {}
+          `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col md:grid md:grid-cols-[220_auto] gap-3 p-4 bg-bg-primary text-text-primary">
         <div className="fixed z-50 md:static bottom-0 md:bottom-auto md:left-auto left-0 w-full md:w-auto md:grid md:grid-rows-[100_auto] gap-3 md:col-[1/2]">
           <h1 className="hidden p-4 h-(--header-height) rounded-md text-4xl md:flex justify-center items-center bg-accent text-primary shadow-sm border border-border">ПослеЧек</h1>
