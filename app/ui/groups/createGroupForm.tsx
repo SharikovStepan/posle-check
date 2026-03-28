@@ -1,14 +1,12 @@
 "use client";
 
-import { Suspense, useActionState, useCallback, useMemo, useState } from "react";
+import { Suspense, useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMembersContext } from "./membersProvider";
 import Search from "../search";
 import OrderSettings from "../orderSettings";
-import { useIsDesktop } from "@/app/lib/useIsDesktop";
 import AddedMembersList from "./addedMembersList";
 import SearchMembersList from "./searchMembersList";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
-import FriendListSkeleton from "@/app/lib/fallbacks/friendsListSkeleton";
 import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { SortBy, SortOrder } from "@/app/lib/types/types.filters";
 import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
@@ -23,10 +21,11 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
   const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
 
-  const membersIds = membersContex.state.map((member) => member.id);
-  //   const isDesktop = useIsDesktop(1024);
+  const [visibleErrors, setVisibleErrors] = useState<{ name: boolean; members: boolean }>({ name: false, members: false });
 
-  //   const [friendsListOptions, setFriendsListOptions] = useState<GetFriendsOptions>({ currentUserId: PROFILE_UUID, search: "" });
+  const visibleErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
+
+  const inputNameRef = useRef<HTMLInputElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortByState, setSortByState] = useState<SortBy>("date");
@@ -52,23 +51,59 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
     setOrderState(order);
   }, []);
 
+  useEffect(() => {
+    if (state.errors?.name && inputNameRef.current) {
+      setVisibleErrors({ name: true, members: false });
+      visibleErrorTmrRef.current = setTimeout(() => {
+        setVisibleErrors({ name: false, members: false });
+      }, 2500);
+      inputNameRef.current.focus();
+    }
+
+    if (state.errors?.members && !state.errors?.name) {
+      setVisibleErrors({ name: false, members: true });
+      visibleErrorTmrRef.current = setTimeout(() => {
+        setVisibleErrors({ name: false, members: false });
+      }, 2500);
+    }
+
+    if (state.errors?.general) {
+      throw new Error("DB failed");
+    }
+
+    return () => {
+      if (visibleErrorTmrRef.current) {
+        clearTimeout(visibleErrorTmrRef.current);
+      }
+    };
+  }, [state]);
+
   return (
     <form action={formAction} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
-      <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2]">
-        <div className="h-full mb-4 flex flex-col gap-1">
+      <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-2">
+        <div className="relative h-full mb-4 flex flex-col gap-1">
           <label htmlFor="name" className="block text-lg text-text-primary">
             Название
           </label>
           <input
+            ref={inputNameRef}
             type="text"
             name="name"
             id="name"
             onChange={(e) => setName(e.target.value)}
             value={name}
             autoComplete="off"
+            aria-invalid={!!state.errors?.name}
+            aria-describedby={state.errors?.name ? "name-error" : undefined}
             placeholder="Введите название..."
-            className="mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus"
+            className={`mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus ${state.errors?.name && visibleErrors.name ? "focus:ring-error!" : ""}`}
           />
+
+          {state.errors?.name && visibleErrors.name && (
+            <p id="name-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
+              {state.errors?.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -135,6 +170,12 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
         <input name="members" type="text" hidden={true} defaultValue={JSON.stringify(membersContex.ids)} />
         <input name="currentUserId" type="text" hidden={true} defaultValue={PROFILE_UUID} />
       </div>
+
+      {state.errors?.members && visibleErrors.members && (
+        <div role="alert" className="fixed z-50 flex justify-center items-center text-center top-1/2 left-1/2 -translate-x-1/2 bg-error text-text-primary px-6 py-3 rounded-lg shadow-lg">
+          {state.errors?.members}
+        </div>
+      )}
 
       <button
         type="submit"

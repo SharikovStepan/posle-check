@@ -20,7 +20,7 @@ export default function GroupCard({ groupData }: { groupData: Group }) {
 
   return (
     <>
-	 <Link href={`/groups/${groupData.id}`} className="block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus:outline-none focus:ring(--ring) rounded-2xl">
+	 <Link href={`/groups/${groupData.id}`} className="block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl">
       <article className="w-full rounded-2xl bg-surface p-4 grid grid-rows-[2fr_1fr_0.5fr] grid-cols-[2fr_1fr] gap-y-2 ">
         <div className="h-14 w-14 bg-accent/30 flex justify-center items-center rounded-xl ">
           {groupData.icon_url !== null ? (
