@@ -13,10 +13,16 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
   const friendStatusDesc = userData.id === PROFILE_UUID ? "Это вы" : friendText(userData.friendship_status);
   return (
     <>
-      <div className="relative p-2 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
+      <div className="relative py-2 px-4 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
         <div className="h-full flex flex-col justify-between">
           <div className={`${friendStatusDesc == "" ? "h-full" : ""} flex items-center gap-3`}>
-            {!userData.avatar_url ? <UserCircleIcon className={`${friendStatusDesc == "" ? "h-15" : "h-10"} text-foreground`} /> : ""}
+            {userData.avatar_url ? (
+              <div className={`${friendStatusDesc == "" ? "h-12" : "h-10"} rounded-full overflow-hidden`}>
+                <img src={userData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <UserCircleIcon className={`${friendStatusDesc == "" ? "h-12" : "h-10"} w-full text-accent/80 overflow-hidden`} />
+            )}
             <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
           </div>
           {friendStatusDesc != "" && <div className="text-text-tertiary text-xs">{friendStatusDesc}</div>}
