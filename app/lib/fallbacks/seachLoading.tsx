@@ -1,4 +1,4 @@
-import Spinner from "../spinner";
+import Spinner from "../../ui/spinner";
 
 export function SeachLoading() {
 	return (

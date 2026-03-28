@@ -123,7 +123,6 @@ function getFriendshipUiStatusByQueryStatus(queryStatus: FriendsListType, userFr
   return "none";
 }
 
-
 export async function getFriendsList(options: GetFriendsOptions): Promise<FriendsListResult> {
   const { currentUserId, filter = "friends", search, sortBy = "date", order = "asc", limit = 5, currentPage = 1 } = options;
 
@@ -198,7 +197,7 @@ export async function getFriendsList(options: GetFriendsOptions): Promise<Friend
     const sortOrder = order === "asc" ? sql`ASC` : sql`DESC`;
 
     // 2️⃣ Получаем сами данные
-    const users = (await sql`
+    const users = await sql<User[]>`
 		 SELECT
 			p.id,
 			p.username,
@@ -216,7 +215,7 @@ export async function getFriendsList(options: GetFriendsOptions): Promise<Friend
 		 ORDER BY ${sortColumn} ${sortOrder}
 		 LIMIT ${limit}
 		 OFFSET ${offset}
-	  `) satisfies dbUserRow[];
+	  `;
 
     // 3️⃣ Мапим статус
     const mappedUsers: User[] = users.map((user) => ({

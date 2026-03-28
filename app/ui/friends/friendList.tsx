@@ -5,7 +5,7 @@ import { FriendsListType } from "@/app/lib/types/types.filters";
 import { getFriendsList } from "@/app/lib/data/data.friendship";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
 import Pagination from "../paginaton";
-import FriendListSkeleton from "@/app/lib/skeletons/friendsListSkeleton";
+import FriendListSkeleton from "@/app/lib/fallbacks/friendsListSkeleton";
 
 export default async function FriendList({ options, filterType }: { options: GetFriendsOptions; filterType: FriendsListType }) {
   const friendsListResult: FriendsListResult = await getFriendsList(options);

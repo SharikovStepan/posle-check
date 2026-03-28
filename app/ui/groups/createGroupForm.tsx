@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useState } from "react";
+import { Suspense, useActionState, useCallback, useMemo, useState } from "react";
 import { useMembersContext } from "./membersProvider";
 import Search from "../search";
 import OrderSettings from "../orderSettings";
@@ -8,18 +8,23 @@ import { useIsDesktop } from "@/app/lib/useIsDesktop";
 import AddedMembersList from "./addedMembersList";
 import SearchMembersList from "./searchMembersList";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
-import FriendListSkeleton from "@/app/lib/skeletons/friendsListSkeleton";
+import FriendListSkeleton from "@/app/lib/fallbacks/friendsListSkeleton";
 import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { SortBy, SortOrder } from "@/app/lib/types/types.filters";
+import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
+import Spinner from "../spinner";
 
 export default function CreateGroupForm({ initialFriendsData, children }: { initialFriendsData: FriendsListResult; children?: React.ReactNode }) {
   const membersContex = useMembersContext();
 
   const [tabType, setTabType] = useState<"friends" | "members">("friends");
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
-  const isDesktop = useIsDesktop(1024);
+  const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
 
-  console.log("membersContex", membersContex.state);
+  const membersIds = membersContex.state.map((member) => member.id);
+  //   const isDesktop = useIsDesktop(1024);
 
   //   const [friendsListOptions, setFriendsListOptions] = useState<GetFriendsOptions>({ currentUserId: PROFILE_UUID, search: "" });
 
@@ -48,13 +53,22 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   }, []);
 
   return (
-    <form action={""} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
+    <form action={formAction} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2]">
         <div className="h-full mb-4 flex flex-col gap-1">
           <label htmlFor="name" className="block text-lg text-text-primary">
             Название
           </label>
-          <input type="text" name="name" id="name" required placeholder="Введите название..." className="mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus" />
+          <input
+            type="text"
+            name="name"
+            id="name"
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            autoComplete="off"
+            placeholder="Введите название..."
+            className="mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus"
+          />
         </div>
 
         <div>
@@ -65,9 +79,12 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
             name="description"
             id="description"
             rows={5}
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
             placeholder="Введите описание..."
             className="mt-1 resize-none block w-full bg-bg-secondary rounded-lg border-border shadow-sm sm:text-sm px-3 py-2 focus"
           />
+          <div></div>
         </div>
 
         <span className="block w-full bg-surface mt-6 h-0.5 "></span>
@@ -115,12 +132,18 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
       <div className={`${tabType == "members" ? "block w-full" : "hidden"} lg:block lg:col-[2/3] row-[1/3] lg:h-full`}>
         <AddedMembersList usersData={membersContex.state} />
+        <input name="members" type="text" hidden={true} defaultValue={JSON.stringify(membersContex.ids)} />
+        <input name="currentUserId" type="text" hidden={true} defaultValue={PROFILE_UUID} />
       </div>
 
       <button
         type="submit"
-        className="fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200">
-        Создать группу
+        disabled={isPending}
+        className={`${
+          isPending ? "" : ""
+        } fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
+        <p className={`${isPending ? "hidden" : ""}`}>Создать группу</p>
+        <Spinner className={`${isPending ? "block" : "hidden!"}`} />
       </button>
     </form>
   );

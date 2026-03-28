@@ -5,7 +5,7 @@ import SearchMembersList from "../../ui/groups/searchMembersList";
 import { PROFILE_UUID } from "../../lib/placeholders-data";
 import { MembersProvider } from "../../ui/groups/membersProvider";
 import { Suspense } from "react";
-import FriendListSkeleton from "../../lib/skeletons/friendsListSkeleton";
+import FriendListSkeleton from "../../lib/fallbacks/friendsListSkeleton";
 import { getFriendsList } from "@/app/lib/data/data.friendship";
 import { FriendsListResult } from "@/app/lib/types/types.friends";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
