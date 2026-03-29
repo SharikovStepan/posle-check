@@ -38,7 +38,13 @@ export default function EditMemberCard({ userData, choosedList = false, marked =
           } ${!choosedList && "cursor-pointer"}`}>
           <div className="h-full flex flex-col justify-between">
             <div className={` h-full flex items-center gap-3`}>
-              {!userData.avatar_url ? <UserCircleIcon className={`text-text-secondary w-15 h-15`} /> : ""}
+              {userData.avatar_url ? (
+                <div className={`h-12 rounded-full overflow-hidden`}>
+                  <img src={userData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <UserCircleIcon className={`h-12 w-full text-accent/80 overflow-hidden`} />
+              )}
               <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
             </div>
           </div>

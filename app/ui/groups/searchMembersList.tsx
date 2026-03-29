@@ -73,7 +73,7 @@ export default function SearchMembersList({ options, initialData, choosedMembers
 
         params.set("page", paginatonPage.toString());
 
-        const choosedMembersCount = choosedMembers.length;
+      //   const choosedMembersCount = choosedMembers.length;
         // const limit = paginatonPage > 1 ? FRIEND_LIST_LIMIT : FRIEND_LIST_LIMIT + choosedMembersCount;
         const limit = FRIEND_LIST_LIMIT || 5;
         params.set("limit", limit.toString());

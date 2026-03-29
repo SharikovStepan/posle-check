@@ -1,4 +1,4 @@
-export type FilterButton<T extends string> = { filterType: T; text: string; icon: string };
+export type FilterButton<T extends string> = { filterType: T; text: string; icon?: string };
 
 export type FriendsListType = "friends" | "outgoing" | "incoming";
 

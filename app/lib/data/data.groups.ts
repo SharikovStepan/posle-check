@@ -1,5 +1,6 @@
 import postgres from "postgres";
-import { GetGroupsOptions, Group, GroupListResult } from "../types/types.groups";
+import { GetGroupsOptions, Group, GroupCardType, GroupListResult, GroupMemberCard, GroupMemberCardQuery, GroupQuery } from "../types/types.groups";
+import { CheckCardType } from "../types/types.checks";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -36,7 +37,7 @@ export async function getGroupsList(options: GetGroupsOptions): Promise<GroupLis
 
     const searchCondition = search
       ? sql`
-			AND LOWER(g.name) LIKE ${"%" + search.toLowerCase() + "%"}
+			AND LOWER(g.title) LIKE ${"%" + search.toLowerCase() + "%"}
 		 `
       : sql``;
 
@@ -53,14 +54,14 @@ export async function getGroupsList(options: GetGroupsOptions): Promise<GroupLis
     const totalPages = Math.ceil(total / limit);
     const offset = limit * (currentPage - 1);
 
-    const sortColumn = sortBy === "name" ? sql`g.name` : sql`g.created_at`;
+    const sortColumn = sortBy === "name" ? sql`g.title` : sql`g.created_at`;
     const sortOrder = order === "asc" ? sql`ASC` : sql`DESC`;
 
     // 2️⃣ DATA
-    const groups = await sql<Group[]>`
+    const groups = await sql<GroupCardType[]>`
 	 SELECT
 		g.id,
-		g.name,
+		g.title,
 		g.description,
 		g.icon_url,
 		g.created_by,
@@ -121,3 +122,160 @@ export async function getGroupsList(options: GetGroupsOptions): Promise<GroupLis
     throw new Error("Не удалось получить группы");
   }
 }
+
+export async function getGroupDetails(groupId: string, currentUserId: string): Promise<Group> {
+  try {
+    const [group] = await sql<GroupQuery[]>`
+		SELECT
+		  g.id,
+		  g.title,
+		  g.description,
+		  g.icon_url,
+	 
+		  COUNT(DISTINCT gm.profile_id)::int AS members_count,
+		  COUNT(DISTINCT c.id)::int AS checks_count
+	 
+		FROM groups g
+		JOIN group_members gm ON gm.group_id = g.id
+		LEFT JOIN checks c ON c.group_id = g.id
+	 
+		WHERE g.id = ${groupId}
+		  AND EXISTS (
+			 SELECT 1
+			 FROM group_members gm2
+			 WHERE gm2.group_id = g.id
+				AND gm2.profile_id = ${currentUserId}
+		  )
+	 
+		GROUP BY g.id
+	 `;
+
+    if (!group) throw new Error("Нет доступа к группе");
+
+    const members = await sql<GroupMemberCardQuery[]>`
+      SELECT
+        p.id,
+        p.username,
+        p.avatar_url,
+		  p.full_name
+      FROM group_members gm
+      JOIN profiles p ON p.id = gm.profile_id
+      WHERE gm.group_id = ${groupId}
+        AND gm.role != 'blocked'
+    `;
+
+    const checks = await sql<CheckCardType[]>`
+	    SELECT
+	   	c.id,
+	   	c.title,
+	   	c.icon_url,
+	   	c.total_amount,
+	   	c.created_at,
+      
+	   	-- 💰 оплачено (отдельный подзапрос)
+	   	COALESCE((
+	   	  SELECT SUM(p.amount)
+	   	  FROM payments p
+	   	  WHERE p.check_id = c.id
+	   		 AND p.status = 'confirmed'
+	   	), 0)::numeric AS paid_amount,
+      
+	   	-- 👥 всего участников
+	   	(
+	   	  SELECT COUNT(*)
+	   	  FROM check_participants cp
+	   	  WHERE cp.check_id = c.id
+	   		 AND cp.participated = true
+	   	)::int AS participants_count,
+      
+	   	-- ✅ оплатившие участники
+	   	(
+	   	  SELECT COUNT(DISTINCT p.payer_id)
+	   	  FROM payments p
+	   	  WHERE p.check_id = c.id
+	   		 AND p.status = 'confirmed'
+	   	)::int AS paid_participants_count
+      
+	    FROM checks c
+	    WHERE c.group_id = ${groupId}
+	    ORDER BY c.created_at DESC
+      `;
+
+
+
+    const unpaidCounts = await sql<
+      {
+        profile_id: string;
+        unpaid_checks_count: number;
+      }[]
+    >`
+      SELECT
+        cp.profile_id,
+        COUNT(*)::int AS unpaid_checks_count
+      FROM check_participants cp
+    
+      JOIN checks c ON c.id = cp.check_id
+    
+      LEFT JOIN payments p
+        ON p.check_id = cp.check_id
+       AND p.payer_id = cp.profile_id
+       AND p.status = 'confirmed'
+    
+      WHERE c.group_id = ${groupId}
+        AND cp.participated = true
+        AND p.id IS NULL
+    
+      GROUP BY cp.profile_id
+    `;
+
+    const map = new Map(unpaidCounts.map((u) => [u.profile_id, u.unpaid_checks_count]));
+
+    const membersWithCounts: GroupMemberCard[] = members.map((member) => ({
+      ...member,
+      unpaid_checks_count: map.get(member.id) ?? 0,
+    }));
+
+    return {
+      ...group,
+      members: membersWithCounts,
+      checks,
+    };
+  } catch (error) {
+    console.error("Ошибка получения группы:", error);
+    throw error;
+  }
+}
+
+
+
+    //  const unpaidIdsByUsers = await sql`
+    //    SELECT
+    //      cp.profile_id,
+
+    //      json_agg(c.id) AS unpaid_checks
+
+    //    FROM check_participants cp
+
+    //    JOIN checks c ON c.id = cp.check_id
+
+    //    -- ❗ ключевая часть
+    //    LEFT JOIN payments p
+    //      ON p.check_id = cp.check_id
+    //     AND p.payer_id = cp.profile_id
+    //     AND p.status = 'confirmed'
+
+    //    WHERE c.group_id = ${groupId}
+    //      AND cp.participated = true
+
+    //      -- 💥 только те, где НЕТ платежа
+    //      AND p.id IS NULL
+
+    //    GROUP BY cp.profile_id
+    //  `;
+
+    //  const unpaidIdsMap = new Map(unpaidIdsByUsers.map((u) => [u.profile_id, u.unpaid_checks]));
+
+    //  const membersWithUnpaid = members.map((member) => ({
+    //    ...member,
+    //    unpaid_checks: unpaidIdsMap.get(member.id) ?? [],
+    //  }));

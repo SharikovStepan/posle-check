@@ -28,7 +28,7 @@
 
   --color-success: #4dbd58;
   --color-error: #5c0000;
-  --color-warning: #5c3f00;
+  --color-warning: #ffb20b;
 
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.12);
   --shadow-md: 0 6px 12px -4px rgb(0 0 0 / 0.15);
@@ -67,7 +67,7 @@ html.dark {
 
   --color-success: #4dbd58;
   --color-error: #5c0000;
-  --color-warning: #5c3f00;
+  --color-warning: #ffc20b;
 
   --shadow-sm: 0 1px 3px rgb(50 50 50 / 0.2);
   --shadow-md: 0 6px 12px -4px rgb(50 50 50 / 0.3);

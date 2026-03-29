@@ -1,6 +1,6 @@
 "use client";
 
-import { Group } from "@/app/lib/types/types.groups";
+import { GroupCardType } from "@/app/lib/types/types.groups";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/outline";
 
@@ -9,7 +9,7 @@ import AvatarsRow from "./avatarsRow";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function GroupCard({ groupData }: { groupData: Group }) {
+export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
   console.log("groupData", groupData);
 
   const { push } = useRouter();
@@ -36,7 +36,7 @@ export default function GroupCard({ groupData }: { groupData: Group }) {
           <AvatarsRow avatars={groupData.avatars} memberCount={groupData.members_count} />
         </div>
 
-        <h4 className="text-text-primary font-bold text-lg row-[2/3] col-[1/2]">{groupData.name}</h4>
+        <h4 className="text-text-primary font-bold text-lg row-[2/3] col-[1/2]">{groupData.title}</h4>
 
         <div className="flex justify-center items-center gap-4 col-[1/3] row-[3/4] justify-self-start">
           <div className="flex justify-center items-center gap-1 text-text-tertiary">

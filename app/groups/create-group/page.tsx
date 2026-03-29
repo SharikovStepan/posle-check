@@ -14,8 +14,8 @@ export default async function Page() {
   const friendsListResult: FriendsListResult = await getFriendsList({ currentUserId: PROFILE_UUID, search: "" });
 
   return (
-    <main className="main-div">
-      <div className="header-div h-full flex justify-between items-center mb-2">
+    <main className="flex flex-col gap-3">
+      <div className="header-div h-full md:h-(--header-height) flex justify-between items-center mb-2">
         <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </Link>
