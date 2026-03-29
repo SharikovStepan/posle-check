@@ -1,4 +1,4 @@
-import { CheckCardType } from "./types.checks";
+import { CheckByUserCardType, CheckToUserCardType } from "./types.checks";
 import { GroupListType } from "./types.filters";
 import { User } from "./types.user";
 
@@ -48,10 +48,11 @@ export type Group = {
   checks_count: number;
   members_count: number;
 
-  checks: CheckCardType[];
+  checksByUser: CheckByUserCardType[];
+  checksToUser: CheckToUserCardType[];
   members: GroupMemberCard[];
 };
 
 export type GroupQuery = Omit<Group, "checks" | "members">;
 
-export type GroupPageTabs = "members" | "checks";
+export type GroupPageTabs = "members" | "checksByUser" | "checksToUser";

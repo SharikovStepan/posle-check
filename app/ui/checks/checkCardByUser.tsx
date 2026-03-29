@@ -1,19 +1,10 @@
-import { CheckCardType } from "@/app/lib/types/types.checks";
 import { DocumentCurrencyDollarIcon } from "@heroicons/react/24/outline";
 import PaidCounter from "./paidCounter";
 import ProgressBar from "./progressBar";
+import { CheckByUserCardType } from "@/app/lib/types/types.checks";
 
-const RubleIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" id="Currency-Ruble--Streamline-Sharp-Material" height="24" width="24">
-    <path
-      fill="#000000"
-      d="M7.25 21v-3.25H5v-1.5h2.25V13.5H5v-1.5h2.25V3h6.5c1.46365 0 2.7046 0.509415 3.72275 1.52825C18.4909 5.5471 19 6.78875 19 8.25325c0 1.4645 -0.5091 2.7051 -1.52725 3.72175C16.4546 12.99165 15.21365 13.5 13.75 13.5h-5v2.75H13v1.5h-4.25V21h-1.5Zm1.5 -9h5c1.05 0 1.9375 -0.3625 2.6625 -1.0875C17.1375 10.1875 17.5 9.3 17.5 8.25s-0.3625 -1.9375 -1.0875 -2.6625C15.6875 4.8625 14.8 4.5 13.75 4.5h-5v7.5Z"
-      stroke-width="0.5"></path>
-  </svg>
-);
 
-export default function CheckCard({ checkData }: { checkData: CheckCardType }) {
-  console.log("created_at", checkData.created_at);
+export default function CheckByUserCard({ checkData }: { checkData: CheckByUserCardType }) {
 
   const date = new Date(checkData.created_at);
 

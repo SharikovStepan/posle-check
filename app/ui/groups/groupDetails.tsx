@@ -4,16 +4,18 @@ import { FilterButton } from "@/app/lib/types/types.filters";
 import { Group, GroupPageTabs } from "@/app/lib/types/types.groups";
 import { useState } from "react";
 import TabChangeButton from "../tabChangeButtons";
-import CheckCard from "../checks/checkCard";
 import GroupdMember from "./GroupMemberCard";
+import CheckByUserCard from "../checks/checkCardByUser";
+import CheckToUserCard from "../checks/checkCardToUser";
 
 const tabs: FilterButton<GroupPageTabs>[] = [
-  { filterType: "checks", text: "Чеки" },
+  { filterType: "checksByUser", text: "Ваши чеки" },
+  { filterType: "checksToUser", text: "Чеки на оплату" },
   { filterType: "members", text: "Участники" },
 ];
 
 export default function GroupDetails({ groupData }: { groupData: Group }) {
-  const [tab, setTab] = useState<"checks" | "members">("checks");
+  const [tab, setTab] = useState<GroupPageTabs>("checksByUser");
 
   return (
     <>
@@ -22,9 +24,13 @@ export default function GroupDetails({ groupData }: { groupData: Group }) {
       </div>
 
       <div className="flex flex-col gap-3">
-        {tab == "checks"
-          ? groupData.checks.map((check) => {
-              return <CheckCard key={check.id} checkData={check} />;
+        {tab == "checksByUser"
+          ? groupData.checksByUser.map((check) => {
+              return <CheckByUserCard key={check.id} checkData={check} />;
+            })
+          : tab == "checksToUser"
+          ? groupData.checksToUser.map((check) => {
+              return <CheckToUserCard key={check.id} checkData={check} />;
             })
           : groupData.members.map((member) => {
               return <GroupdMember key={member.id} memberData={member} />;

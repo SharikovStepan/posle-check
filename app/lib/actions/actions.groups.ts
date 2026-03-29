@@ -12,21 +12,21 @@ export type CreateGroupState = {
   success?: boolean;
   groupId?: string;
   errors?: {
-    name?: string;
+    title?: string;
     members?: string;
     general?: string;
   };
 };
 
 const createGroupSchema = z.object({
-  name: z.string().trim().min(1, "Название не может быть пустым"),
+  title: z.string().trim().min(1, "Название не может быть пустым"),
   description: z.string().optional(),
   members: z.array(z.string()).min(2, "Нужен хотя бы один участник помимо вас"),
   currentUserId: z.string(),
 });
 
 export async function createGroupAction(prevState: CreateGroupState, formData: FormData): Promise<CreateGroupState> {
-  const name = formData.get("name");
+  const title = formData.get("title");
   const description = formData.get("description");
   const membersRaw = formData.get("members"); // JSON строка
   const currentUserId = formData.get("currentUserId");
@@ -49,7 +49,7 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
 
   // 👉 Валидация через Zod
   const result = createGroupSchema.safeParse({
-    name,
+    title,
     description,
     members: uniqueMembers,
     currentUserId,
@@ -59,20 +59,20 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
     const { fieldErrors } = z.flattenError(result.error);
     return {
       errors: {
-        name: fieldErrors.name?.[0],
+        title: fieldErrors.title?.[0],
         members: fieldErrors.members?.[0],
       },
     };
   }
 
-  const { name: validName, description: validDescription, members } = result.data;
+  const { title: validTitle, description: validDescription, members } = result.data;
 
   try {
     const groupId = await sql.begin(async (tx: any) => {
       // 1. Создаём группу
       const [group] = await tx`
-			INSERT INTO groups (name, description, created_by)
-			VALUES (${validName}, ${validDescription || null}, ${currentUserId})
+			INSERT INTO groups (title, description, created_by)
+			VALUES (${validTitle}, ${validDescription || null}, ${currentUserId})
 			RETURNING id
 		 `;
 

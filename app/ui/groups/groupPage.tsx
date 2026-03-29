@@ -9,6 +9,9 @@ import GroupDetails from "./groupDetails";
 export default async function GroupPage({ id }: { id: string }) {
   const groupDetails = await getGroupDetails(id, PROFILE_UUID);
 
+  console.log(groupDetails);
+  
+
   return (
     <>
       <div className="header-div h-21 flex justify-start gap-4 items-center mb-2">

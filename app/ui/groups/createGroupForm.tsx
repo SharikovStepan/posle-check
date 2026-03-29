@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMembersContext } from "./membersProvider";
 import Search from "../search";
 import OrderSettings from "../orderSettings";
@@ -12,16 +12,17 @@ import { SortBy, SortOrder } from "@/app/lib/types/types.filters";
 import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
 import Spinner from "../spinner";
 
+
 export default function CreateGroupForm({ initialFriendsData, children }: { initialFriendsData: FriendsListResult; children?: React.ReactNode }) {
   const membersContex = useMembersContext();
 
   const [tabType, setTabType] = useState<"friends" | "members">("friends");
-  const [name, setName] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
 
-  const [visibleErrors, setVisibleErrors] = useState<{ name: boolean; members: boolean }>({ name: false, members: false });
+  const [visibleErrors, setVisibleErrors] = useState<{ title: boolean; members: boolean }>({ title: false, members: false });
 
   const visibleErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -52,18 +53,18 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   }, []);
 
   useEffect(() => {
-    if (state.errors?.name && inputNameRef.current) {
-      setVisibleErrors({ name: true, members: false });
+    if (state.errors?.title && inputNameRef.current) {
+      setVisibleErrors({ title: true, members: false });
       visibleErrorTmrRef.current = setTimeout(() => {
-        setVisibleErrors({ name: false, members: false });
+        setVisibleErrors({ title: false, members: false });
       }, 2500);
       inputNameRef.current.focus();
     }
 
-    if (state.errors?.members && !state.errors?.name) {
-      setVisibleErrors({ name: false, members: true });
+    if (state.errors?.members && !state.errors?.title) {
+      setVisibleErrors({ title: false, members: true });
       visibleErrorTmrRef.current = setTimeout(() => {
-        setVisibleErrors({ name: false, members: false });
+        setVisibleErrors({ title: false, members: false });
       }, 2500);
     }
 
@@ -82,26 +83,26 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
     <form action={formAction} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-2">
         <div className="relative h-full mb-4 flex flex-col gap-1">
-          <label htmlFor="name" className="block text-lg text-text-primary">
+          <label htmlFor="title" className="block text-lg text-text-primary">
             Название
           </label>
           <input
             ref={inputNameRef}
             type="text"
-            name="name"
-            id="name"
-            onChange={(e) => setName(e.target.value)}
-            value={name}
+            name="title"
+            id="title"
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
             autoComplete="off"
-            aria-invalid={!!state.errors?.name}
-            aria-describedby={state.errors?.name ? "name-error" : undefined}
+            aria-invalid={!!state.errors?.title}
+            aria-describedby={state.errors?.title ? "title-error" : undefined}
             placeholder="Введите название..."
-            className={`mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus ${state.errors?.name && visibleErrors.name ? "focus:ring-error!" : ""}`}
+            className={`mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus ${state.errors?.title && visibleErrors.title ? "focus:ring-error!" : ""}`}
           />
 
-          {state.errors?.name && visibleErrors.name && (
-            <p id="name-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
-              {state.errors?.name}
+          {state.errors?.title && visibleErrors.title && (
+            <p id="tite-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
+              {state.errors?.title}
             </p>
           )}
         </div>

@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
-  console.log("groupData", groupData);
+//   console.log("groupData", groupData);
 
   const { push } = useRouter();
 
