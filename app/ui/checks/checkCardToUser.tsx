@@ -34,9 +34,9 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
           <p className="text-text-tertiary text-sm">{formattedDate}</p>
         </div>
 
-        <div className="grid grid-rows-[1fr_1fr] justify-items-end items-center">
+        <div className="grid grid-rows-[1fr_auto] justify-items-end items-center">
           {formatAmount && !checkData.is_paid ? (
-            <div className="flex gap-2 justify-center items-center text-xl font-bold tracking-wide w-full">
+            <div className="flex gap-1 justify-center items-center text-xl font-bold tracking-wide">
               <p className="text-text-primary self-end justify-self-end">{formatAmount}</p>
               <p className="text-text-primary">₽</p>
             </div>
@@ -44,8 +44,8 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
             ""
           )}
 
-          <div className={`text-sm ${formatAmount ? "row-[2/3]" : "row-[1/3]"}`}>
-            {!checkData.participated ? <p className="text-text-tertiary">не участвовал</p> : !checkData.is_paid ? <p className="text-warning">Не оплачен</p> : <p className="text-success">Оплачен</p>}
+          <div className={`text-xs text-nowrap ${formatAmount ? "row-[2/3]" : "row-[1/3]"}`}>
+            {!checkData.participated ? <p className="text-text-tertiary">Не участвовал</p> : !checkData.is_paid ? <p className="text-warning">Не оплачен</p> : <p className="text-success">Оплачен</p>}
           </div>
         </div>
 

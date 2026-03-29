@@ -27,8 +27,8 @@ const friendsFilters: FilterButton<GroupListType>[] = [
   // { filterType: 'created_by_others', text: "Не мною", icon: PencilSquareIcon },
 ];
 
-export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListType; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
-  const searchParams = await props.searchParams;
+export default function Page(props: { searchParams?: { query?: string; filter: GroupListType; sortBy?: SortBy; order?: SortOrder; page?: string } }) {
+  const searchParams = props.searchParams;
 
   const query = searchParams?.query || "";
   const filterType = searchParams?.filter || "all";

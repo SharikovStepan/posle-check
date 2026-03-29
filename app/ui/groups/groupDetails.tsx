@@ -10,7 +10,7 @@ import CheckToUserCard from "../checks/checkCardToUser";
 
 const tabs: FilterButton<GroupPageTabs>[] = [
   { filterType: "checksByUser", text: "Ваши чеки" },
-  { filterType: "checksToUser", text: "Чеки на оплату" },
+  { filterType: "checksToUser", text: "На оплату" },
   { filterType: "members", text: "Участники" },
 ];
 

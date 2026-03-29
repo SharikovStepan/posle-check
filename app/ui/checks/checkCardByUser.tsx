@@ -3,9 +3,7 @@ import PaidCounter from "./paidCounter";
 import ProgressBar from "./progressBar";
 import { CheckByUserCardType } from "@/app/lib/types/types.checks";
 
-
 export default function CheckByUserCard({ checkData }: { checkData: CheckByUserCardType }) {
-
   const date = new Date(checkData.created_at);
 
   const formattedDate = date
@@ -37,7 +35,7 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
         </div>
 
         <div className="flex flex-col justify-center items-end">
-          <div className="flex gap-2 justify-center items-center text-xl font-bold tracking-wide">
+          <div className="flex gap-1 justify-center items-center text-xl font-bold tracking-wide">
             <p className="text-text-primary self-end justify-self-end">{formatAmount}</p>
             <p className="text-text-primary">₽</p>
           </div>
