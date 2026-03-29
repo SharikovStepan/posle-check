@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import SideNav from "./sidenav";
 
-const hiddenPaths = ["/groups/create-group", "/register", "/"];
+const hiddenPaths = ["/groups/create-group", "/groups/[id]/create-check"];
 
 export default function SideNavWrapper() {
   const pathname = usePathname();

@@ -56,3 +56,5 @@ export type Group = {
 export type GroupQuery = Omit<Group, "checks" | "members">;
 
 export type GroupPageTabs = "members" | "checksByUser" | "checksToUser";
+
+export type CreateGroupPageTabs = "members" | "friends";

@@ -8,15 +8,21 @@ import AddedMembersList from "./addedMembersList";
 import SearchMembersList from "./searchMembersList";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
 import { PROFILE_UUID } from "@/app/lib/placeholders-data";
-import { SortBy, SortOrder } from "@/app/lib/types/types.filters";
+import { FilterButton, SortBy, SortOrder } from "@/app/lib/types/types.filters";
 import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
 import Spinner from "../spinner";
+import TabChangeButton from "../tabChangeButtons";
+import { CreateGroupPageTabs } from "@/app/lib/types/types.groups";
 
+const tabs: FilterButton<CreateGroupPageTabs>[] = [
+  { filterType: "friends", text: "Друзья" },
+  { filterType: "members", text: "Добавленные" },
+];
 
 export default function CreateGroupForm({ initialFriendsData, children }: { initialFriendsData: FriendsListResult; children?: React.ReactNode }) {
   const membersContex = useMembersContext();
 
-  const [tabType, setTabType] = useState<"friends" | "members">("friends");
+  const [tabType, setTabType] = useState<CreateGroupPageTabs>("friends");
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -135,24 +141,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
         </div>
 
         <div className={`lg:hidden grid grid-cols-[1fr_1fr] bg-surface h-8 rounded-xl `}>
-          <button
-            type="button"
-            disabled={tabType == "friends"}
-            onClick={() => setTabType("friends")}
-            className={`${
-              tabType === "friends" ? "bg-accent pointer-events-none text-text-inverted" : "text-text-primary bg-surface hover:bg-surface-hover"
-            } w-full cursor-pointer rounded-xl transition-all duration-200`}>
-            Друзья
-          </button>
-          <button
-            type="button"
-            disabled={tabType == "members"}
-            onClick={() => setTabType("members")}
-            className={`${
-              tabType === "members" ? "bg-accent pointer-events-none text-text-inverted" : "text-text-primary bg-surface hover:bg-surface-hover"
-            } w-full cursor-pointer rounded-xl transition-all duration-200`}>
-            Добавленные
-          </button>
+          <TabChangeButton currentTab={tabType} changeTab={setTabType} tabs={tabs} />
         </div>
 
         <div className={`${tabType == "friends" ? "block" : "hidden"} lg:block lg:col-[1/2] row-[2/3]`}>

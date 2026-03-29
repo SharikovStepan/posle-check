@@ -1,7 +1,7 @@
 import { getGroupDetails } from "@/app/lib/data/data.groups";
 import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import PageHeader from "../pageHeader";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, DocumentPlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 import GroupDetails from "./groupDetails";
@@ -14,7 +14,7 @@ export default async function GroupPage({ id }: { id: string }) {
 
   return (
     <>
-      <div className="header-div h-21 flex justify-start gap-4 items-center mb-2">
+      <div className="header-div h-21 flex justify-between gap-4 items-center mb-2">
         <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </Link>
@@ -31,6 +31,9 @@ export default async function GroupPage({ id }: { id: string }) {
             </p>
           </div>
         </div>
+		  <Link href={`/groups/${id}/create-check`} className=" flex justify-center items-center transition-all duration-200 cursor-pointer text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary">
+          <DocumentPlusIcon className="w-1/2 h-1/2" />
+        </Link>
       </div>
 
 
