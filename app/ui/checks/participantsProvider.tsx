@@ -4,7 +4,7 @@ import { CreateCheckParticipantsCardsType, ParticipantsActions, ParticipantsActi
 import { createContext, ReactNode, useContext, useEffect, useReducer, useState } from "react";
 import { participantsReducer } from "./participants-reducer";
 
-export type ParticipantState = { lastDispatch: ParticipantsActionsTypes; participanstList: CreateCheckParticipantsCardsType[] };
+export type ParticipantState = { lastDispatch: ParticipantsActionsTypes; participanstList: CreateCheckParticipantsCardsType[];creator:CreateCheckParticipantsCardsType;total:number };
 
 interface ParticipatsContextValue {
   state: ParticipantState;
@@ -21,10 +21,15 @@ interface ParticipantsProviderProp {
 
 export const ParticipantsProvider: React.FC<ParticipantsProviderProp> = ({ children, initialState }) => {
   const [state, dispatch] = useReducer(participantsReducer, initialState);
-  //   const [ids, setIds] = useState<string[]>([]);
+//   const [isCreatorParticipate, setIsCreatorParticipate] = useState<boolean>(true);
 
   useEffect(() => {
-    // setIds(state.map((member) => member.id));
+   //  const creator = state.participanstList.find((member) => member.isCreator);
+   //  if (creator) {
+   //    setIsCreatorParticipate(creator?.participating);
+   //  } else {
+   //    setIsCreatorParticipate(false);
+   //  }
   }, []);
 
   return <ParticipantsContext.Provider value={{ state, dispatch }}>{children}</ParticipantsContext.Provider>;

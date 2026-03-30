@@ -5,7 +5,9 @@ import { useParticipantsContext } from "./participantsProvider";
 export default function MembersList({ searchQuery }: { searchQuery: string }) {
   const participantsContext = useParticipantsContext();
 
-  const searchFiltered = participantsContext.state.participanstList.filter((member) => {
+  const participantsAndCreator = [participantsContext.state.creator, ...participantsContext.state.participanstList];
+
+  const searchFiltered = participantsAndCreator.filter((member) => {
     const fullNameTrimed = member.full_name?.toLowerCase().trim();
     const usernameTrimed = member.username.toLowerCase().trim();
     const searchTrimed = searchQuery.toLowerCase().trim();

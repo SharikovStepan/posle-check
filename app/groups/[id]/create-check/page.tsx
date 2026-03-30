@@ -22,7 +22,16 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   const members = await getGroupMembers(id, PROFILE_UUID);
 
-  const checkParticipants: CreateCheckParticipantsCardsType[] = members.map((member) => ({ ...member, participating: true, amount: null }));
+  const checkParticipants: CreateCheckParticipantsCardsType[] = members.filter((member) => !member.isCreator);
+  const creator: CreateCheckParticipantsCardsType = members.find((member) => member.isCreator) || {
+    id: "",
+    username: "",
+    full_name: null,
+    avatar_url: null,
+    participating: true,
+    amount: 0,
+    isCreator: true,
+  };
 
   return (
     <main className="flex flex-col gap-3">
@@ -34,7 +43,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       </div>
 
       <div className="h-full">
-        <ParticipantsProvider initialState={{ participanstList: checkParticipants, lastDispatch: "ADD_ALL" }}>
+        <ParticipantsProvider initialState={{ participanstList: checkParticipants, creator: creator, lastDispatch: "ADD_ALL", total: 0 }}>
           <Suspense fallback={<div>Загрузка...</div>}>
             <CreateCheckForm checkParticipants={checkParticipants} />
           </Suspense>

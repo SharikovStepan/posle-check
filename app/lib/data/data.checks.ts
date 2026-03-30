@@ -1,5 +1,6 @@
 import postgres from "postgres";
-import {  CreateCheckParticipantsCardsType } from "../types/types.checks";
+import { CreateCheckParticipantsCardsType } from "../types/types.checks";
+import { GroupMemberCardQuery } from "../types/types.groups";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -26,9 +27,18 @@ export async function getGroupMembers(groupId: string, currentUserId: string): P
 			)
  
 		 ORDER BY p.username ASC
-	  `) as CreateCheckParticipantsCardsType[];
+	  `) as GroupMemberCardQuery[];
 
-    return members;
+    const participantsCardsArray: CreateCheckParticipantsCardsType[] = members.map((member) => {
+      const isCreator = member.id == currentUserId;
+      if (isCreator) {
+        return { ...member, participating: true, amount: 0, isCreator: true };
+      } else {
+        return { ...member, participating: true, amount: 0, isCreator: false };
+      }
+    });
+
+    return participantsCardsArray;
   } catch (error) {
     console.error("Ошибка получения участников группы:", error);
     throw error;

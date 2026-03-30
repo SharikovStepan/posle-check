@@ -13,24 +13,33 @@ import { participantsReducer } from "./participants-reducer";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
+import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
 
 const tabs: FilterButton<CreateCheckPageTabs>[] = [
   { filterType: "members", text: "Участники" },
   { filterType: "amounts", text: "Суммы" },
 ];
 
+type LocalErrors = {
+  share: string | null;
+};
+
 export default function CreateCheckForm({ checkParticipants }: { checkParticipants: CreateCheckParticipantsCardsType[] }) {
   const [tabType, setTabType] = useState<CreateCheckPageTabs>("amounts");
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [amount, setAmount] = useState<number>(0);
-  const [myShare, setMyShare] = useState<number>(0);
+  //  const [amount, setAmount] = useState<number>(0);
+  //   const [myShareReadOnly, setMyShareReadOnly] = useState<boolean>(false);
 
   const [isAddAll, setIsAddAll] = useState<boolean>(true);
   const [shareAmount, setShareAmount] = useState<boolean>(false);
 
+  //   const [isEqualAmounts,setIsEqualAmounts]=useState(false)
+
   const { state: contextstate, dispatch } = useParticipantsContext();
+
+  const [localErrors, setLocalErrors] = useState<LocalErrors>({ share: null });
 
   //   const [participantsList, dispatch] = useReducer(participantsReducer, checkParticipants);
 
@@ -38,12 +47,14 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
     switch (contextstate.lastDispatch) {
       case "DELETE_FROM_PARTICIPANTS":
         setIsAddAll(false);
+        setShareAmount(false);
         break;
       case "ADD_TO_PARTICIPANTS":
         const notAll = contextstate.participanstList.find((member) => !member.participating);
         if (!notAll) {
           setIsAddAll(true);
         }
+        setShareAmount(false);
         break;
       case "CLEAR_AMOUNT":
         setShareAmount(false);
@@ -55,15 +66,22 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
   useEffect(() => {
     if (contextstate.lastDispatch == "SET_AMOUNT") {
-      const isEqual = contextstate.participanstList.every((member) => member.amount == contextstate.participanstList[0].amount);
-      if (isEqual) {
+      if (isEqualParticipantsAmounts(contextstate.participanstList)) {
         setShareAmount(true);
       } else {
         setShareAmount(false);
       }
+
+      if (isAllParticipantsCustomAmounts(contextstate.participanstList) && contextstate.creator.participating) {
+        const newValueForMyShare = contextstate.total - sumParticipantsAmount(contextstate.participanstList);
+
+        dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: newValueForMyShare } });
+      }
     }
+
     console.log("contextstate.participanstList", contextstate.participanstList);
     console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+    console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
 
   useEffect(() => {
@@ -77,21 +95,25 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   useEffect(() => {
     if (shareAmount) {
       const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
-
-      const shareAmountValue = amount / participatedCount;
-      setMyShare(shareAmountValue);
+      const creatorParticipate = contextstate.creator.participating ? 1 : 0;
+      const shareAmountValue = contextstate.total / (participatedCount + creatorParticipate);
       dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
-    } else if (!shareAmount && contextstate.lastDispatch != "CLEAR_AMOUNT" && contextstate.lastDispatch != "SET_AMOUNT") {
+    } else if (
+      !shareAmount &&
+      contextstate.lastDispatch != "CLEAR_AMOUNT" &&
+      contextstate.lastDispatch != "SET_AMOUNT" &&
+      contextstate.lastDispatch != "SET_AMOUNT_CREATOR" &&
+      contextstate.lastDispatch != "SHARE_AMOUNT_NOT_CREATOR"
+    ) {
       dispatch({ type: "CANCEL_SHARE" });
-      setMyShare(0);
     }
   }, [shareAmount]);
 
-//   useEffect(() => {
-//     if (myShare != contextstate.participanstList[0].amount) {
-//       setShareAmount(false);
-//     }
-//   }, [myShare]);
+  //   useEffect(() => {
+  //     if (myShare != contextstate.participanstList[0].amount) {
+  //       setShareAmount(false);
+  //     }
+  //   }, [myShare]);
 
   //   const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
 
@@ -115,6 +137,66 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   //     }),
   //     [searchQuery, sortByState, orderState]
   //   );
+
+  const showErrorTmr = useRef<NodeJS.Timeout | null>(null);
+
+  const handleChangeMyShare = (currentValue: number) => {
+    if (!contextstate.creator.participating) return;
+
+    const maxPossibleValue = maxPossibleCreatorValue(contextstate.total, contextstate.participanstList);
+    if (currentValue > maxPossibleCreatorValue(contextstate.total, contextstate.participanstList) && !isEqualParticipantsAmounts(contextstate.participanstList)) {
+      dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxPossibleValue } });
+    } else {
+      dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: currentValue } });
+    }
+
+    if (isEqualParticipantsAmounts(contextstate.participanstList)) {
+      setShareAmount(false);
+      const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
+      const amountToOther = (contextstate.total - currentValue) / participatedCount;
+      dispatch({ type: "SHARE_AMOUNT_NOT_CREATOR", payload: { amount: amountToOther } });
+    }
+  };
+
+  const handleChangeAmount = (currentValue: number) => {
+    dispatch({ type: "SET_TOTAL", payload: { amount: currentValue } });
+
+    if (shareAmount) {
+      setShareAmount(false);
+    }
+  };
+
+  const handleToggleAddAll = () => {
+    setIsAddAll((prev) => !prev);
+  };
+
+  const handleToggleShare = () => {
+    const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
+    const possibleToShare = contextstate.total / participatedCount >= 1;
+    if (possibleToShare && !shareAmount) {
+      setShareAmount(true);
+    } else if (shareAmount) {
+      setShareAmount(false);
+    } else {
+      setLocalErrors((prev) => ({ ...prev, share: "Сумма должна быть больше количества участников" }));
+    }
+  };
+
+  useEffect(() => {
+    if (showErrorTmr.current) {
+      clearTimeout(showErrorTmr.current);
+    }
+
+    showErrorTmr.current = setTimeout(() => {
+      setLocalErrors({ share: null });
+    }, 3000);
+
+    return () => {
+      if (showErrorTmr.current) {
+        clearTimeout(showErrorTmr.current);
+      }
+    };
+  }, [localErrors]);
 
   const onSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -146,6 +228,9 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   //       }
   //     };
   //   }, [state]);
+
+  const isEqual = contextstate.participanstList.every((member) => member.amount == contextstate.participanstList[0].amount && member.amount != 0);
+  const isAllCustomAmount = contextstate.participanstList.every((member) => member.amount != 0);
 
   return (
     <form action={""} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
@@ -202,10 +287,17 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
             <input
               // ref={inputNameRef}
               type="number"
-              name="amount"
-              id="amount"
-              onChange={(e) => setAmount(Number(e.target.value))}
-              value={amount}
+              name="total-amount"
+              id="total-amount"
+              min="0"
+              onChange={(e) => {
+                if (e.target.value.startsWith("-") || e.target.value == "0") {
+                  handleChangeAmount(0);
+                } else {
+                  handleChangeAmount(Number(e.target.value));
+                }
+              }}
+              value={contextstate.total < 1 ? "" : contextstate.total}
               autoComplete="off"
               // aria-invalid={!!state.errors?.title}
               // aria-describedby={state.errors?.title ? "title-error" : undefined}
@@ -219,7 +311,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
           )} */}
         </div>
 
-        <div className="relative h-full flex justify-between items-center gap-1">
+        <div className={`${contextstate.creator.participating ? "" : "opacity-20"} relative h-full flex justify-between items-center gap-1`}>
           <label htmlFor="title" className="block text-lg text-text-primary">
             Моя часть
           </label>
@@ -229,11 +321,20 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
             <input
               // ref={inputNameRef}
+              disabled={!contextstate.creator.participating}
+              readOnly={!isEqualParticipantsAmounts(contextstate.participanstList) && isAllAdded(contextstate.participanstList)}
               type="number"
+              min="0"
               name="my_share"
               id="my_share"
-              onChange={(e) => setMyShare(Number(e.target.value))}
-              value={myShare}
+              onChange={(e) => {
+                if (e.target.value.startsWith("-") || e.target.value == "0") {
+                  handleChangeMyShare(0);
+                } else {
+                  handleChangeMyShare(Number(e.target.value));
+                }
+              }}
+              value={contextstate.creator.amount == 0 ? "" : contextstate.creator.amount}
               autoComplete="off"
               // aria-invalid={!!state.errors?.title}
               // aria-describedby={state.errors?.title ? "title-error" : undefined}
@@ -248,8 +349,10 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         </div>
 
         <div className="flex flex-col gap-4">
-          <ToggleButton labelText={"Добавить всех"} toggleChange={setIsAddAll} toggleState={isAddAll} inputName={"add-all"} />
-          <ToggleButton labelText={"Поделить сумму"} toggleChange={setShareAmount} toggleState={shareAmount} inputName={"share-amount"} />
+          <ToggleButton error={null} labelText={"Добавить всех"} toggleChange={handleToggleAddAll} toggleState={isAddAll} inputName={"add-all"} />
+          <div>
+            <ToggleButton error={localErrors.share} labelText={"Поделить сумму"} toggleChange={handleToggleShare} toggleState={shareAmount} inputName={"share-amount"} />
+          </div>
         </div>
 
         <div className={`flex w-full h-8 bg-bg-secondary rounded-2xl lg:hidden`}>
