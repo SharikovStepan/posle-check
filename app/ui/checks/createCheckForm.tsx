@@ -379,7 +379,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         <MembersList searchQuery={searchQuery} />
       </div>
 
-      <div className={`${tabType == "amounts" ? "block" : "hidden"} relative  lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
+      <div className={`${tabType == "amounts" ? "flex" : "hidden"} relative lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
         <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
 
         <p className="text-xl">Суммы</p>
