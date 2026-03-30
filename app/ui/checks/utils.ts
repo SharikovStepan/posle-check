@@ -18,7 +18,7 @@ export const isAllParticipantsCustomAmounts = (members: CreateCheckParticipantsC
 
 export const sumParticipantsAmount = (members: CreateCheckParticipantsCardsType[]) => {
   const membersShare = members.reduce((acc, member) => {
-    const isParticipating = member.participating || !member.isCreator;
+    const isParticipating = member.participating && !member.isCreator;
     if (isParticipating) {
       return acc + member.amount;
     } else {

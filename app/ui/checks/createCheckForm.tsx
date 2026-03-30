@@ -37,7 +37,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
   //   const [isEqualAmounts,setIsEqualAmounts]=useState(false)
 
-  const { state: contextstate, dispatch } = useParticipantsContext();
+  const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
 
   const [localErrors, setLocalErrors] = useState<LocalErrors>({ share: null });
 
@@ -79,9 +79,9 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       }
     }
 
-   //  console.log("contextstate.participanstList", contextstate.participanstList);
-   //  console.log("contextstate.lastDispatch", contextstate.lastDispatch);
-   //  console.log("creator", contextstate.creator);
+    //  console.log("contextstate.participanstList", contextstate.participanstList);
+    //  console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+    //  console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
 
   useEffect(() => {
@@ -228,9 +228,6 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   //       }
   //     };
   //   }, [state]);
-
-  const isEqual = contextstate.participanstList.every((member) => member.amount == contextstate.participanstList[0].amount && member.amount != 0);
-  const isAllCustomAmount = contextstate.participanstList.every((member) => member.amount != 0);
 
   return (
     <form action={""} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
@@ -382,7 +379,10 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       <div className={`${tabType == "amounts" ? "flex" : "hidden"} relative lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
         <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
 
-        <p className="text-xl">Суммы</p>
+        <div className="flex justify-between items-center">
+          <p className="text-xl">Суммы</p>
+          <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} Р</p>
+        </div>
         <ParticipantsList />
       </div>
 

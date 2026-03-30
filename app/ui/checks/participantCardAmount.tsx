@@ -6,28 +6,23 @@ import { useEffect, useState } from "react";
 import { isAllAdded, maxPossibeParticipantValue } from "./utils";
 
 export default function ParticipantCardAmount({ participantData }: { participantData: CreateCheckParticipantsCardsType }) {
-  const { state, dispatch } = useParticipantsContext();
+  const { state, remindAmount, dispatch } = useParticipantsContext();
 
   //   const [isCustomAmount, setIsCustomAmount] = useState<boolean>(!!participantData.amount);
   //   const [amount, setAmount] = useState(0);
 
   const toggleCustomAmount = () => {
-    if (participantData.amount <= 0) {
-      dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: 0.9 } });
+    if (participantData.amount <= 0 && state.total != 0) {
+      dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: 0.1 } });
+    } else if (state.total == 0) {
+      console.log("error");
     } else {
       dispatch({ type: "CLEAR_AMOUNT", payload: { id: participantData.id } });
     }
   };
 
   const handleChange = (currentAmount: number) => {
-    const maxValue = maxPossibeParticipantValue(state.total, state.participanstList, state.creator, participantData.id);
-    if ((state.creator.amount < 1 || !state.creator.participating) && currentAmount > maxValue) {
-      dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: maxValue } });
-    } else {
-      dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
-    }
-
-    //  setAmount(currentAmount);
+    dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
   };
 
   useEffect(() => {
@@ -104,8 +99,8 @@ export default function ParticipantCardAmount({ participantData }: { participant
                 min="0"
                 id="amount"
                 onChange={(e) => {
-                  if (e.target.value.startsWith("-") || e.target.value == "0") {
-                    handleChange(0.9);
+                  if (e.target.value.startsWith("-") || e.target.value == "0" || e.target.value == "") {
+                    handleChange(0.1);
                   } else {
                     handleChange(Number(e.target.value));
                   }
