@@ -44,14 +44,27 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         if (!notAll) {
           setIsAddAll(true);
         }
+        break;
       case "CLEAR_AMOUNT":
         setShareAmount(false);
+        break;
       default:
         break;
     }
-
-    console.log("contextstate.participanstList", contextstate.participanstList);
   }, [contextstate.lastDispatch]);
+
+  useEffect(() => {
+    if (contextstate.lastDispatch == "SET_AMOUNT") {
+      const isEqual = contextstate.participanstList.every((member) => member.amount == contextstate.participanstList[0].amount);
+      if (isEqual) {
+        setShareAmount(true);
+      } else {
+        setShareAmount(false);
+      }
+    }
+    console.log("contextstate.participanstList", contextstate.participanstList);
+    console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+  }, [contextstate.participanstList]);
 
   useEffect(() => {
     if (isAddAll) {
@@ -68,10 +81,17 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       const shareAmountValue = amount / participatedCount;
       setMyShare(shareAmountValue);
       dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
-    } else if (!shareAmount && contextstate.lastDispatch != "CLEAR_AMOUNT") {
+    } else if (!shareAmount && contextstate.lastDispatch != "CLEAR_AMOUNT" && contextstate.lastDispatch != "SET_AMOUNT") {
       dispatch({ type: "CANCEL_SHARE" });
+      setMyShare(0);
     }
   }, [shareAmount]);
+
+//   useEffect(() => {
+//     if (myShare != contextstate.participanstList[0].amount) {
+//       setShareAmount(false);
+//     }
+//   }, [myShare]);
 
   //   const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
 
@@ -236,7 +256,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
           <TabChangeButton tabs={tabs} currentTab={tabType} changeTab={setTabType} />
         </div>
 
-		  <span className="block w-full bg-surface mt-6 h-0.5 "></span>
+        <span className="block w-full bg-surface mt-6 h-0.5 "></span>
       </div>
 
       {/* <div className={`${true ? "block" : "hidden"} w-full lg:block lg:col-[1/2] row-[2/3]`}>
@@ -257,9 +277,9 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       </div>
 
       <div className={`${tabType == "amounts" ? "block" : "hidden"}lg:block relative lg:h-full flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
-		<span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
+        <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
 
-		  <p className="text-xl">Суммы</p>
+        <p className="text-xl">Суммы</p>
         <ParticipantsList />
       </div>
 

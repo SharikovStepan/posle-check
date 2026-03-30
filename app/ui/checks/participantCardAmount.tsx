@@ -10,11 +10,20 @@ export default function ParticipantCardAmount({ participantData }: { participant
   const [isCustomAmount, setIsCustomAmount] = useState<boolean>(!!participantData.amount);
   const [amount, setAmount] = useState(0);
 
-  //   const []
+  const handleChange = (currentAmount: number) => {
+    dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
+    setAmount(currentAmount);
+  };
+
+  useEffect(() => {
+    //  dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount } });
+    //  setAmount(amount);
+  }, [amount]);
 
   useEffect(() => {
     if (isCustomAmount) {
-      dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount } });
+      // dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount } });
+      setAmount(amount);
     } else {
       dispatch({ type: "CLEAR_AMOUNT", payload: { id: participantData.id } });
       setAmount(0);
@@ -76,7 +85,7 @@ export default function ParticipantCardAmount({ participantData }: { participant
                 type="number"
                 name="amount"
                 id="amount"
-                onChange={(e) => setAmount(Number(e.target.value))}
+                onChange={(e) => handleChange(Number(e.target.value))}
                 value={amount}
                 autoComplete="off"
                 // aria-invalid={!!state.errors?.title}
@@ -90,7 +99,7 @@ export default function ParticipantCardAmount({ participantData }: { participant
 
         <label className=" inline-flex w-fit h-full items-center justify-between">
           <span className="select-none hidden text-lg font-medium text-text-primary">{"Ввести сумму"}</span>
-          <input name={"isCustomAmount"} type="checkbox" checked={participantData.amount != null} onChange={() => setIsCustomAmount((prev) => !prev)} className="sr-only peer" />
+          <input name={"isCustomAmount"} type="checkbox" checked={isCustomAmount} onChange={() => setIsCustomAmount((prev) => !prev)} className="sr-only peer" />
           <div className="cursor-pointer relative w-8 h-16 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full peer peer-checked:after:-translate-y-full rtl:peer-checked:after:-translate-y-full peer-checked:after:border-border after:content-[''] after:absolute after:bottom-0 after:border-border after:border-2 after:bg-text-primary after:rounded-full after:h-8 after:w-8 after:transition-all transition-all peer-checked:bg-accent/70"></div>
         </label>
         {/* <ToggleButton toggleState={isCustomAmount} toggleChange={setIsCustomAmount} inputName="set-amount" labelText="Введите сумму" /> */}

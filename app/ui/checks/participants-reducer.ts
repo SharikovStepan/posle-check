@@ -55,13 +55,13 @@ export const participantsReducer = (state: ParticipantState, action: Participant
           return { ...member, amount: action.payload.amount };
         }),
       };
-		case "CANCEL_SHARE":
-			return {
-			  lastDispatch: "CANCEL_SHARE",
-			  participanstList: state.participanstList.map((member) => {
-				 return { ...member, amount: null };
-			  }),
-			};
+    case "CANCEL_SHARE":
+      return {
+        lastDispatch: "CANCEL_SHARE",
+        participanstList: state.participanstList.map((member) => {
+          return { ...member, amount: null };
+        }),
+      };
 
     case "ADD_ALL":
       return {
