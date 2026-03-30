@@ -79,9 +79,9 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       }
     }
 
-    console.log("contextstate.participanstList", contextstate.participanstList);
-    console.log("contextstate.lastDispatch", contextstate.lastDispatch);
-    console.log("creator", contextstate.creator);
+   //  console.log("contextstate.participanstList", contextstate.participanstList);
+   //  console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+   //  console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
 
   useEffect(() => {

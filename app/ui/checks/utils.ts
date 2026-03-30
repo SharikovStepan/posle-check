@@ -18,7 +18,7 @@ export const isAllParticipantsCustomAmounts = (members: CreateCheckParticipantsC
 
 export const sumParticipantsAmount = (members: CreateCheckParticipantsCardsType[]) => {
   const membersShare = members.reduce((acc, member) => {
-    const isParticipating = member.participating;
+    const isParticipating = member.participating || !member.isCreator;
     if (isParticipating) {
       return acc + member.amount;
     } else {
@@ -30,13 +30,21 @@ export const sumParticipantsAmount = (members: CreateCheckParticipantsCardsType[
 };
 
 export const maxPossibleCreatorValue = (totalAmount: number, members: CreateCheckParticipantsCardsType[]): number => {
-  return totalAmount - sumParticipantsAmount(members) - members.filter((member) => member.participating).length;
+  if (isAllParticipantsCustomAmounts(members)) {
+    return totalAmount - sumParticipantsAmount(members);
+  } else {
+    return totalAmount - sumParticipantsAmount(members) - members.filter((member) => member.participating).length;
+  }
 };
 
 export const maxPossibeParticipantValue = (totalAmount: number, members: CreateCheckParticipantsCardsType[], creator: CreateCheckParticipantsCardsType, targetId: string) => {
-  const filtered = members.filter((members) => members.id != targetId);
+  const filtered = members.filter((members) => members.id != targetId || !members.isCreator);
 
   const creatorValue = creator.participating ? creator.amount : 0;
 
-  return totalAmount - (creatorValue + sumParticipantsAmount(filtered)) - filtered.length;
+  if (isAllParticipantsCustomAmounts(members)) {
+    return totalAmount - (creatorValue + sumParticipantsAmount(filtered)) - filtered.length;
+  } else {
+    return totalAmount - (creatorValue + sumParticipantsAmount(filtered));
+  }
 };
