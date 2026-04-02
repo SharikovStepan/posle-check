@@ -30,12 +30,6 @@ export const ParticipantsProvider: React.FC<ParticipantsProviderProp> = ({ child
 
     setRemindAmount(parseFloat((state.total - (participantsValue + state.creator.amount)).toFixed()));
 
-    //  const creator = state.participanstList.find((member) => member.isCreator);
-    //  if (creator) {
-    //    setIsCreatorParticipate(creator?.participating);
-    //  } else {
-    //    setIsCreatorParticipate(false);
-    //  }
   }, [state.creator, state.participanstList, state.total]);
 
   return <ParticipantsContext.Provider value={{ state, remindAmount, dispatch }}>{children}</ParticipantsContext.Provider>;

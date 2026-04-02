@@ -1,19 +1,19 @@
 "use client";
 
 import { PROFILE_UUID } from "@/app/lib/placeholders-data";
-import { useActionState, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import Spinner from "../spinner";
 import ToggleButton from "../toggleButton";
 import Search from "../search";
-import SearchMembersList from "../groups/searchMembersList";
-import { CreateCheckPageTabs, CreateCheckParticipantsCardsType, ParticipantsActions } from "@/app/lib/types/types.checks";
+import { CreateCheckPageTabs, CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
 import { FilterButton } from "@/app/lib/types/types.filters";
 import TabChangeButton from "../tabChangeButtons";
-import { participantsReducer } from "./participants-reducer";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
 import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
+import { createCheckAction, CreateCheckState } from "@/app/lib/actions/actions.checks";
+import ErrorPop from "../error-pop";
 
 const tabs: FilterButton<CreateCheckPageTabs>[] = [
   { filterType: "members", text: "Участники" },
@@ -21,27 +21,44 @@ const tabs: FilterButton<CreateCheckPageTabs>[] = [
 ];
 
 type LocalErrors = {
-  share: string | null;
+  shareMember?: string | null;
+  shareAmount?: string | null;
+  title?: string | null;
+  totalAmount?: string | null;
+  myShare?: string | null;
+  participants?: string | null;
 };
 
 export default function CreateCheckForm({ checkParticipants }: { checkParticipants: CreateCheckParticipantsCardsType[] }) {
   const [tabType, setTabType] = useState<CreateCheckPageTabs>("amounts");
 
+  const [isPending, setIsPending] = useState<boolean>(false);
+
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  //  const [amount, setAmount] = useState<number>(0);
-  //   const [myShareReadOnly, setMyShareReadOnly] = useState<boolean>(false);
 
   const [isAddAll, setIsAddAll] = useState<boolean>(true);
   const [shareAmount, setShareAmount] = useState<boolean>(false);
 
-  //   const [isEqualAmounts,setIsEqualAmounts]=useState(false)
-
   const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
 
-  const [localErrors, setLocalErrors] = useState<LocalErrors>({ share: null });
+  //   const [state, formAction, isPending] = useActionState<CreateCheckState, FormData>(createCheckAction, { errors: {} });
 
-  //   const [participantsList, dispatch] = useReducer(participantsReducer, checkParticipants);
+  const [localErrors, setLocalErrors] = useState<LocalErrors>({});
+
+  const [visibleErrors, setVisibleErrors] = useState<{ title: boolean; members: boolean }>({ title: false, members: false });
+
+  const visibleErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
+
+  const inputTitleRef = useRef<HTMLInputElement | null>(null);
+  const inputTotalAmountRef = useRef<HTMLInputElement | null>(null);
+  const inputMyShareRef = useRef<HTMLInputElement | null>(null);
+  const membersListhRef = useRef<HTMLDivElement | null>(null);
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const showErrorTmr = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     switch (contextstate.lastDispatch) {
@@ -79,9 +96,9 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       }
     }
 
-    //  console.log("contextstate.participanstList", contextstate.participanstList);
-    //  console.log("contextstate.lastDispatch", contextstate.lastDispatch);
-    //  console.log("creator", contextstate.creator);
+    //   console.log("contextstate.participanstList", contextstate.participanstList);
+    //   console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+    //   console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
 
   useEffect(() => {
@@ -108,37 +125,6 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       dispatch({ type: "CANCEL_SHARE" });
     }
   }, [shareAmount]);
-
-  //   useEffect(() => {
-  //     if (myShare != contextstate.participanstList[0].amount) {
-  //       setShareAmount(false);
-  //     }
-  //   }, [myShare]);
-
-  //   const [state, formAction, isPending] = useActionState<CreateGroupState, FormData>(createGroupAction, { errors: {} });
-
-  const [visibleErrors, setVisibleErrors] = useState<{ title: boolean; members: boolean }>({ title: false, members: false });
-
-  const visibleErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
-
-  const inputNameRef = useRef<HTMLInputElement | null>(null);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  //   const [sortByState, setSortByState] = useState<SortBy>("date");
-  //   const [orderState, setOrderState] = useState<SortOrder>("asc");
-
-  //   const friendsListOptions = useMemo<GetFriendsOptions>(
-  //     () => ({
-  //       currentUserId: PROFILE_UUID,
-  //       filter: "friends",
-  //       search: searchQuery,
-  //       sortBy: sortByState,
-  //       order: orderState,
-  //     }),
-  //     [searchQuery, sortByState, orderState]
-  //   );
-
-  const showErrorTmr = useRef<NodeJS.Timeout | null>(null);
 
   const handleChangeMyShare = (currentValue: number) => {
     if (!contextstate.creator.participating) return;
@@ -172,13 +158,17 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
   const handleToggleShare = () => {
     const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
-    const possibleToShare = contextstate.total / participatedCount >= 1;
+    const possibleToShare = contextstate.total / participatedCount >= 1 && participatedCount >= 1;
+    console.log("participatedCount", participatedCount);
+
     if (possibleToShare && !shareAmount) {
       setShareAmount(true);
     } else if (shareAmount) {
       setShareAmount(false);
+    } else if (!participatedCount) {
+      setLocalErrors((prev) => ({ ...prev, shareMember: "Добавьте участников" }));
     } else {
-      setLocalErrors((prev) => ({ ...prev, share: "Сумма должна быть больше количества участников" }));
+      setLocalErrors((prev) => ({ ...prev, shareAmount: "Сумма должна быть больше количества участников" }));
     }
   };
 
@@ -187,9 +177,56 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       clearTimeout(showErrorTmr.current);
     }
 
-    showErrorTmr.current = setTimeout(() => {
-      setLocalErrors({ share: null });
-    }, 3000);
+    if (localErrors.title) {
+      if (inputTitleRef.current) {
+        inputTitleRef.current.focus();
+      }
+    }
+
+    if (localErrors.totalAmount) {
+      if (inputTotalAmountRef.current) {
+        inputTotalAmountRef.current.focus();
+      }
+    }
+
+    if (localErrors.shareAmount) {
+      if (inputTotalAmountRef.current) {
+        inputTotalAmountRef.current.focus();
+      }
+    }
+
+    if (localErrors.myShare) {
+      if (inputMyShareRef.current) {
+        inputMyShareRef.current.focus();
+      }
+    }
+
+    if (localErrors.participants) {
+      setTabType("members");
+      if (membersListhRef.current && !membersListhRef.current.classList.contains("hidden")) {
+        membersListhRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start", // 'start', 'center', 'end', 'nearest'
+          inline: "nearest",
+        });
+      } else if (tabsRef.current) {
+        console.log("tabsRef", tabsRef);
+
+        tabsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start", // 'start', 'center', 'end', 'nearest'
+          inline: "nearest",
+        });
+      }
+    }
+
+    if (Object.keys(localErrors).length) {
+      showErrorTmr.current = setTimeout(() => {
+        setLocalErrors({});
+      }, 3000);
+    }
+
+    console.log("localErrors", localErrors);
 
     return () => {
       if (showErrorTmr.current) {
@@ -202,59 +239,51 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
     setSearchQuery(query);
   }, []);
 
-  //   useEffect(() => {
-  //     if (state.errors?.title && inputNameRef.current) {
-  //       setVisibleErrors({ title: true, members: false });
-  //       visibleErrorTmrRef.current = setTimeout(() => {
-  //         setVisibleErrors({ title: false, members: false });
-  //       }, 2500);
-  //       inputNameRef.current.focus();
-  //     }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (title == "") {
+      setLocalErrors((prev) => ({ ...prev, title: "Название не может быть пустым" }));
+      return;
+    }
 
-  //     if (state.errors?.members && !state.errors?.title) {
-  //       setVisibleErrors({ title: false, members: true });
-  //       visibleErrorTmrRef.current = setTimeout(() => {
-  //         setVisibleErrors({ title: false, members: false });
-  //       }, 2500);
-  //     }
+    if (contextstate.total == 0) {
+      setLocalErrors((prev) => ({ ...prev, totalAmount: "Введите сумму чека" }));
+      return;
+    }
 
-  //     if (state.errors?.general) {
-  //       throw new Error("DB failed");
-  //     }
+    if (contextstate.creator.participating && contextstate.creator.amount == 0) {
+      setLocalErrors((prev) => ({ ...prev, myShare: "Введите свою часть суммы" }));
+      return;
+    }
 
-  //     return () => {
-  //       if (visibleErrorTmrRef.current) {
-  //         clearTimeout(visibleErrorTmrRef.current);
-  //       }
-  //     };
-  //   }, [state]);
+    if (!contextstate.participanstList.find((member) => member.participating)) {
+      setLocalErrors((prev) => ({ ...prev, participants: "Добавьте участников" }));
+      return;
+    }
+  };
 
   return (
-    <form action={""} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-6">
         <div className="relative h-full flex flex-col gap-1">
           <label htmlFor="title" className="block text-lg text-text-primary">
             Название
           </label>
           <input
-            ref={inputNameRef}
+            ref={inputTitleRef}
             type="text"
             name="title"
             id="title"
             onChange={(e) => setTitle(e.target.value)}
             value={title}
             autoComplete="off"
-            // aria-invalid={!!state.errors?.title}
-            // aria-describedby={state.errors?.title ? "title-error" : undefined}
+            aria-invalid={!!localErrors.title}
+            aria-describedby={localErrors.title ? "title-error" : undefined}
             placeholder="Введите название..."
-            className={`mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus ${false && visibleErrors.title ? "focus:ring-error!" : ""}`}
+            className={`mt-1 block w-full h-8 bg-bg-secondary rounded-lg shadow-sm sm:text-sm px-3 focus ${localErrors.title ? "focus:ring-error!" : ""}`}
           />
 
-          {/* {state.errors?.title && visibleErrors.title && (
-            <p id="tite-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
-              {state.errors?.title}
-            </p>
-          )} */}
+          {localErrors.title && <ErrorPop position="left" inputName={"title"} errorText={localErrors.title} />}
         </div>
 
         <div>
@@ -279,10 +308,10 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
           </label>
 
           <div className="flex justify-center items-center gap-2">
-            <p>Р</p>
+            <p>₽</p>
 
             <input
-              // ref={inputNameRef}
+              ref={inputTotalAmountRef}
               type="number"
               name="total-amount"
               id="total-amount"
@@ -296,16 +325,14 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
               }}
               value={contextstate.total < 1 ? "" : contextstate.total}
               autoComplete="off"
-              // aria-invalid={!!state.errors?.title}
-              // aria-describedby={state.errors?.title ? "title-error" : undefined}
-              className={` block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${false ? "focus:ring-error!" : ""}`}
+              aria-invalid={!!localErrors.totalAmount}
+              aria-describedby={localErrors.totalAmount ? "total-amount-error" : undefined}
+              className={` block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${
+                localErrors.totalAmount || localErrors.shareAmount ? "focus:ring-error!" : ""
+              }`}
             />
           </div>
-          {/* {state.errors?.title && visibleErrors.title && (
-            <p id="tite-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
-              {state.errors?.title}
-            </p>
-          )} */}
+          {localErrors.totalAmount && <ErrorPop position="right" inputName={"total-amount"} errorText={localErrors.totalAmount} />}
         </div>
 
         <div className={`${contextstate.creator.participating ? "" : "opacity-20"} relative h-full flex justify-between items-center gap-1`}>
@@ -314,16 +341,16 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
           </label>
 
           <div className="flex justify-center items-center gap-2">
-            <p>Р</p>
+            <p>₽</p>
 
             <input
-              // ref={inputNameRef}
+              ref={inputMyShareRef}
               disabled={!contextstate.creator.participating}
               readOnly={!isEqualParticipantsAmounts(contextstate.participanstList) && isAllAdded(contextstate.participanstList)}
               type="number"
               min="0"
-              name="my_share"
-              id="my_share"
+              name="creator-share"
+              id="creator-share"
               onChange={(e) => {
                 if (e.target.value.startsWith("-") || e.target.value == "0") {
                   handleChangeMyShare(0);
@@ -333,26 +360,29 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
               }}
               value={contextstate.creator.amount == 0 ? "" : contextstate.creator.amount}
               autoComplete="off"
-              // aria-invalid={!!state.errors?.title}
-              // aria-describedby={state.errors?.title ? "title-error" : undefined}
-              className={` block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${false ? "focus:ring-error!" : ""}`}
+              aria-invalid={!!localErrors.myShare}
+              aria-describedby={localErrors.myShare ? "title-error" : undefined}
+              className={` block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${localErrors.myShare ? "focus:ring-error!" : ""}`}
             />
+
+            {localErrors.myShare && <ErrorPop position="right" inputName={"total-amount"} errorText={localErrors.myShare} />}
           </div>
-          {/* {state.errors?.title && visibleErrors.title && (
-            <p id="tite-error" className="text-red-500 text-sm mt-1 absolute bottom-0 left-0 translate-y-full">
-              {state.errors?.title}
-            </p>
-          )} */}
         </div>
 
         <div className="flex flex-col gap-4">
           <ToggleButton error={null} labelText={"Добавить всех"} toggleChange={handleToggleAddAll} toggleState={isAddAll} inputName={"add-all"} />
           <div>
-            <ToggleButton error={localErrors.share} labelText={"Поделить сумму"} toggleChange={handleToggleShare} toggleState={shareAmount} inputName={"share-amount"} />
+            <ToggleButton
+              error={localErrors.shareMember || localErrors.shareAmount || null}
+              labelText={"Поделить сумму"}
+              toggleChange={handleToggleShare}
+              toggleState={shareAmount}
+              inputName={"share-amount"}
+            />
           </div>
         </div>
 
-        <div className={`flex w-full h-8 bg-bg-secondary rounded-2xl lg:hidden`}>
+        <div ref={tabsRef} className={`flex w-full h-8 bg-bg-secondary rounded-2xl lg:hidden`}>
           <TabChangeButton tabs={tabs} currentTab={tabType} changeTab={setTabType} />
         </div>
 
@@ -367,9 +397,11 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         </div>
       </div> */}
 
-      <div className={`${tabType == "members" ? "flex" : "hidden"} lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
+      <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
+        
+		  {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
+			
         <p className="text-xl">Участники</p>
-
         <div className="h-10">
           <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
         </div>
@@ -381,73 +413,20 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
         <div className="flex justify-between items-center">
           <p className="text-xl">Суммы</p>
-          <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} Р</p>
+          <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} ₽</p>
         </div>
         <ParticipantsList />
       </div>
 
-      {/* 
-      <div className="members-div w-full flex flex-col gap-3 mt-4">
-        <div className="flex justify-between items-center">
-          <p className="text-lg">Добавить друзей</p>
-          <p className="inline-block bg-accent/18 px-4 py-1 rounded-2xl text-accent-light">
-            Добавленно: <span>{membersContex.state.length}</span>
-          </p>
-        </div>
-
-        <div className={`lg:hidden grid grid-cols-[1fr_1fr] bg-surface h-8 rounded-xl `}>
-          <button
-            type="button"
-            disabled={tabType == "friends"}
-            onClick={() => setTabType("friends")}
-            className={`${
-              tabType === "friends" ? "bg-accent pointer-events-none text-text-inverted" : "text-text-primary bg-surface hover:bg-surface-hover"
-            } w-full cursor-pointer rounded-xl transition-all duration-200`}>
-            Друзья
-          </button>
-          <button
-            type="button"
-            disabled={tabType == "members"}
-            onClick={() => setTabType("members")}
-            className={`${
-              tabType === "members" ? "bg-accent pointer-events-none text-text-inverted" : "text-text-primary bg-surface hover:bg-surface-hover"
-            } w-full cursor-pointer rounded-xl transition-all duration-200`}>
-            Добавленные
-          </button>
-        </div>
-
-        <div className={`${tabType == "friends" ? "block" : "hidden"} lg:block lg:col-[1/2] row-[2/3]`}>
-          <div className="control-div flex flex-col gap-3 mb-6">
-            <div className="h-10">
-              <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
-            </div>
-            <OrderSettings mode="state" onOrderChange={onOrderChange} />
-          </div>
-          <SearchMembersList choosedMembers={membersContex.state} initialData={initialFriendsData} options={friendsListOptions} />
-        </div>
-      </div>
-
-      <div className={`${tabType == "members" ? "block w-full" : "hidden"} lg:block lg:col-[2/3] row-[1/3] lg:h-full`}>
-        <AddedMembersList usersData={membersContex.state} />
-        <input name="members" type="text" hidden={true} defaultValue={JSON.stringify(membersContex.ids)} />
-        <input name="currentUserId" type="text" hidden={true} defaultValue={PROFILE_UUID} />
-      </div>
-
-      {state.errors?.members && visibleErrors.members && (
-        <div role="alert" className="fixed z-50 flex justify-center items-center text-center top-1/2 left-1/2 -translate-x-1/2 bg-error text-text-primary px-6 py-3 rounded-lg shadow-lg">
-          {state.errors?.members}
-        </div>
-      )} */}
-
-      {/* <button
+      <button
         type="submit"
         disabled={isPending}
         className={`${
           isPending ? "" : ""
-        } fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
-        <p className={`${isPending ? "hidden" : ""}`}>Создать группу</p>
+        } fixed bottom-13 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
+        <p className={`${isPending ? "hidden" : ""}`}>Создать Чек</p>
         <Spinner className={`${isPending ? "block" : "hidden!"}`} />
-      </button> */}
+      </button>
     </form>
   );
 }

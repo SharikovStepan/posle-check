@@ -17,7 +17,6 @@ export default function Search({ placeholder, mode = "navigation", onSearchChang
   const debounceTmr = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-	
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;

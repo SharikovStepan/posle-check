@@ -1,15 +1,9 @@
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useParticipantsContext } from "./participantsProvider";
 import { CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
-import ToggleButton from "../toggleButton";
-import { useEffect, useState } from "react";
-import { isAllAdded, maxPossibeParticipantValue } from "./utils";
 
 export default function ParticipantCardAmount({ participantData }: { participantData: CreateCheckParticipantsCardsType }) {
   const { state, remindAmount, dispatch } = useParticipantsContext();
-
-  //   const [isCustomAmount, setIsCustomAmount] = useState<boolean>(!!participantData.amount);
-  //   const [amount, setAmount] = useState(0);
 
   const toggleCustomAmount = () => {
     if (participantData.amount <= 0 && state.total != 0) {
@@ -25,41 +19,10 @@ export default function ParticipantCardAmount({ participantData }: { participant
     dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
   };
 
-  useEffect(() => {
-    //  dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount } });
-    //  setAmount(amount);
-  }, []);
-
-  //   useEffect(() => {
-  //     if (isCustomAmount) {
-  //       // dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount } });
-  //       setAmount(amount);
-  //     } else {
-  //       dispatch({ type: "CLEAR_AMOUNT", payload: { id: participantData.id } });
-  //       setAmount(0);
-  //     }
-  //   }, [isCustomAmount]);
-
-  //   useEffect(() => {
-  //     switch (state.lastDispatch) {
-  //       case "SHARE_AMOUNT":
-  //         setIsCustomAmount(true);
-  //         if (state.participanstList[0].amount) {
-  //           setAmount(state.participanstList[0].amount);
-  //         }
-  //         break;
-  //       case "CANCEL_SHARE":
-  //         setIsCustomAmount(false);
-  //         setAmount(0);
-
-  //       default:
-  //         break;
-  //     }
-  //   }, [state.lastDispatch]);
-
   return (
     <div className={`overflow-hidden relative p-2 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center transition-all duration-200 border border-border shadow-md`}>
       <div className="h-full grid grid-cols-[auto_1fr_80_auto] gap-x-1 w-full">
+        <input type="hidden" readOnly name="participant" value={participantData.id} />
         <div className={`h-full flex items-center gap-3`}>
           {participantData.avatar_url ? (
             <div className={`h-12 rounded-full overflow-hidden`}>
@@ -105,23 +68,21 @@ export default function ParticipantCardAmount({ participantData }: { participant
                     handleChange(Number(e.target.value));
                   }
                 }}
-                value={participantData.amount < 1 ? "" : participantData.amount}
+                value={participantData.amount < 1 ? "0" : participantData.amount}
                 autoComplete="off"
                 // aria-invalid={!!state.errors?.title}
                 // aria-describedby={state.errors?.title ? "title-error" : undefined}
                 className={` block w-20 h-8 bg-bg-tertiary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${false ? "focus:ring-error!" : ""}`}
               />
-              {/* <p className="absolute top-1/2 right-0 translate-y-[calc(50%-4px)] translate-x-[calc(100%+4px)]">Р</p> */}
             </div>
           </div>
         </div>
 
         <label className=" inline-flex w-fit h-full items-center justify-between">
           <span className="select-none hidden text-lg font-medium text-text-primary">{"Ввести сумму"}</span>
-          <input name={"isCustomAmount"} type="checkbox" checked={!!participantData.amount} onChange={toggleCustomAmount} className="sr-only peer" />
+          <input name="is-custom-amount" id="is-custom-amount" type="checkbox" checked={!!participantData.amount} onChange={toggleCustomAmount} className="sr-only peer" />
           <div className="cursor-pointer relative w-8 h-16 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full peer peer-checked:after:-translate-y-full rtl:peer-checked:after:-translate-y-full peer-checked:after:border-border after:content-[''] after:absolute after:bottom-0 after:border-border after:border-2 after:bg-text-primary after:rounded-full after:h-8 after:w-8 after:transition-all transition-all peer-checked:bg-accent/70"></div>
         </label>
-        {/* <ToggleButton toggleState={isCustomAmount} toggleChange={setIsCustomAmount} inputName="set-amount" labelText="Введите сумму" /> */}
       </div>
     </div>
   );
