@@ -11,7 +11,7 @@ import TabChangeButton from "../tabChangeButtons";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
-import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
+import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
 import { createCheckAction, CreateCheckState } from "@/app/lib/actions/actions.checks";
 import ErrorPop from "../error-pop";
 
@@ -27,6 +27,10 @@ type LocalErrors = {
   totalAmount?: string | null;
   myShare?: string | null;
   participants?: string | null;
+  participantAmount?: string | null;
+  remindAmount?: string | null;
+
+  succes?: string | null;
 };
 
 export default function CreateCheckForm({ checkParticipants }: { checkParticipants: CreateCheckParticipantsCardsType[] }) {
@@ -42,13 +46,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
   const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
 
-  //   const [state, formAction, isPending] = useActionState<CreateCheckState, FormData>(createCheckAction, { errors: {} });
-
   const [localErrors, setLocalErrors] = useState<LocalErrors>({});
-
-  const [visibleErrors, setVisibleErrors] = useState<{ title: boolean; members: boolean }>({ title: false, members: false });
-
-  const visibleErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
 
   const inputTitleRef = useRef<HTMLInputElement | null>(null);
   const inputTotalAmountRef = useRef<HTMLInputElement | null>(null);
@@ -61,14 +59,14 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const showErrorTmr = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    switch (contextstate.lastDispatch) {
+    switch (contextstate.lastDispatch.type) {
       case "DELETE_FROM_PARTICIPANTS":
         setIsAddAll(false);
         setShareAmount(false);
         break;
       case "ADD_TO_PARTICIPANTS":
         const notAll = contextstate.participanstList.find((member) => !member.participating);
-        if (!notAll) {
+        if (!notAll && contextstate.creator.participating) {
           setIsAddAll(true);
         }
         setShareAmount(false);
@@ -79,49 +77,77 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       default:
         break;
     }
+
+    console.log("contextstate.lastDispatch", contextstate.lastDispatch);
   }, [contextstate.lastDispatch]);
 
   useEffect(() => {
-    if (contextstate.lastDispatch == "SET_AMOUNT") {
+    if (contextstate.lastDispatch.type == "SET_AMOUNT") {
       if (isEqualParticipantsAmounts(contextstate.participanstList)) {
         setShareAmount(true);
       } else {
         setShareAmount(false);
       }
 
-      if (isAllParticipantsCustomAmounts(contextstate.participanstList) && contextstate.creator.participating) {
-        const newValueForMyShare = contextstate.total - sumParticipantsAmount(contextstate.participanstList);
+      // if (false) {
+      //   const lastParticipantUpdated = contextstate.participanstList.find((member) => member.id == contextstate.lastDispatch.id);
 
-        dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: newValueForMyShare } });
-      }
+      //   if (lastParticipantUpdated) {
+      //     const currentParticipantAmount = lastParticipantUpdated.amount;
+      //     const positiveRemind = (contextstate.participanstList.length - remindAmount) * -1;
+
+      //     dispatch({ type: "SET_AMOUNT", payload: { id: lastParticipantUpdated.id, amount: currentParticipantAmount - positiveRemind } });
+      //   }
+      // }
+
+      // if (isAllParticipantsCustomAmounts(contextstate.participanstList) && contextstate.creator.participating && !isEqualParticipantsAmounts(contextstate.participanstList)) {
+      //   const newValueForMyShare = contextstate.total - sumParticipantsAmount(contextstate.participanstList);
+
+      //   dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: newValueForMyShare } });
+      // }
     }
 
-    //   console.log("contextstate.participanstList", contextstate.participanstList);
-    //   console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+    console.log("contextstate.participanstList", contextstate.participanstList);
+    //   console.log("contextstate.lastDispatch.type", contextstate.lastDispatch.type);
     //   console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
 
   useEffect(() => {
+    if (contextstate.creator.participating) {
+      if (contextstate.creator.amount >= 0 && contextstate.creator.amount < 1 && contextstate.lastDispatch.type != "CANCEL_SHARE") {
+        //   setShareAmount(false);
+        //  dispatch({ type: "CANCEL_SHARE" });
+      }
+    }
+  }, [contextstate.creator]);
+
+  useEffect(() => {
     if (isAddAll) {
       dispatch({ type: "ADD_ALL" });
-    } else if (!isAddAll && contextstate.lastDispatch != "DELETE_FROM_PARTICIPANTS") {
+    } else if (!isAddAll && contextstate.lastDispatch.type != "DELETE_FROM_PARTICIPANTS") {
       dispatch({ type: "DELETE_ALL" });
+      setShareAmount(false);
     }
   }, [isAddAll]);
 
   useEffect(() => {
     if (shareAmount) {
       const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
-      const creatorParticipate = contextstate.creator.participating ? 1 : 0;
-      const shareAmountValue = contextstate.total / (participatedCount + creatorParticipate);
-      dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
-    } else if (
-      !shareAmount &&
-      contextstate.lastDispatch != "CLEAR_AMOUNT" &&
-      contextstate.lastDispatch != "SET_AMOUNT" &&
-      contextstate.lastDispatch != "SET_AMOUNT_CREATOR" &&
-      contextstate.lastDispatch != "SHARE_AMOUNT_NOT_CREATOR"
-    ) {
+
+      if (contextstate.creator.participating) {
+        if (contextstate.creator.amount) {
+          const shareAmountValue = (contextstate.total - contextstate.creator.amount) / participatedCount;
+          dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
+        } else {
+          const shareAmountValue = contextstate.total / (participatedCount + 1);
+          dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
+          dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: shareAmountValue } });
+        }
+      } else {
+        const shareAmountValue = contextstate.total / participatedCount;
+        dispatch({ type: "SHARE_AMOUNT", payload: { amount: shareAmountValue } });
+      }
+    } else if (!shareAmount && contextstate.lastDispatch.type != "CLEAR_AMOUNT" && contextstate.lastDispatch.type != "SET_AMOUNT") {
       dispatch({ type: "CANCEL_SHARE" });
     }
   }, [shareAmount]);
@@ -129,19 +155,30 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const handleChangeMyShare = (currentValue: number) => {
     if (!contextstate.creator.participating) return;
 
-    const maxPossibleValue = maxPossibleCreatorValue(contextstate.total, contextstate.participanstList);
-    if (currentValue > maxPossibleCreatorValue(contextstate.total, contextstate.participanstList) && !isEqualParticipantsAmounts(contextstate.participanstList)) {
-      dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxPossibleValue } });
-    } else {
+    const prevAmount = contextstate.creator.amount;
+    const maxAllowed = prevAmount + remindAmount - isNotCustomParticipantsAmounts(contextstate.participanstList);
+
+    if (currentValue <= maxAllowed) {
       dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: currentValue } });
+    } else {
+      const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
+      dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxValue } });
     }
 
-    if (isEqualParticipantsAmounts(contextstate.participanstList)) {
-      setShareAmount(false);
-      const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
-      const amountToOther = (contextstate.total - currentValue) / participatedCount;
-      dispatch({ type: "SHARE_AMOUNT_NOT_CREATOR", payload: { amount: amountToOther } });
-    }
+    //  const maxPossibleValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
+    //  if (currentValue > maxPossibeAmountValue(contextstate.total, contextstate.participanstList) && !isEqualParticipantsAmounts(contextstate.participanstList)) {
+    //    dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxPossibleValue } });
+    //  } else {
+    //    dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: currentValue } });
+    //  }
+
+    //  if (isEqualParticipantsAmounts(contextstate.participanstList)) {
+
+    //    setShareAmount(false);
+    //    const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
+    //    const amountToOther = (contextstate.total - currentValue) / participatedCount;
+    //    dispatch({ type: "SHARE_AMOUNT_NOT_CREATOR", payload: { amount: amountToOther } });
+    //  }
   };
 
   const handleChangeAmount = (currentValue: number) => {
@@ -159,7 +196,6 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const handleToggleShare = () => {
     const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
     const possibleToShare = contextstate.total / participatedCount >= 1 && participatedCount >= 1;
-    console.log("participatedCount", participatedCount);
 
     if (possibleToShare && !shareAmount) {
       setShareAmount(true);
@@ -260,6 +296,18 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       setLocalErrors((prev) => ({ ...prev, participants: "Добавьте участников" }));
       return;
     }
+
+    if (contextstate.participanstList.find((member) => member.participating && member.amount == 0.1)) {
+      setLocalErrors((prev) => ({ ...prev, participantAmount: "Введите сумму участника" }));
+      return;
+    }
+
+    if (remindAmount > 1 && isAllParticipantsCustomAmounts(contextstate.participanstList)) {
+      setLocalErrors((prev) => ({ ...prev, remindAmount: "Вы назначили сумму всем участникам, но она не покрывает весь чек" }));
+      return;
+    }
+
+    setLocalErrors((prev) => ({ ...prev, succes: "Ура" }));
   };
 
   return (
@@ -312,15 +360,18 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
             <input
               ref={inputTotalAmountRef}
-              type="number"
+              type="text"
+              inputMode="decimal"
               name="total-amount"
               id="total-amount"
               min="0"
               onChange={(e) => {
-                if (e.target.value.startsWith("-") || e.target.value == "0") {
+                const onlyDigits = e.target.value.replace(/\D/g, "");
+
+                if (onlyDigits == "0" || onlyDigits == "") {
                   handleChangeAmount(0);
                 } else {
-                  handleChangeAmount(Number(e.target.value));
+                  handleChangeAmount(Number(onlyDigits));
                 }
               }}
               value={contextstate.total < 1 ? "" : contextstate.total}
@@ -346,16 +397,18 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
             <input
               ref={inputMyShareRef}
               disabled={!contextstate.creator.participating}
-              readOnly={!isEqualParticipantsAmounts(contextstate.participanstList) && isAllAdded(contextstate.participanstList)}
-              type="number"
+              //   readOnly={!isEqualParticipantsAmounts(contextstate.participanstList) && isAllAdded(contextstate.participanstList)}
+              type="text"
+              inputMode="decimal"
               min="0"
               name="creator-share"
               id="creator-share"
               onChange={(e) => {
-                if (e.target.value.startsWith("-") || e.target.value == "0") {
+                const onlyDigits = e.target.value.replace(/\D/g, "");
+                if (onlyDigits == "0" || onlyDigits == "") {
                   handleChangeMyShare(0);
                 } else {
-                  handleChangeMyShare(Number(e.target.value));
+                  handleChangeMyShare(Number(onlyDigits));
                 }
               }}
               value={contextstate.creator.amount == 0 ? "" : contextstate.creator.amount}
@@ -398,9 +451,8 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       </div> */}
 
       <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
-        
-		  {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
-			
+        {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
+
         <p className="text-xl">Участники</p>
         <div className="h-10">
           <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
@@ -423,10 +475,40 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         disabled={isPending}
         className={`${
           isPending ? "" : ""
-        } fixed bottom-13 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
+        } fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
         <p className={`${isPending ? "hidden" : ""}`}>Создать Чек</p>
         <Spinner className={`${isPending ? "block" : "hidden!"}`} />
       </button>
+
+      {localErrors.participantAmount && (
+        <div
+          id={`participant-amount-error`}
+          role="alert"
+          className={`
+			fixed bottom-30 left-1/2 -translate-x-1/2 z-50 flex justify-center w-3/4 items-center text-center bg-error text-text-primary px-3 py-2 rounded-lg shadow-lg transition-all`}>
+          {localErrors.participantAmount}
+        </div>
+      )}
+
+      {localErrors.remindAmount && (
+        <div
+          id={`amount-error`}
+          role="alert"
+          className={`
+			fixed bottom-30 left-1/2 -translate-x-1/2 z-50 flex justify-center w-3/4 items-center text-center bg-error text-text-primary px-3 py-2 rounded-lg shadow-lg transition-all`}>
+          {localErrors.remindAmount}
+        </div>
+      )}
+
+      {localErrors.succes && (
+        <div
+          id={`participant-amount-error`}
+          role="alert"
+          className={`
+			fixed bottom-30 left-1/2 -translate-x-1/2 z-50 flex justify-center w-3/4 h-20 items-center text-center bg-success text-text-primary px-3 py-2 rounded-lg shadow-lg transition-all`}>
+          {localErrors.succes}
+        </div>
+      )}
     </form>
   );
 }

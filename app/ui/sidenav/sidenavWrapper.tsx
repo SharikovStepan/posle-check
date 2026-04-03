@@ -8,7 +8,10 @@ const hiddenPaths = ["/groups/create-group", "/groups/[id]/create-check"];
 export default function SideNavWrapper() {
   const pathname = usePathname();
 
-  if (hiddenPaths.includes(pathname)) {
+  const isCreateCheckPath = pathname?.endsWith("/create-check");
+  const isHiddenPath = hiddenPaths.includes(pathname);
+
+  if (isHiddenPath || isCreateCheckPath) {
     return <SideNav hidden={true} />;
   }
 

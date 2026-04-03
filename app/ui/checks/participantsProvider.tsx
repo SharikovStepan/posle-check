@@ -1,11 +1,11 @@
 "use client";
 
-import { CreateCheckParticipantsCardsType, ParticipantsActions, ParticipantsActionsTypes } from "@/app/lib/types/types.checks";
+import { CreateCheckParticipantsCardsType, LastDispatchInfo, ParticipantsActions, ParticipantsActionsTypes } from "@/app/lib/types/types.checks";
 import { createContext, ReactNode, useContext, useEffect, useReducer, useState } from "react";
 import { participantsReducer } from "./participants-reducer";
 import { sumParticipantsAmount } from "./utils";
 
-export type ParticipantState = { lastDispatch: ParticipantsActionsTypes; participanstList: CreateCheckParticipantsCardsType[]; creator: CreateCheckParticipantsCardsType; total: number };
+export type ParticipantState = { lastDispatch: LastDispatchInfo; participanstList: CreateCheckParticipantsCardsType[]; creator: CreateCheckParticipantsCardsType; total: number };
 
 interface ParticipatsContextValue {
   state: ParticipantState;

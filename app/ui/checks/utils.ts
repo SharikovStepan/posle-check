@@ -7,7 +7,7 @@ export const isAllAdded = (members: CreateCheckParticipantsCardsType[]): boolean
 export const isEqualParticipantsAmounts = (members: CreateCheckParticipantsCardsType[]): boolean => {
   const participatedMembers = members.filter((member) => member.participating);
 
-  return participatedMembers.every((member) => member.amount == participatedMembers[0].amount && member.amount != 0);
+  return participatedMembers.every((member) => member.amount == participatedMembers[0].amount && member.amount >= 1);
 };
 
 export const isAllParticipantsCustomAmounts = (members: CreateCheckParticipantsCardsType[]) => {
@@ -37,14 +37,26 @@ export const maxPossibleCreatorValue = (totalAmount: number, members: CreateChec
   }
 };
 
-export const maxPossibeParticipantValue = (totalAmount: number, members: CreateCheckParticipantsCardsType[], creator: CreateCheckParticipantsCardsType, targetId: string) => {
-  const filtered = members.filter((members) => members.id != targetId || !members.isCreator);
-
-  const creatorValue = creator.participating ? creator.amount : 0;
+export const maxPossibeAmountValue = (totalAmount: number, members: CreateCheckParticipantsCardsType[], creator?: CreateCheckParticipantsCardsType, targetId?: string) => {
+  const participatingMembers = members.filter((members) => members.id != targetId && !members.isCreator);
+  const participnatsWithAmounts = participatingMembers.filter((participant) => participant.amount >= 1);
+  const creatorValue = creator?.participating ? creator.amount : 0;
+  console.log("participatingMembers", participatingMembers);
+  console.log("participnatsWithAmounts", participnatsWithAmounts);
 
   if (isAllParticipantsCustomAmounts(members)) {
-    return totalAmount - (creatorValue + sumParticipantsAmount(filtered)) - filtered.length;
+    return totalAmount - (creatorValue + sumParticipantsAmount(participatingMembers));
   } else {
-    return totalAmount - (creatorValue + sumParticipantsAmount(filtered));
+    return totalAmount - (creatorValue + sumParticipantsAmount(participatingMembers)) - participatingMembers.length + participnatsWithAmounts.length;
   }
+};
+
+export const isEmptyParticipantsAmounts = (members: CreateCheckParticipantsCardsType[]): number => {
+  const memebersWithOpenAmounts = members.filter((member) => member.participating && member.amount > 0 && member.amount < 1);
+  return memebersWithOpenAmounts.length;
+};
+
+export const isNotCustomParticipantsAmounts = (members: CreateCheckParticipantsCardsType[]): number => {
+  const memebersWithNoAmounts = members.filter((member) => member.participating && member.amount >= 0 && member.amount < 1);
+  return memebersWithNoAmounts.length;
 };

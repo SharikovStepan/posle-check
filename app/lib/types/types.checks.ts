@@ -56,3 +56,9 @@ export type ParticipantsActionsTypes =
   | "ADD_ALL"
   | "DELETE_ALL"
   | "SET_TOTAL";
+
+export type LastDispatchInfo = {
+  type: ParticipantsActionsTypes;
+  id?: string;
+  amount?: number;
+};
