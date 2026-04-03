@@ -10,7 +10,7 @@ type errors = {
   amount?: string | null;
 };
 
-export default function ParticipantCardAmount({ participantData, setErrors }: { participantData: CreateCheckParticipantsCardsType; setErrors: any }) {
+export default function ParticipantCardAmount({ participantData }: { participantData: CreateCheckParticipantsCardsType; }) {
   const { state, remindAmount, dispatch } = useParticipantsContext();
 
   const [cardLocalError, setCardError] = useState<errors>({});

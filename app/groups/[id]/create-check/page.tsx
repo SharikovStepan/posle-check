@@ -43,7 +43,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       </div>
 
       <div className="h-full">
-        <ParticipantsProvider initialState={{ participanstList: checkParticipants, creator: creator, lastDispatch: "ADD_ALL", total: 0 }}>
+        <ParticipantsProvider initialState={{ participanstList: checkParticipants, creator: creator, lastDispatch: { type: "ADD_ALL" }, total: 0 }}>
           <Suspense fallback={<div>Загрузка...</div>}>
             <CreateCheckForm checkParticipants={checkParticipants} />
           </Suspense>
