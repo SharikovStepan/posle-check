@@ -9,19 +9,6 @@ import { z } from "zod";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-// export type CreateCheckState = {
-//   success?: boolean;
-//   checkId?: string;
-//   errors?: {
-//     title?: string;
-//     amount?: string;
-//     myShare?: string;
-//     particiants?: string;
-//     remindAmount?: string;
-//     general?: string;
-//   };
-// };
-
 const ParticipantSchema = z.object({
   id: z.string().min(1),
   amount: z.number(),
@@ -116,6 +103,30 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
 			`;
       }
 
+      if (creator.participating) {
+        await tx`
+          INSERT INTO payments (
+            check_id,
+            payer_id,
+            amount,
+            type,
+            status,
+            created_by,
+            confirmed_at,
+				paid_at
+          )
+          VALUES (
+            ${checkId},
+            ${creator.id},
+            ${creator.amount},
+            'creator',
+            'confirmed',
+            ${creator.id},
+            now(),
+				now()
+          )
+        `;
+      }
       revalidatePath("/checks");
       revalidatePath(`/groups/${groupId}`);
 

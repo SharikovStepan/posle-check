@@ -16,6 +16,8 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
 
   const formatAmount = parseFloat(checkData.total_amount).toString();
 
+  console.log("checkData", checkData);
+
   return (
     <>
       <div className="w-full bg-surface p-4 rounded-xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 grid-rows-[1fr_auto]">
@@ -39,10 +41,10 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
             <p className="text-text-primary self-end justify-self-end">{formatAmount}</p>
             <p className="text-text-primary">₽</p>
           </div>
-          <PaidCounter paid={checkData.paid_participants_count} total={checkData.participants_count} />
+          <PaidCounter paid={checkData.paid_participants_count} total={checkData.participants_count - 1} />
         </div>
 
-        <ProgressBar current={checkData.paid_participants_count} total={checkData.participants_count} />
+        <ProgressBar current={checkData.paid_participants_count} total={checkData.participants_count - 1} />
       </div>
     </>
   );

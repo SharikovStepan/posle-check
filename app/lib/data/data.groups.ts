@@ -164,7 +164,7 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
         AND gm.role != 'blocked'
     `) as GroupMemberCardQuery[];
 
-	 const checksByUser = (await sql`
+    const checksByUser = (await sql`
 		SELECT
 		  c.id,
 		  c.title,
@@ -191,6 +191,7 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
 			 FROM payments p
 			 WHERE p.check_id = c.id
 				AND p.status = 'confirmed'
+				AND p.payer_id != c.created_by
 		  )::int AS paid_participants_count
 	 
 		FROM checks c
