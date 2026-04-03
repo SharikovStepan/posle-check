@@ -14,6 +14,7 @@ import ParticipantsList from "./participantsList";
 import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
 import { createCheckAction, CreateCheckState } from "@/app/lib/actions/actions.checks";
 import ErrorPop from "../error-pop";
+import ConfirmCreate from "./confirmCreate";
 
 const tabs: FilterButton<CreateCheckPageTabs>[] = [
   { filterType: "members", text: "Участники" },
@@ -34,6 +35,8 @@ type LocalErrors = {
 };
 
 export default function CreateCheckForm({ checkParticipants }: { checkParticipants: CreateCheckParticipantsCardsType[] }) {
+  const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
+
   const [tabType, setTabType] = useState<CreateCheckPageTabs>("amounts");
 
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -44,7 +47,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const [isAddAll, setIsAddAll] = useState<boolean>(true);
   const [shareAmount, setShareAmount] = useState<boolean>(false);
 
-  const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
   const [localErrors, setLocalErrors] = useState<LocalErrors>({});
 
@@ -53,6 +56,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const inputMyShareRef = useRef<HTMLInputElement | null>(null);
   const membersListhRef = useRef<HTMLDivElement | null>(null);
   const tabsRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -78,7 +82,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         break;
     }
 
-    console.log("contextstate.lastDispatch", contextstate.lastDispatch);
+    //  console.log("contextstate.lastDispatch", contextstate.lastDispatch);
   }, [contextstate.lastDispatch]);
 
   useEffect(() => {
@@ -107,7 +111,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       // }
     }
 
-    console.log("contextstate.participanstList", contextstate.participanstList);
+    //  console.log("contextstate.participanstList", contextstate.participanstList);
     //   console.log("contextstate.lastDispatch.type", contextstate.lastDispatch.type);
     //   console.log("creator", contextstate.creator);
   }, [contextstate.participanstList]);
@@ -190,7 +194,10 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   };
 
   const handleToggleAddAll = () => {
-    setIsAddAll((prev) => !prev);
+    setIsAddAll((prev) => {
+      setShareAmount(false);
+      return !prev;
+    });
   };
 
   const handleToggleShare = () => {
@@ -306,12 +313,36 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       setLocalErrors((prev) => ({ ...prev, remindAmount: "Вы назначили сумму всем участникам, но она не покрывает весь чек" }));
       return;
     }
+    console.log("formRef.current", formRef.current);
 
-    setLocalErrors((prev) => ({ ...prev, succes: "Ура" }));
+    if (formRef.current) {
+      const formData = new FormData(formRef.current);
+
+      const tittle = formData.get("title");
+      const description = formData.get("description");
+      const totalAmount = formData.get("total-amount");
+
+      const isCreatorParticipating = contextstate.creator.participating;
+      const creatorShare = formData.get("creator-share");
+
+      const participants = contextstate.participanstList.map((member) => {
+        const isParticipating = member.participating;
+        const amount = member.amount;
+        const id = member.id;
+
+        if (isParticipating) {
+          return { id, amount };
+        }
+      });
+
+      const full = { tittle, description, totalAmount, isCreatorParticipating, creatorShare, participants };
+
+      setShowConfirm(true);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-6">
         <div className="relative h-full flex flex-col gap-1">
           <label htmlFor="title" className="block text-lg text-text-primary">
@@ -442,14 +473,6 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         <span className="block w-full bg-surface mt-6 h-0.5 "></span>
       </div>
 
-      {/* <div className={`${true ? "block" : "hidden"} w-full lg:block lg:col-[1/2] row-[2/3]`}>
-        <div className="control-div flex flex-col gap-3 mb-6">
-          <div className="h-10">
-            <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
-          </div>
-        </div>
-      </div> */}
-
       <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
         {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
 
@@ -500,6 +523,11 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         </div>
       )}
 
+      {showConfirm && (
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-5/6 h-fit z-50">
+          <ConfirmCreate tittle={title} totalAmount={contextstate.total} creator={contextstate.creator} members={contextstate.participanstList} />
+        </div>
+      )}
       {localErrors.succes && (
         <div
           id={`participant-amount-error`}
