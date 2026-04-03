@@ -329,7 +329,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
       const creator = { id: contextstate.creator.id, participating: contextstate.creator.participating, amount: contextstate.creator.amount };
 
-      const participants = contextstate.participanstList.map((member) => {
+      const participants = contextstate.participanstList.filter((member) => {
         const isParticipating = member.participating;
         const amount = member.amount;
         const id = member.id;
@@ -340,6 +340,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
       }) as { id: string; amount: number }[];
 
       const full: CreateCheckActionData = { title, description, totalAmount, creator, participants };
+      console.log("full", full);
 
       const result = await createCheckAction(full, groupId);
 

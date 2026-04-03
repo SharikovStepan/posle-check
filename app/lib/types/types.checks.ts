@@ -5,6 +5,7 @@ export type CheckByUserCardType = {
   title: string;
   created_at: Date;
   icon_url: string | null;
+  creator_participating: boolean;
 
   total_amount: string;
   paid_amount: string;
