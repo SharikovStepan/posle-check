@@ -62,3 +62,11 @@ export type LastDispatchInfo = {
   id?: string;
   amount?: number;
 };
+
+export type CreateCheckActionData = {
+  title: string;
+  description: string | null;
+  totalAmount: number;
+  creator: { id: string; participating: boolean; amount: number };
+  participants: { id: string; amount: number }[];
+};

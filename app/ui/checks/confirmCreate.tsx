@@ -1,5 +1,6 @@
 import { CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
+import Spinner from "../spinner";
 
 export default function ConfirmCreate({
   totalAmount,
@@ -7,12 +8,18 @@ export default function ConfirmCreate({
   creator,
   members,
   remindAmount,
+  isPending,
+  onCancel,
+  onConfirm,
 }: {
   totalAmount: number;
   title: string;
   creator: CreateCheckParticipantsCardsType;
   members: CreateCheckParticipantsCardsType[];
   remindAmount: number;
+  onCancel: () => void;
+  onConfirm: () => void;
+  isPending: boolean;
 }) {
   return (
     <>
@@ -34,9 +41,9 @@ export default function ConfirmCreate({
 
         {members.some((m) => m.participating && m.amount > 0) && (
           <>
-            <span className="block w-full bg-surface-hover mb-2 h-0.5 "></span>
+            {/* <span className="block w-full bg-surface-hover mb-2 h-0.5 "></span> */}
 
-            <div className="flex flex-col justify-center mb-2">
+            <div className="shadow-xl flex flex-col justify-center mb-2 bg-bg-tertiary rounded-lg p-2">
               <h3 className="font-semibold mb-2 text-center">Установленные суммы</h3>
               <table className="w-full border-collapse">
                 {/* <thead>
@@ -49,7 +56,7 @@ export default function ConfirmCreate({
                   {members.map((member) => {
                     if (member.participating && member.amount > 0) {
                       return (
-                        <tr key={member.id} className="border-b border-bg-tertiary">
+                        <tr key={member.id} className="last:border-0 border-b border-text-tertiary/20">
                           <td className="py-2 px-3">
                             <div className="flex items-center gap-3">
                               {member.avatar_url ? (
@@ -73,14 +80,16 @@ export default function ConfirmCreate({
 
         {members.some((m) => m.participating && (!m.amount || m.amount === 0)) && (
           <>
-            <div className="flex flex-col justify-center gap-2">
-              <h3 className="font-semibold mb-2 text-center">Сумма на усмотрение</h3>
+            <div className="flex flex-col justify-center gap-2 bg-bg-tertiary rounded-lg p-2 shadow">
+              <h3 className="font-semibold mb-2 text-center">Сумма на усмотрение участника</h3>
 
               <ul className="flex flex-wrap gap-2">
                 {members.map((member) => {
                   if (member.participating && (!member.amount || member.amount === 0)) {
                     return (
-                      <li key={member.id} className="border-b border-bg-tertiary min-w-[calc(50%-5px)] lg:min-w-[calc(33%-5px)] h-fit p-2">
+                      <li
+                        key={member.id}
+                        className="last:border-0 last:md:border-b border-b border-text-tertiary/20 w-full md:w-auto md:min-w-[calc(50%-5px)] lg:min-w-[calc(33%-5px)] h-fit py-2 px-3">
                         <div className="flex items-center gap-3">
                           {member.avatar_url ? (
                             <img src={member.avatar_url} alt={member.username} className="w-8 h-8 rounded-full object-cover" />
@@ -96,23 +105,24 @@ export default function ConfirmCreate({
               </ul>
             </div>
 
-            <span className="block w-full bg-surface-hover mb-0 h-0.5"></span>
+            {/* <span className="block w-full bg-surface-hover mb-0 h-0.5"></span> */}
           </>
         )}
 
         {remindAmount !== 0 && (
-          <div className="flex gap-2">
-            <p className="font-medium">Нераспределенная сумма:</p>
+          <div className="flex gap-2 bg-bg-tertiary rounded-lg p-2">
+            <p className="font-medium text-text-secondary">Нераспределенная сумма:</p>
             <h4>{remindAmount}</h4>
           </div>
         )}
 
-        <div className="dialog-buttons flex w-full justify-center gap-5">
-          <button type="button" className="btn-cancel button bg-error">
+        <div className="dialog-buttons flex w-full justify-center gap-5 mt-4">
+          <button  onClick={onCancel} type="button" className={`${isPending ? "opacity-50" : ""} btn-cancel button bg-error w-27`}>
             Отклонить
           </button>
-          <button type="button" className="btn-confirm button bg-accent">
-            Подтвердить
+          <button disabled={isPending} onClick={onConfirm} type="button" className="btn-confirm button bg-accent w-27 text-text-inverted">
+            <p className={`${isPending ? "hidden" : ""}`}>Создать Чек</p>
+            <Spinner className={`${isPending ? "block" : "hidden!"}`} />
           </button>
         </div>
       </dialog>

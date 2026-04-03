@@ -109,6 +109,7 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
 
     return { success: true, groupId: groupId };
   } catch (error) {
+	
     if (isRedirectError(error)) throw error;
     console.error("Ошибка при создании группы:", error);
     return {

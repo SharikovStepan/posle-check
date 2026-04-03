@@ -5,14 +5,14 @@ import { useActionState, useCallback, useEffect, useRef, useState } from "react"
 import Spinner from "../spinner";
 import ToggleButton from "../toggleButton";
 import Search from "../search";
-import { CreateCheckPageTabs, CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
+import { CreateCheckActionData, CreateCheckPageTabs, CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
 import { FilterButton } from "@/app/lib/types/types.filters";
 import TabChangeButton from "../tabChangeButtons";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
 import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
-import { createCheckAction, CreateCheckState } from "@/app/lib/actions/actions.checks";
+import { createCheckAction } from "@/app/lib/actions/actions.checks";
 import ErrorPop from "../error-pop";
 import ConfirmCreate from "./confirmCreate";
 
@@ -34,7 +34,7 @@ type LocalErrors = {
   succes?: string | null;
 };
 
-export default function CreateCheckForm({ checkParticipants }: { checkParticipants: CreateCheckParticipantsCardsType[] }) {
+export default function CreateCheckForm({ groupId }: { groupId: string }) {
   const { state: contextstate, dispatch, remindAmount } = useParticipantsContext();
 
   const [tabType, setTabType] = useState<CreateCheckPageTabs>("amounts");
@@ -49,6 +49,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const [isPending, setIsPending] = useState<boolean>(false);
 
   const [localErrors, setLocalErrors] = useState<LocalErrors>({});
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const inputTitleRef = useRef<HTMLInputElement | null>(null);
   const inputTotalAmountRef = useRef<HTMLInputElement | null>(null);
@@ -312,17 +313,21 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       setLocalErrors((prev) => ({ ...prev, remindAmount: "Вы назначили сумму всем участникам, но она не покрывает весь чек" }));
       return;
     }
-    console.log("formRef.current", formRef.current);
+
+    setShowConfirm(true);
+  };
+
+  const handleConfirm = async () => {
+    setIsPending(true);
 
     if (formRef.current) {
       const formData = new FormData(formRef.current);
 
-      const tittle = formData.get("title");
-      const description = formData.get("description");
-      const totalAmount = formData.get("total-amount");
+      const title = formData.get("title")?.toString() || "";
+      const description = formData.get("description")?.toString() || null;
+      const totalAmount = Number(formData.get("total-amount"));
 
-      const isCreatorParticipating = contextstate.creator.participating;
-      const creatorShare = formData.get("creator-share");
+      const creator = { id: contextstate.creator.id, participating: contextstate.creator.participating, amount: contextstate.creator.amount };
 
       const participants = contextstate.participanstList.map((member) => {
         const isParticipating = member.participating;
@@ -332,14 +337,30 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         if (isParticipating) {
           return { id, amount };
         }
-      });
+      }) as { id: string; amount: number }[];
 
-      const full = { tittle, description, totalAmount, isCreatorParticipating, creatorShare, participants };
+      const full: CreateCheckActionData = { title, description, totalAmount, creator, participants };
 
-      setIsPending(true);
-      setShowConfirm(true);
+      const result = await createCheckAction(full, groupId);
+
+      if (!result.success) {
+        setServerError(result.error || "Server error");
+      }
     }
   };
+
+  useEffect(() => {
+    if (showConfirm) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  }, [showConfirm]); // Срабатывает ПОСЛЕ того, как showConfirm изменился и DOM обновился
+
+  if (serverError) {
+    throw new Error(serverError);
+  }
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
@@ -499,8 +520,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
         className={`${
           isPending ? "" : ""
         } fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
-        <p className={`${isPending ? "hidden" : ""}`}>Создать Чек</p>
-        <Spinner className={`${isPending ? "block" : "hidden!"}`} />
+        <p>Создать Чек</p>
       </button>
 
       {localErrors.participantAmount && (
@@ -525,9 +545,21 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
       {showConfirm && (
         <>
-          <div className="fixed w-full h-full top-0 left-0 z-40 bg-bg-primary/90"></div>
+          <div className="fixed w-full h-full top-0 left-0 z-50 bg-bg-primary/90"></div>
           <div className="absolute top-10 left-1/2 -translate-x-1/2 w-5/6 h-fit z-50">
-            <ConfirmCreate remindAmount={remindAmount} title={title} totalAmount={contextstate.total} creator={contextstate.creator} members={contextstate.participanstList} />
+            <ConfirmCreate
+              onCancel={() => {
+                setIsPending(false);
+                setShowConfirm(false);
+              }}
+              onConfirm={handleConfirm}
+              isPending={isPending}
+              remindAmount={remindAmount}
+              title={title}
+              totalAmount={contextstate.total}
+              creator={contextstate.creator}
+              members={contextstate.participanstList}
+            />
           </div>
         </>
       )}
