@@ -39,8 +39,6 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
   const [tabType, setTabType] = useState<CreateCheckPageTabs>("amounts");
 
-  const [isPending, setIsPending] = useState<boolean>(false);
-
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -48,6 +46,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
   const [shareAmount, setShareAmount] = useState<boolean>(false);
 
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const [localErrors, setLocalErrors] = useState<LocalErrors>({});
 
@@ -337,6 +336,7 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
 
       const full = { tittle, description, totalAmount, isCreatorParticipating, creatorShare, participants };
 
+      setIsPending(true);
       setShowConfirm(true);
     }
   };
@@ -524,9 +524,12 @@ export default function CreateCheckForm({ checkParticipants }: { checkParticipan
       )}
 
       {showConfirm && (
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-5/6 h-fit z-50">
-          <ConfirmCreate tittle={title} totalAmount={contextstate.total} creator={contextstate.creator} members={contextstate.participanstList} />
-        </div>
+        <>
+          <div className="fixed w-full h-full top-0 left-0 z-40 bg-bg-primary/90"></div>
+          <div className="absolute top-10 left-1/2 -translate-x-1/2 w-5/6 h-fit z-50">
+            <ConfirmCreate remindAmount={remindAmount} title={title} totalAmount={contextstate.total} creator={contextstate.creator} members={contextstate.participanstList} />
+          </div>
+        </>
       )}
       {localErrors.succes && (
         <div
