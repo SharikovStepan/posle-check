@@ -1,7 +1,7 @@
 "use server";
 
 import postgres, { Sql, TransactionSql } from "postgres";
-import { CreateCheckActionData } from "../types/types.checks";
+import { ConfirmPaymentType, CreateCheckActionData, SendPaymentType } from "../types/types.checks";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -141,5 +141,169 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
 
     console.error("Ошибка создания чека:", error);
     return { success: false, error: "DB Fail" };
+  }
+}
+
+const paymentSchema = z.object({
+  payer_id: z.string().min(1),
+  check_id: z.string().min(1),
+
+  payment_amount: z
+    .string()
+    .min(1, "Введите сумму")
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && val !== 0, {
+      message: "Сумма не может быть 0",
+    }),
+});
+
+export async function createPaymentAction(prevState: SendPaymentType, formData: FormData): Promise<SendPaymentType> {
+  const parsed = paymentSchema.safeParse({
+    payer_id: formData.get("currentUserId"),
+    check_id: formData.get("checkId"),
+    payment_amount: formData.get("payment-amount"),
+  });
+
+  if (!parsed.success) {
+    const { fieldErrors } = z.flattenError(parsed.error);
+
+    return {
+      success: false,
+      error: {
+        payment_amount: fieldErrors.payment_amount?.[0] ?? "",
+      },
+    };
+  }
+
+  const { payer_id, payment_amount, check_id } = parsed.data;
+
+  try {
+    // 1. Получаем share_amount
+    const [participant] = await sql`
+		 SELECT share_amount
+		 FROM check_participants
+		 WHERE check_id = ${check_id}
+			AND profile_id = ${payer_id}
+		 LIMIT 1
+	  `;
+
+    if (!participant) {
+      throw new Error("Участник не найден");
+    }
+
+    const type = participant.share_amount == null ? "self" : "request";
+
+    const updated = await sql`
+	 UPDATE payments
+	 SET
+		amount = ${payment_amount},
+		status = 'pending',
+		updated_at = NOW()
+	 WHERE check_id = ${check_id}
+		AND payer_id = ${payer_id}
+		AND status = 'declined'
+	 RETURNING id
+  `;
+
+    if (updated.length === 0) {
+      await sql`
+		INSERT INTO payments (
+		  check_id,
+		  payer_id,
+		  amount,
+		  type,
+		  status,
+		  created_by
+		)
+		VALUES (
+		  ${check_id},
+		  ${payer_id},
+		  ${payment_amount},
+		  ${type},
+		  'pending',
+		  ${payer_id}
+		)
+	 `;
+    }
+
+    revalidatePath(`/checks/${check_id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка создания платежа:", error);
+    throw error;
+  }
+}
+
+const confirmPaymentSchema = z.object({
+  paymentId: z.string().min(1, "Payment id is required"),
+  checkId: z.string().min(1, "Check id is required"),
+  currentUserId: z.string().min(1, "User id is required"),
+  action: z.enum(["confirm", "decline"]),
+});
+
+export async function confirmPayment(prevState: ConfirmPaymentType, formData: FormData): Promise<ConfirmPaymentType> {
+  const parsed = confirmPaymentSchema.safeParse({
+    paymentId: formData.get("payment-id"),
+    checkId: formData.get("check-id"),
+    currentUserId: formData.get("currentUserId"),
+    action: formData.get("action"),
+  });
+
+  if (!parsed.success) {
+    console.error("Validation error:", z.flattenError(parsed.error));
+    return { success: false };
+  }
+
+  const { paymentId, checkId, currentUserId, action } = parsed.data;
+
+  try {
+    // 1. Проверяем, что пользователь — creator чека
+    const [check] = await sql`
+		 SELECT created_by
+		 FROM checks
+		 WHERE id = ${checkId}
+		 LIMIT 1
+	  `;
+
+    if (!check) {
+      throw new Error("Чек не найден");
+    }
+
+    if (check.created_by !== currentUserId) {
+      throw new Error("Нет доступа");
+    }
+
+    // 2. Проверяем, что payment существует
+    const [payment] = await sql`
+		 SELECT id
+		 FROM payments
+		 WHERE id = ${paymentId}
+			AND check_id = ${checkId}
+		 LIMIT 1
+	  `;
+
+    if (!payment) {
+      throw new Error("Платёж не найден");
+    }
+
+    // 3. Определяем новый статус
+    const newStatus = action === "confirm" ? "confirmed" : "declined";
+
+    // 4. Обновляем платёж
+    await sql`
+         UPDATE payments
+         SET
+           status = ${newStatus},
+           updated_at = NOW(),
+           confirmed_at = ${action === "confirm" ? sql`NOW()` : sql`confirmed_at`}
+         WHERE id = ${paymentId}
+       `;
+
+    revalidatePath(`/checks/${checkId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка подтверждения платежа:", error);
+    throw error;
   }
 }

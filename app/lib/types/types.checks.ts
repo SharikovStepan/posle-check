@@ -21,9 +21,11 @@ export type CheckToUserCardType = {
   created_at: Date;
 
   participated: boolean;
-  is_paid: boolean;
 
-  share_amount: string | null;
+  payment_status: "confirmed" | "pending" | "declined" | "unpaid";
+  payment_amount: number | null;
+
+  share_amount: number | null;
 };
 
 export type CreateCheckPageTabs = "members" | "amounts";
@@ -71,3 +73,50 @@ export type CreateCheckActionData = {
   creator: { id: string; participating: boolean; amount: number };
   participants: { id: string; amount: number }[];
 };
+
+export type ParticipantPayment = {
+  id: string;
+  amount: number;
+  status: "pending" | "confirmed" | "declined";
+};
+
+export type CheckDetailsParticipant = {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+
+  share_amount: number | null;
+  payments: ParticipantPayment[];
+};
+
+export type CheckDetailsByUserType = {
+  id: string;
+  title: string;
+  icon_url: string | null;
+  photo_url: string | null;
+  description: string | null;
+  total_amount: number;
+  paid_amount: number;
+  created_at: string;
+  paid_count: number;
+
+  creator: { id: string; full_name: string; username: string; avatar_url: string; participating: boolean; amount: number };
+  participants: CheckDetailsParticipant[];
+};
+
+export type SendPaymentType = {
+  success?: boolean;
+  error?: {
+    payment_amount?: string;
+  };
+};
+
+
+export type ConfirmPaymentType = {
+	success?: boolean;
+	error?: {
+	  payment_amount?: string;
+	};
+ };
+ 

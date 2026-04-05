@@ -244,26 +244,33 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
 		  c.icon_url,
 		  c.created_at,
 	 
-		  -- участвовал ли
 		  cp.participated,
 	 
-		  -- сколько должен
-		  cp.share_amount,
+		  cp.share_amount::float8 AS share_amount,
 	 
-		  -- оплатил ли
-		  EXISTS (
-			 SELECT 1
-			 FROM payments p
-			 WHERE p.check_id = c.id
-				AND p.payer_id = ${currentUserId}
-				AND p.status = 'confirmed'
-		  ) AS is_paid
+		  -- статус платежа
+		  COALESCE(p_last.status, 'unpaid') AS payment_status,
+	 
+		  -- сумма последнего платежа
+		  p_last.amount::float8 AS payment_amount
 	 
 		FROM checks c
 	 
 		LEFT JOIN check_participants cp
 		  ON cp.check_id = c.id
 		 AND cp.profile_id = ${currentUserId}
+	 
+		-- последний платеж пользователя по чеку
+		LEFT JOIN LATERAL (
+		  SELECT
+			 p.status,
+			 p.amount
+		  FROM payments p
+		  WHERE p.check_id = c.id
+			 AND p.payer_id = ${currentUserId}
+		  ORDER BY p.created_at DESC
+		  LIMIT 1
+		) p_last ON true
 	 
 		WHERE c.group_id = ${groupId}
 		  AND c.created_by != ${currentUserId}

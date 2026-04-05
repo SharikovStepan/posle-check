@@ -7,6 +7,7 @@ import Link from "next/link";
 import GroupDetails from "./groupDetails";
 
 export default async function GroupPage({ id }: { id: string }) {
+	
   const groupDetails = await getGroupDetails(id, PROFILE_UUID);
 
   console.log(groupDetails);
@@ -21,7 +22,7 @@ export default async function GroupPage({ id }: { id: string }) {
         <div className="flex flex-col gap-2 w-fit items-center self-start">
           <PageHeader title={groupDetails.title} />
 
-          <div className="flex gap-2 text-xs text-text-tertiary items-center">
+          <div className="flex gap-2 text-xs text-text-tertiary items-center self-start">
             <p className="">
               <span className="font-bold">{groupDetails.members_count}</span> Участника
             </p>
