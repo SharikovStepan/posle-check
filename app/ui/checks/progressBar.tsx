@@ -1,7 +1,7 @@
 export default function ProgressBar({ total, current }: { total: number; current: number }) {
   const width = (100 / total) * current;
 
-  const color = width <= 0 ? "var(--color-surface)" : width >= 50 && width != 100 ? "var(--color-warning)" : "var(--color-success)";
+  const color = width <= 0 ? "var(--color-surface)" : width > 0 && width != 100 ? "var(--color-warning)" : "var(--color-success)";
   return (
     <>
       <div className="relative w-full h-2 bg-bg-tertiary rounded-lg col-span-3">
