@@ -158,7 +158,16 @@ body {
   }
 }
 
+.focus {
+  @apply focus:outline-0 focus:ring-1 focus:ring-(--ring)  focus:ring-offset-0;
+}
 
-.focus{
-	@apply focus:outline-0 focus:ring-1 focus:ring-(--ring)  focus:ring-offset-0;
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0px var(--color-warning);
+  }
+  50% {
+    box-shadow: 0 0 5px var(--color-warning);
+  }
 }

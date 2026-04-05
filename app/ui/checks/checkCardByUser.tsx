@@ -43,7 +43,7 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
               <p className="text-text-primary self-end justify-self-end">{formatAmount}</p>
               <p className="text-text-primary">₽</p>
             </div>
-            <PaidCounter paid={checkData.paid_participants_count} total={checkData.participants_count - (checkData.creator_participating ? 1 : 0)} />
+            <PaidCounter isPending={checkData.is_pending_payments} paid={checkData.paid_participants_count} total={checkData.participants_count - (checkData.creator_participating ? 1 : 0)} />
           </div>
 
           <ProgressBar current={checkData.paid_participants_count} total={checkData.participants_count - (checkData.creator_participating ? 1 : 0)} />

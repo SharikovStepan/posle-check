@@ -6,6 +6,7 @@ export type CheckByUserCardType = {
   created_at: Date;
   icon_url: string | null;
   creator_participating: boolean;
+  is_pending_payments: boolean;
 
   total_amount: string;
   paid_amount: string;
@@ -112,11 +113,9 @@ export type SendPaymentType = {
   };
 };
 
-
 export type ConfirmPaymentType = {
-	success?: boolean;
-	error?: {
-	  payment_amount?: string;
-	};
- };
- 
+  success?: boolean;
+  error?: {
+    payment_amount?: string;
+  };
+};
