@@ -7,7 +7,6 @@ import OrderSettings from "../orderSettings";
 import AddedMembersList from "./addedMembersList";
 import SearchMembersList from "./searchMembersList";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { FilterButton, SortBy, SortOrder } from "@/app/lib/types/types.filters";
 import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
 import Spinner from "../spinner";
@@ -40,7 +39,6 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
   const friendsListOptions = useMemo<GetFriendsOptions>(
     () => ({
-      currentUserId: PROFILE_UUID,
       filter: "friends",
       search: searchQuery,
       sortBy: sortByState,
@@ -158,7 +156,6 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
       <div className={`${tabType == "members" ? "block w-full" : "hidden"} lg:block lg:col-[2/3] row-[1/3] lg:h-full`}>
         <AddedMembersList usersData={membersContex.state} />
         <input name="members" type="text" hidden={true} defaultValue={JSON.stringify(membersContex.ids)} />
-        <input name="currentUserId" type="text" hidden={true} defaultValue={PROFILE_UUID} />
       </div>
 
       {state.errors?.members && visibleErrors.members && (

@@ -42,7 +42,6 @@ export type ParticipantsActions =
   | { type: "SET_AMOUNT_CREATOR"; payload: { amount: number } }
   | { type: "CLEAR_AMOUNT"; payload: { id: string } }
   | { type: "SHARE_AMOUNT"; payload: { amount: number } }
-  | { type: "SHARE_AMOUNT_NOT_CREATOR"; payload: { amount: number } }
   | { type: "CANCEL_SHARE" }
   | { type: "ADD_ALL" }
   | { type: "DELETE_ALL" }
@@ -55,7 +54,6 @@ export type ParticipantsActionsTypes =
   | "SET_AMOUNT_CREATOR"
   | "CLEAR_AMOUNT"
   | "SHARE_AMOUNT"
-  | "SHARE_AMOUNT_NOT_CREATOR"
   | "CANCEL_SHARE"
   | "ADD_ALL"
   | "DELETE_ALL"

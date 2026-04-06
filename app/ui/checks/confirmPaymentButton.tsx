@@ -1,7 +1,6 @@
 "use client";
 
 import { confirmPayment } from "@/app/lib/actions/actions.checks";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { ConfirmPaymentType } from "@/app/lib/types/types.checks";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { useActionState } from "react";
@@ -15,7 +14,6 @@ export function ConfirmPaymentButton({ paymentId, checkId, action }: { paymentId
       <input type="hidden" name="payment-id" value={paymentId} />
       <input type="hidden" name="action" value={action} />
       <input type="hidden" name="check-id" value={checkId} />
-      <input type="hidden" name="currentUserId" value={PROFILE_UUID} />
 
       <button
         disabled={isPending}

@@ -7,11 +7,18 @@ export default async function GroupsList({ options }: { options: GetGroupsOption
 
   return (
     <>
-      <div className="w-full flex flex-col gap-3">
-        {groupsData.groups.map((group) => {
-          return <GroupCard key={group.id} groupData={group} />
-        })}
-      </div>
+      {groupsData.groups.length != 0 ? (
+        <div className="w-full flex flex-col gap-3">
+          {groupsData.groups.map((group) => {
+            return <GroupCard key={group.id} groupData={group} />;
+          })}
+        </div>
+      ) : (
+        <div>
+          <p>У вас нет групп</p>
+          <p></p>
+        </div>
+      )}
     </>
   );
 }

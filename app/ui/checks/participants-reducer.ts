@@ -1,6 +1,5 @@
-import { CreateCheckParticipantsCardsType, ParticipantsActions } from "@/app/lib/types/types.checks";
+import { ParticipantsActions } from "@/app/lib/types/types.checks";
 import { ParticipantState } from "./participantsProvider";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 
 export const participantsReducer = (state: ParticipantState, action: ParticipantsActions): ParticipantState => {
   switch (action.type) {
@@ -73,20 +72,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         creator: state.creator,
         total: state.total,
       };
-    case "SHARE_AMOUNT_NOT_CREATOR":
-      return {
-        lastDispatch: { type: "SHARE_AMOUNT_NOT_CREATOR" },
-        participanstList: state.participanstList.map((member) => {
-          if (member.id == PROFILE_UUID) {
-            return member;
-          } else {
-            return { ...member, amount: parseFloat(action.payload.amount.toFixed(1)) };
-          }
-        }),
-        creator: { ...state.creator },
-        total: state.total,
-      };
-
+   
     case "CANCEL_SHARE":
       return {
         lastDispatch: { type: "CANCEL_SHARE" },

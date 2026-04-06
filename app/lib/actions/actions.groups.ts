@@ -5,6 +5,7 @@ import postgres, { Sql } from "postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { auth } from "@/auth";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -26,10 +27,16 @@ const createGroupSchema = z.object({
 });
 
 export async function createGroupAction(prevState: CreateGroupState, formData: FormData): Promise<CreateGroupState> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
   const title = formData.get("title");
   const description = formData.get("description");
   const membersRaw = formData.get("members"); // JSON строка
-  const currentUserId = formData.get("currentUserId");
+  const currentUserId = session.user.id;
 
   let parsedMembers: string[] = [];
 
@@ -109,7 +116,6 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
 
     return { success: true, groupId: groupId };
   } catch (error) {
-	
     if (isRedirectError(error)) throw error;
     console.error("Ошибка при создании группы:", error);
     return {

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { z } from "zod";
+import { auth } from "@/auth";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -158,8 +159,14 @@ const paymentSchema = z.object({
 });
 
 export async function createPaymentAction(prevState: SendPaymentType, formData: FormData): Promise<SendPaymentType> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
   const parsed = paymentSchema.safeParse({
-    payer_id: formData.get("currentUserId"),
+    payer_id: session.user.id,
     check_id: formData.get("checkId"),
     payment_amount: formData.get("payment-amount"),
   });
@@ -242,10 +249,16 @@ const confirmPaymentSchema = z.object({
 });
 
 export async function confirmPayment(prevState: ConfirmPaymentType, formData: FormData): Promise<ConfirmPaymentType> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
   const parsed = confirmPaymentSchema.safeParse({
     paymentId: formData.get("payment-id"),
     checkId: formData.get("check-id"),
-    currentUserId: formData.get("currentUserId"),
+    currentUserId: session.user.id,
     action: formData.get("action"),
   });
 

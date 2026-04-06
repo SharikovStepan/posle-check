@@ -1,6 +1,5 @@
 import { getGroupDetails } from "@/app/lib/data/data.groups";
 import GroupSkeleton from "@/app/lib/fallbacks/groupSkeleton";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import GroupPage from "@/app/ui/groups/groupPage";
 import PageHeader from "@/app/ui/pageHeader";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";

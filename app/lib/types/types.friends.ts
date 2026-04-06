@@ -11,7 +11,7 @@ export interface Friendship {
 }
 
 export interface GetFriendsOptions {
-  currentUserId: string;
+  currentUserId?: string;
   filter?: FriendsListType;
 
   search?: string;
@@ -23,10 +23,9 @@ export interface GetFriendsOptions {
   currentPage?: number;
 }
 
-
 export interface FriendsListResult {
-	users: User[];
-	total: number; // всего друзей/заявок
-	totalPages: number; // всего страниц
-	page: number; // текущая страница (offset / limit + 1)
- }
+  users: User[];
+  total: number; // всего друзей/заявок
+  totalPages: number; // всего страниц
+  page: number; // текущая страница (offset / limit + 1)
+}

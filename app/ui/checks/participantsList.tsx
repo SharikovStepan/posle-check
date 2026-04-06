@@ -1,13 +1,11 @@
-import { CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
-import ParticipantCardAdd from "./participantCardAdd";
 import ParticipantCardAmount from "./participantCardAmount";
 import { useParticipantsContext } from "./participantsProvider";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
+import { useSession } from "next-auth/react";
 
 export default function ParticipantsList() {
   const participantsContext = useParticipantsContext();
 
-  const filtered = participantsContext.state.participanstList.filter((member) => member.participating && member.id != PROFILE_UUID);
+  const filtered = participantsContext.state.participanstList.filter((member) => member.participating);
   return (
     <>
       {filtered.map((member) => {

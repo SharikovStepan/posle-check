@@ -17,7 +17,7 @@ export default function ToggleButton({
 }) {
   return (
     <>
-      <label className="inline-flex  w-full items-center justify-between gap-2">
+      <label className="inline-flex w-full items-center justify-between gap-2">
         <span className="select-none text-lg font-medium text-text-primary">{labelText}</span>
 
         <input aria-describedby={error ? `${inputName}-error` : undefined} name={inputName} type="checkbox" checked={toggleState} onChange={toggleChange} className="sr-only peer" />

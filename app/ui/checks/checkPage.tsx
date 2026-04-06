@@ -1,14 +1,22 @@
 import CheckDetailsByUser from "./checkDetailsByUser";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import PageHeader from "../pageHeader";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getCheckDetails } from "@/app/lib/data/data.checks";
 import CheckDetailsToUser from "./checkDetailsToUser";
 import BackButton from "../backButton";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function CheckPage({ checkId }: { checkId: string }) {
-  const checkDetails = await getCheckDetails(checkId, PROFILE_UUID);
+
+	const session = await auth();
+  
+	if (!session?.user?.id) {
+	  redirect('/login');
+	}
+
+  const checkDetails = await getCheckDetails(checkId, session.user.id);
 
   const date = new Date(checkDetails.created_at);
   console.log("date", date);
@@ -26,7 +34,7 @@ export default async function CheckPage({ checkId }: { checkId: string }) {
     minute: "numeric",
   });
 
-  const isCreator = checkDetails.creator.id == PROFILE_UUID;
+  const isCreator = checkDetails.creator.id == session.user.id;
   return (
     <>
       <div className="header-div h-21 flex justify-between gap-4 items-center mb-2">

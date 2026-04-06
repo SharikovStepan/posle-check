@@ -20,3 +20,12 @@ export interface dbUserRow {
   friendship_status: string;
   friendship_id: string | null;
 }
+
+export interface Profile {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string;
+  email: string;
+//   providerId: string;
+}

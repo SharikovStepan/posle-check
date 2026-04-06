@@ -6,6 +6,9 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 export async function getGroupMembers(groupId: string, currentUserId: string): Promise<CreateCheckParticipantsCardsType[]> {
   try {
+
+	
+
     const members = (await sql`
 		 SELECT
 			p.id,

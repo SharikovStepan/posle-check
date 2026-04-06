@@ -1,8 +1,6 @@
 "use client";
 
 import { createPaymentAction } from "@/app/lib/actions/actions.checks";
-import { CreateGroupState } from "@/app/lib/actions/actions.groups";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { CheckDetailsByUserType, SendPaymentType } from "@/app/lib/types/types.checks";
 import { UserCircleIcon } from "@heroicons/react/16/solid";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -10,7 +8,6 @@ import Spinner from "../spinner";
 
 export default function CheckDetailsToUser({ checkData }: { checkData: CheckDetailsByUserType }) {
   const userData = checkData.participants[0];
-  console.log("checkData", checkData);
 
   const firstPayment = userData.payments.length > 0 ? userData.payments[0] : null;
 
@@ -157,7 +154,6 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
               </button>
             )}
 
-            <input name="currentUserId" id="currentUserId" type="hidden" value={PROFILE_UUID} />
             <input type="hidden" name="checkId" value={checkData.id} />
           </form>
         </div>

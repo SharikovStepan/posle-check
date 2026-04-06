@@ -1,17 +1,22 @@
 import { getGroupDetails } from "@/app/lib/data/data.groups";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import PageHeader from "../pageHeader";
 import { ArrowLeftIcon, DocumentPlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 import GroupDetails from "./groupDetails";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function GroupPage({ id }: { id: string }) {
-	
-  const groupDetails = await getGroupDetails(id, PROFILE_UUID);
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const groupDetails = await getGroupDetails(id, session.user.id);
 
   console.log(groupDetails);
-  
 
   return (
     <>
@@ -32,11 +37,12 @@ export default async function GroupPage({ id }: { id: string }) {
             </p>
           </div>
         </div>
-		  <Link href={`/groups/${id}/create-check`} className=" flex justify-center items-center transition-all duration-200 cursor-pointer text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary">
+        <Link
+          href={`/groups/${id}/create-check`}
+          className=" flex justify-center items-center transition-all duration-200 cursor-pointer text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary">
           <DocumentPlusIcon className="w-1/2 h-1/2" />
         </Link>
       </div>
-
 
       <GroupDetails groupData={groupDetails} />
     </>

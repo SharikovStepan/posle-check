@@ -1,10 +1,19 @@
 import UserCard from "./userCard";
 import EmptyNotification from "./emptyNotification";
 import { searchUserByEmail } from "@/app/lib/data/data.friendship";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function SearchedNewFriend({ query }: { query: string }) {
-  const searchedUser = query ? await searchUserByEmail(PROFILE_UUID, query) : null;
+	
+	const session = await auth();
+  
+	if (!session?.user?.id) {
+	  redirect('/login');
+	}
+
+
+  const searchedUser = query ? await searchUserByEmail(session.user.id, query) : null;
 
   return (
     <>

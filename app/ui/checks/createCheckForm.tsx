@@ -168,21 +168,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
       const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
       dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxValue } });
     }
-
-    //  const maxPossibleValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
-    //  if (currentValue > maxPossibeAmountValue(contextstate.total, contextstate.participanstList) && !isEqualParticipantsAmounts(contextstate.participanstList)) {
-    //    dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxPossibleValue } });
-    //  } else {
-    //    dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: currentValue } });
-    //  }
-
-    //  if (isEqualParticipantsAmounts(contextstate.participanstList)) {
-
-    //    setShareAmount(false);
-    //    const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
-    //    const amountToOther = (contextstate.total - currentValue) / participatedCount;
-    //    dispatch({ type: "SHARE_AMOUNT_NOT_CREATOR", payload: { amount: amountToOther } });
-    //  }
   };
 
   const handleChangeAmount = (currentValue: number) => {

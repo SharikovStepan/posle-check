@@ -2,7 +2,6 @@
 
 import React, { Children, useActionState } from "react";
 import SubmitButton from "../submitButton";
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FriendshipState, sendFriendRequestByUsers } from "@/app/lib/actions/actions.friendship";
@@ -14,7 +13,6 @@ export default function AddFriendButton({ friendId, children }: { friendId: stri
 
   return (
 <form action={formAction}>
-  <input type="hidden" name="currentUserId" value={PROFILE_UUID} />
   <input type="hidden" name="targetUserId" value={friendId} />
   <input type="hidden" name="currentPath" value={pathname} />
   <input type="hidden" name="searchParams" value={searchParams.toString()} />

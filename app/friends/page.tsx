@@ -1,4 +1,3 @@
-import { PROFILE_UUID } from "../lib/placeholders-data";
 import FriendList from "../ui/friends/friendList";
 import PageHeader from "../ui/pageHeader";
 import Search from "../ui/search";
@@ -13,6 +12,8 @@ import { Suspense } from "react";
 import SearchedNewFriend from "../ui/friends/searchedNewFriend";
 import FriendListSkeleton from "../lib/fallbacks/friendsListSkeleton";
 import { SeachLoading } from "../lib/fallbacks/seachLoading";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 const UsersIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
@@ -35,7 +36,15 @@ const friendsFilters: FilterButton<FriendsListType>[] = [
 ];
 
 export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: FriendsListType | "search"; sortBy?: string; order?: string; page?: string }> }) {
-  const searchParams = await props.searchParams;
+  
+	const session = await auth();
+  
+  if (!session?.user?.id) {
+    redirect('/login');
+  }
+
+	
+	const searchParams = await props.searchParams;
 
   const query = searchParams?.query || "";
   const filterType = searchParams?.filter || "friends";
@@ -45,7 +54,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
   const sortBy: SortBy | null = (searchParams?.sortBy as SortBy) || null;
 
   const options: GetFriendsOptions = {
-    currentUserId: PROFILE_UUID,
+    currentUserId: session.user.id,
     filter: filterType !== "search" ? filterType : "friends",
     currentPage: currentPage,
     search: query,

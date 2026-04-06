@@ -7,7 +7,6 @@ type Theme = "light" | "dark";
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme | null>(null);
 
-  // 👉 инициализация
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
 
@@ -23,7 +22,6 @@ export default function ThemeToggle() {
     }
   }, []);
 
-  // 👉 применение темы
   const applyTheme = (theme: Theme) => {
     const html = document.documentElement;
 
@@ -46,8 +44,8 @@ export default function ThemeToggle() {
   if (!theme) return null;
 
   return (
-    <button onClick={toggleTheme} className="px-4 py-2 rounded-lg bg-surface border border-border hover:bg-surface-hover transition">
-      {theme === "dark" ? "🌙 Тёмная" : "☀️ Светлая"}
+    <button onClick={toggleTheme} className="px-4 py-2 rounded-lg bg-bg-tertiary border border-border hover:bg-surface-hover transition">
+      {theme === "dark" ? "☀️ Светлая" : "🌙 Тёмная"}
     </button>
   );
 }

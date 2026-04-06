@@ -4,6 +4,7 @@ import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { getFriendshipByUsers } from "../data/data.friendship";
 import { Friendship } from "../types/types.friends";
+import { auth } from "@/auth";
 
 export type FriendshipState = {
   id?: string;
@@ -15,7 +16,15 @@ export type RequestFriendActions = "accept" | "decline" | "send" | "cancel";
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 export async function sendFriendRequestByUsers(prevState: FriendshipState, formData: FormData): Promise<FriendshipState> {
-  const currentUserId = formData.get("currentUserId") as string;
+  
+	const session = await auth();
+
+	if (!session?.user?.id) {
+	  throw new Error("Unauthorized");
+	}
+	
+	
+	const currentUserId = session.user.id
   const targetUserId = formData.get("targetUserId") as string;
   const currentPath = formData.get("currentPath") as string;
   const searchParams = formData.get("searchParams") as string;
@@ -65,7 +74,14 @@ function revalidateRerender(path: string, search: string): void {
 }
 
 export async function requestFriendAction(actionType: RequestFriendActions, prevState: FriendshipState, formData: FormData): Promise<FriendshipState> {
-  const currentUserId = formData.get("currentUserId") as string;
+	const session = await auth();
+
+	if (!session?.user?.id) {
+	  throw new Error("Unauthorized");
+	}
+
+	
+	const currentUserId = session.user.id
   const friendshipId = formData.get("friendshipId") as string;
   const currentPath = formData.get("currentPath") as string;
   const searchParams = formData.get("searchParams") as string;
