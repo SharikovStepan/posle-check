@@ -9,10 +9,7 @@ import Link from "next/link";
 import { User } from "@/app/lib/types/types.user";
 
 export default function UserCard({ userData, friendshipId }: { friendshipId: string | null; userData: User; isSearched?: boolean }) {
-
-	
-
-  const friendStatusDesc = userData.id === '' ? "Это вы" : friendText(userData.friendship_status);
+  const friendStatusDesc = userData.id === "" ? "Это вы" : friendText(userData.friendship_status);
   return (
     <>
       <div className="relative py-2 px-4 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
@@ -31,7 +28,7 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
         </div>
 
         <div className="flex w-fit flex-col md:flex-row gap-2 justify-end items-center">
-          {userData.friendship_status == "none" && userData.id !== 'UUID' ? (
+          {userData.friendship_status == "none" && userData.id !== "UUID" ? (
             <AddFriendButton friendId={userData.id}>
               <p>Добавить в друзья</p>
             </AddFriendButton>
@@ -58,10 +55,11 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
               </RequestFriendButton>
             </>
           ) : userData.friendship_status == "friendly" && friendshipId ? (
-            <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer border-error/70 border-2 text-error hover:bg-error/10 hover:border-error/90">
-              <XMarkIcon className="h-6 w-6 text-error hover:text-error/70" />
-            </RequestFriendButton>
-          ) : userData.id == 'UUID' ? (
+            ""
+          ) : // <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer border-error/70 border-2 text-error hover:bg-error/10 hover:border-error/90">
+          //   <XMarkIcon className="h-6 w-6 text-error hover:text-error/70" />
+          // </RequestFriendButton>
+          userData.id == "UUID" ? (
             <Link href={"/profile"} className={`p-2 border-2 rounded-md border-border text-text-primary w-full h-10 flex justify-center items-center hover:bg-accent hover:text-accent-foreground`}>
               <p className="">{"Открыть профиль"}</p>
             </Link>
