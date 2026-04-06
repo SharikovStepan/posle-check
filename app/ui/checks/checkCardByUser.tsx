@@ -17,7 +17,6 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
 
   const formatAmount = parseFloat(checkData.total_amount).toString();
 
-  console.log("checkData", checkData);
 
   return (
     <>

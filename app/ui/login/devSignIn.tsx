@@ -16,10 +16,9 @@ export default function DevSignIn() {
     const userId = formData.get("userId") as string;
 
     try {
-      // ✅ ВАЖНО: используем try-catch для обработки ошибки
       const result = await signIn("dev-uuid", {
         userId: userId,
-        redirect: false, // ⚠️ Временно отключаем автоматический редирект для обработки ошибок
+        redirect: false,
         callbackUrl: "/profile",
       });
 
@@ -65,6 +64,7 @@ export default function DevSignIn() {
           type="text"
           name="userId"
           value={uuid}
+          autoComplete="off"
           onChange={(e) => setUuid(e.target.value)}
           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           className="w-full px-3 py-2 bg-bg-tertiary border border-border rounded-md shadow-sm focus:outline-none focus:ring-(--ring) focus:ring-2"
@@ -83,7 +83,7 @@ export default function DevSignIn() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-text-inverted bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-text-primary disabled:opacity-50">
+        className="cursor-pointer w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-text-inverted bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-text-primary disabled:opacity-50">
         {loading ? "Logging in..." : "Login with UUID"}
       </button>
     </form>

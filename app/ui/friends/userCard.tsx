@@ -23,6 +23,7 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
               <UserCircleIcon className={`${friendStatusDesc == "" ? "h-12" : "h-10"} w-full text-accent/80 overflow-hidden`} />
             )}
           </div>
+
           <div>
             <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
             {friendStatusDesc != "" && <div className="text-text-tertiary/80 text-xs">{friendStatusDesc}</div>}

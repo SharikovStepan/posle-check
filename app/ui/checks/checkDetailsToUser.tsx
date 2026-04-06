@@ -26,7 +26,6 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
     if (errorShowTmr.current) {
       clearTimeout(errorShowTmr.current);
     }
-    console.log("state", state);
 
     if (state.error) {
       setShowError(true);

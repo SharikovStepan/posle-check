@@ -238,7 +238,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
           inline: "nearest",
         });
       } else if (tabsRef.current) {
-        console.log("tabsRef", tabsRef);
 
         tabsRef.current.scrollIntoView({
           behavior: "smooth",
@@ -254,7 +253,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
       }, 3000);
     }
 
-    console.log("localErrors", localErrors);
 
     return () => {
       if (showErrorTmr.current) {
@@ -325,7 +323,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
       }) as { id: string; amount: number }[];
 
       const full: CreateCheckActionData = { title, description, totalAmount, creator, participants };
-      console.log("full", full);
 
       const result = await createCheckAction(full, groupId);
 

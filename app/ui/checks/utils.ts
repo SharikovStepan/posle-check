@@ -41,8 +41,6 @@ export const maxPossibeAmountValue = (totalAmount: number, members: CreateCheckP
   const participatingMembers = members.filter((members) => members.id != targetId && !members.isCreator);
   const participnatsWithAmounts = participatingMembers.filter((participant) => participant.amount >= 1);
   const creatorValue = creator?.participating ? creator.amount : 0;
-  console.log("participatingMembers", participatingMembers);
-  console.log("participnatsWithAmounts", participnatsWithAmounts);
 
   if (isAllParticipantsCustomAmounts(members)) {
     return totalAmount - (creatorValue + sumParticipantsAmount(participatingMembers));

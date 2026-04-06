@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
+
   return (
     <>
       <Link href={`/groups/${groupData.id}`} className="block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl">
@@ -34,7 +35,6 @@ export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
             <div className="flex justify-center items-center gap-1 text-text-tertiary">
               <UserGroupIconMicro className="h-5 w-5" />
               <p>{groupData.members_count}</p>
-
               <p className="text-sm">Участников</p>
             </div>
 

@@ -15,20 +15,18 @@ import { ParticipantsProvider } from "@/app/ui/checks/participantsProvider";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-import { Metadata } from 'next';
+import { Metadata } from "next";
+import BackButton from "@/app/ui/backButton";
 export const metadata: Metadata = {
-	title: 'Создать чек',
- };
-
+  title: "Создать чек",
+};
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
-
   const session = await auth();
-  
-  if (!session?.user?.id) {
-    redirect('/login');
-  }
 
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
   const params = await props.params;
   const id = params.id;
@@ -44,14 +42,17 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     participating: true,
     amount: 0,
     isCreator: true,
+    role: "admin",
+    status: "accepted",
+    invited_by: "",
   };
 
   return (
     <main className="flex flex-col gap-3">
       <div className="header-div h-full md:h-(--header-height) flex justify-between items-center mb-2">
-        <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
+        <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
-        </Link>
+        </BackButton>
         <PageHeader title={"Новый чек"} />
       </div>
 

@@ -7,7 +7,9 @@ export type GroupCardType = {
   title: string;
   description: string | null;
   icon_url: string | null;
-  created_by: string;
+  created_by: GroupMemberCardQuery;
+  current_user_role: "admin" | "member" | "pending";
+  current_user_status: "pending" | "accepted" | "declined";
   created_at: string;
   updated_at: string;
   members_count: number;
@@ -15,7 +17,17 @@ export type GroupCardType = {
   avatars: (string | null)[];
 };
 
-export type GroupMemberCard = { id: string; username: string; full_name: string | null; avatar_url: string | null; unpaid_checks_count: number };
+export type GroupMemberCard = {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  unpaid_checks_count: number;
+  invited_by: string;
+  role: "member" | "admin";
+  status: "accepted" | "pending" | "declined";
+};
+
 export type GroupMemberCardQuery = Omit<GroupMemberCard, "unpaid_checks_count">;
 
 export interface GroupListResult {

@@ -17,7 +17,6 @@ export default function ParticipantCardAmount({ participantData }: { participant
   const showErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleCustomAmount = () => {
-    console.log(" isNotCustomParticipantsAmounts(state.participanstList)", isNotCustomParticipantsAmounts(state.participanstList));
 
     if (state.total == 0) {
       setCardError((prev) => ({ ...prev, isCustomAmount: "Введите сумму чека" }));
@@ -49,7 +48,6 @@ export default function ParticipantCardAmount({ participantData }: { participant
       dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
     } else {
       const maxValue = maxPossibeAmountValue(state.total, state.participanstList, state.creator, participantData.id);
-      console.log(maxValue);
 
       dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: maxValue } });
     }

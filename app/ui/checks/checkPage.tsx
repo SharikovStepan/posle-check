@@ -19,7 +19,6 @@ export default async function CheckPage({ checkId }: { checkId: string }) {
   const checkDetails = await getCheckDetails(checkId, session.user.id);
 
   const date = new Date(checkDetails.created_at);
-  console.log("date", date);
 
   const formattedDate = date
     .toLocaleDateString("ru-RU", {
@@ -38,7 +37,7 @@ export default async function CheckPage({ checkId }: { checkId: string }) {
   return (
     <>
       <div className="header-div h-21 flex justify-between gap-4 items-center mb-2">
-        <BackButton className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
+        <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </BackButton>
 		  

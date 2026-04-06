@@ -64,8 +64,8 @@ export default async function Home() {
 
           <span className="block w-full bg-bg-tertiary h-px"></span>
 
-          <Link className="button bg-accent text-text-inverted text-lg px-8 py-3 rounded-lg font-medium hover:shadow-lg transition-all" href={"/login"}>
-            Начать использовать →
+          <Link className="button bg-accent text-text-inverted text-lg px-8 py-3 rounded-lg font-medium hover:shadow-lg hover:bg-accent-hover transition-all" href={"/login"}>
+            Начать использовать
           </Link>
         </div>
       </div>

@@ -15,7 +15,7 @@ const tabs: FilterButton<GroupPageTabs>[] = [
   { filterType: "members", text: "Участники" },
 ];
 
-export default function GroupDetails({ groupData }: { groupData: Group }) {
+export default function GroupDetails({ groupData, currentUserId }: { currentUserId: string; groupData: Group }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function GroupDetails({ groupData }: { groupData: Group }) {
               return <CheckToUserCard key={check.id} checkData={check} />;
             })
           : groupData.members.map((member) => {
-              return <GroupdMember key={member.id} memberData={member} />;
+              return <GroupdMember key={member.id} memberData={member} groupId={groupData.id} currentUserId={currentUserId} />;
             })}
       </div>
     </>

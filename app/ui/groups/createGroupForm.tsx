@@ -39,7 +39,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
   const friendsListOptions = useMemo<GetFriendsOptions>(
     () => ({
-		currentUserId:'Добавили поле для TS, но в API оно берется из session',
+      currentUserId: "Добавили поле для TS, но в API оно берется из session",
       filter: "friends",
       search: searchQuery,
       sortBy: sortByState,
@@ -156,7 +156,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
       <div className={`${tabType == "members" ? "block w-full" : "hidden"} lg:block lg:col-[2/3] row-[1/3] lg:h-full`}>
         <AddedMembersList usersData={membersContex.state} />
-        <input name="members" type="text" hidden={true} defaultValue={JSON.stringify(membersContex.ids)} />
+        <input name="members" type="hidden" value={JSON.stringify(membersContex.ids)} />
       </div>
 
       {state.errors?.members && visibleErrors.members && (

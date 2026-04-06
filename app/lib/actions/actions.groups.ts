@@ -19,6 +19,10 @@ export type CreateGroupState = {
   };
 };
 
+export type AcceptGroupState = {
+  success?: boolean;
+};
+
 const createGroupSchema = z.object({
   title: z.string().trim().min(1, "Название не может быть пустым"),
   description: z.string().optional(),
@@ -89,6 +93,7 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
 		  group_id,
 		  profile_id,
 		  role,
+		  status,
 		  invited_by,
 		  joined_at,
 		  invited_at
@@ -100,8 +105,15 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
 			 WHEN m.member_id = ${currentUserId} THEN 'admin'
 			 ELSE 'member'
 		  END,
+		  CASE
+			 WHEN m.member_id = ${currentUserId} THEN 'accepted'
+			 ELSE 'pending'
+		  END,
 		  ${currentUserId},
-		  NOW(),
+		  CASE
+			 WHEN m.member_id = ${currentUserId} THEN NOW()
+			 ELSE NULL
+		  END,
 		  NOW()
 		FROM UNNEST(${members}::uuid[]) AS m(member_id)
 	 `;
@@ -123,5 +135,100 @@ export async function createGroupAction(prevState: CreateGroupState, formData: F
         general: "Не удалось создать группу",
       },
     };
+  }
+}
+
+export type ActionInviteState = {
+  success?: boolean;
+  error?: string;
+};
+
+export async function actionInvite(prevState: ActionInviteState, formData: FormData): Promise<ActionInviteState> {
+  const session = await auth();
+
+  const currentUserId = session?.user?.id;
+
+  if (!currentUserId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const groupId = formData.get("groupId") as string;
+  const memberId = formData.get("memberId") as string;
+  const action = formData.get("action") as "accept" | "decline" | "resend" | "delete";
+
+  if (!groupId || !memberId || !action) {
+    return { success: false, error: "Missing data" };
+  }
+
+  // Проверка прав для accept/decline
+  if (action === "accept" || action === "decline") {
+    if (currentUserId !== memberId) {
+      return { success: false, error: "You can only accept/decline your own invitations" };
+    }
+  }
+
+  // Проверка прав для send/delete (должен быть invited_by)
+  if (action === "resend" || action === "delete") {
+    const [invitation] = await sql`
+		 SELECT invited_by
+		 FROM group_members
+		 WHERE group_id = ${groupId}
+			AND profile_id = ${memberId}
+	  `;
+
+    if (!invitation || invitation.invited_by !== currentUserId) {
+      return { success: false, error: "You don't have permission to do this action" };
+    }
+  }
+
+  // Обработка delete
+  if (action === "delete") {
+    try {
+      await sql`
+			DELETE FROM group_members
+			WHERE group_id = ${groupId}
+			  AND profile_id = ${memberId}
+		 `;
+
+      revalidatePath("/groups");
+      return { success: true };
+    } catch (error) {
+      console.error("actionInvite delete error:", error);
+      return { success: false, error: "DB error" };
+    }
+  }
+
+  let status: "accepted" | "declined" | "pending";
+
+  switch (action) {
+    case "accept":
+      status = "accepted";
+      break;
+    case "decline":
+      status = "declined";
+      break;
+    case "resend":
+      status = "pending";
+      break;
+    default:
+      return { success: false, error: "Invalid action" };
+  }
+
+  try {
+    await sql`
+		 UPDATE group_members
+		 SET 
+			status = ${status},
+			invited_at = CASE WHEN ${action} = 'send' THEN NOW() ELSE invited_at END,
+			joined_at = CASE WHEN ${action} = 'accept' THEN NOW() ELSE joined_at END
+		 WHERE group_id = ${groupId}
+			AND profile_id = ${memberId}
+	  `;
+
+    revalidatePath("/groups");
+    return { success: true };
+  } catch (error) {
+    console.error("actionInvite error:", error);
+    return { success: false, error: "DB error" };
   }
 }

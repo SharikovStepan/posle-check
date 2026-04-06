@@ -59,57 +59,64 @@ export async function getGroupsList(options: GetGroupsOptions): Promise<GroupLis
 
     // 2️⃣ DATA
     const groups = await sql<GroupCardType[]>`
-	 SELECT
-		g.id,
-		g.title,
-		g.description,
-		g.icon_url,
-		g.created_by,
-		g.created_at,
-		g.updated_at,
-  
-		COUNT(DISTINCT gm_all.profile_id)::int AS members_count,
-		COUNT(DISTINCT c.id)::int AS checks_count,
-  
-		ARRAY(
-		  SELECT p.avatar_url
-		  FROM (
-			 -- создатель (всегда первый)
-			 SELECT g.created_by AS profile_id, 0 AS sort_order, g.created_at AS created_at
-  
-			 UNION ALL
-  
-			 -- остальные участники
-			 SELECT gm2.profile_id, 1 AS sort_order, gm2.joined_at
-			 FROM group_members gm2
-			 WHERE gm2.group_id = g.id
-				AND gm2.profile_id != g.created_by
-		  ) AS members
-		  LEFT JOIN profiles p ON p.id = members.profile_id
-		  ORDER BY members.sort_order ASC, members.created_at ASC
-		  LIMIT 3
-		) AS avatars
-  
-	 FROM groups g
-  
-	 -- участники для фильтра
-	 JOIN group_members gm ON gm.group_id = g.id
-  
-	 -- все участники для подсчёта
-	 LEFT JOIN group_members gm_all ON gm_all.group_id = g.id
-  
-	 -- чеки
-	 LEFT JOIN checks c ON c.group_id = g.id
-  
-	 WHERE ${whereCondition}
-	 ${searchCondition}
-  
-	 GROUP BY g.id
-  
-	 ORDER BY ${sortColumn} ${sortOrder}
-	 LIMIT ${limit}
-	 OFFSET ${offset}
-  `;
+         SELECT
+            g.id,
+            g.title,
+            g.description,
+            g.icon_url,
+        
+            json_build_object(
+              'id', creator.id,
+              'username', creator.username,
+              'full_name', creator.full_name,
+              'avatar_url', creator.avatar_url
+            ) AS created_by,
+        
+            g.created_at,
+            g.updated_at,
+        
+            gm.role AS current_user_role,
+				gm.status AS current_user_status,
+        
+            COUNT(DISTINCT gm_all.profile_id)::int AS members_count,
+            COUNT(DISTINCT c.id)::int AS checks_count,
+        
+            ARRAY(
+              SELECT p.avatar_url
+              FROM (
+                SELECT g.created_by AS profile_id, 0 AS sort_order, g.created_at
+        
+                UNION ALL
+        
+                SELECT gm2.profile_id, 1 AS sort_order, gm2.joined_at
+                FROM group_members gm2
+                WHERE gm2.group_id = g.id
+                  AND gm2.profile_id != g.created_by
+              ) AS members
+              LEFT JOIN profiles p ON p.id = members.profile_id
+              ORDER BY members.sort_order ASC, members.created_at ASC
+              LIMIT 3
+            ) AS avatars
+        
+         FROM groups g
+        
+         JOIN group_members gm 
+           ON gm.group_id = g.id
+          AND gm.profile_id = ${currentUserId}
+        
+         LEFT JOIN group_members gm_all ON gm_all.group_id = g.id
+         LEFT JOIN checks c ON c.group_id = g.id
+         LEFT JOIN profiles creator ON creator.id = g.created_by
+        
+         WHERE ${whereCondition}
+         ${searchCondition}
+        
+         GROUP BY g.id, creator.id, gm.role, gm.status
+        
+         ORDER BY ${sortColumn} ${sortOrder}
+         LIMIT ${limit}
+         OFFSET ${offset}
+        `;
 
     return {
       groups: groups,
@@ -157,14 +164,17 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
         p.id,
         p.username,
         p.avatar_url,
-		  p.full_name
+		  p.full_name,
+		  gm.role,
+		  gm.status,
+		  gm.invited_by
       FROM group_members gm
       JOIN profiles p ON p.id = gm.profile_id
       WHERE gm.group_id = ${groupId}
         AND gm.role != 'blocked'
     `) as GroupMemberCardQuery[];
 
-	 const checksByUser = (await sql`
+    const checksByUser = (await sql`
 		SELECT
 		  c.id,
 		  c.title,

@@ -44,7 +44,7 @@ export default async function GroupPage({ id }: { id: string }) {
         </Link>
       </div>
 
-      <GroupDetails groupData={groupDetails} />
+      <GroupDetails currentUserId={session.user.id} groupData={groupDetails} />
     </>
   );
 }

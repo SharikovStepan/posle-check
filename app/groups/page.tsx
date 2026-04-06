@@ -97,7 +97,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
 
         <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center">
           <Suspense fallback={<GroupsListSkeleton count={5} />}>
-            <GroupsList options={options} />
+            <GroupsList currentUserId={session.user.id} options={options} />
           </Suspense>
         </section>
       </main>
