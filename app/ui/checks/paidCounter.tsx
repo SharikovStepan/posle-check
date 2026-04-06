@@ -4,7 +4,7 @@ export default function PaidCounter({ paid, total, isPending = false }: { isPend
 
   const isAllPaied = paid == total;
 
-  const mainClassNames = "text-sm";
+  const mainClassNames = "text-xs md:text-sm text-nowrap";
 
   return (
     <>

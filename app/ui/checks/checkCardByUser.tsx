@@ -33,12 +33,12 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
             )}
           </div>
 
-          <div className="flex flex-col justify-center items-start">
+          <div className="flex flex-col justify-between items-start">
             <h3 className="text-text-primary text-xl font-medium">{checkData.title}</h3>
             <p className="text-text-tertiary text-sm">{formattedDate}</p>
           </div>
 
-          <div className="flex flex-col justify-center items-end">
+          <div className="flex flex-col justify-between items-end">
             <div className="flex gap-1 justify-center items-center text-xl font-bold tracking-wide">
               <p className="text-text-primary self-end justify-self-end">{formatAmount}</p>
               <p className="text-text-primary">₽</p>

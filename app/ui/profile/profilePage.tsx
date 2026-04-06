@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import ProfileCard from "./profileCard";
 
 export default function ProfilePage() {
   const session = useSession();
@@ -9,7 +10,9 @@ export default function ProfilePage() {
   return (
     <>
       <div className="flex flex-col gap-2 justify-center items-center">
-        <h3 className="text-text-primary text-lg">Позже здесь будет страница профиля</h3>
+        <ProfileCard name={session.data?.user.name || "noname"} avatar_url={session.data?.user.image || ""} />
+
+        <h3 className="text-text-primary text-lg text-center">Позже здесь будет страница профиля</h3>
         <p className="text-text-tertiary/80 text-sm">А пока можно сменить тему </p>
       </div>
     </>

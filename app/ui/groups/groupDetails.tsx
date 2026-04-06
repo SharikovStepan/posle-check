@@ -3,6 +3,7 @@
 import { FilterButton } from "@/app/lib/types/types.filters";
 import { Group, GroupPageTabs } from "@/app/lib/types/types.groups";
 import { useState } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import TabChangeButton from "../tabChangeButtons";
 import GroupdMember from "./GroupMemberCard";
 import CheckByUserCard from "../checks/checkCardByUser";
@@ -15,12 +16,27 @@ const tabs: FilterButton<GroupPageTabs>[] = [
 ];
 
 export default function GroupDetails({ groupData }: { groupData: Group }) {
-  const [tab, setTab] = useState<GroupPageTabs>("checksByUser");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [tab, setTab] = useState<GroupPageTabs>(() => {
+    const tabParam = searchParams.get("tab") as GroupPageTabs;
+    return tabParam && tabs.some((t) => t.filterType === tabParam) ? tabParam : "checksByUser";
+  });
+
+  const changeTab = (newTab: GroupPageTabs) => {
+    setTab(newTab);
+
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", newTab);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <>
       <div className="flex w-full bg-surface rounded-2xl h-8">
-        <TabChangeButton tabs={tabs} currentTab={tab} changeTab={setTab} />
+        <TabChangeButton tabs={tabs} currentTab={tab} changeTab={changeTab} />
       </div>
 
       <div className="flex flex-col gap-3">

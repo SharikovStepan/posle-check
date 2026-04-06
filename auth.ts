@@ -4,8 +4,24 @@ import Yandex from "next-auth/providers/yandex";
 import { authConfig } from "./auth.config";
 import postgres from "postgres";
 import { Profile } from "./app/lib/types/types.user";
+import Credentials from "next-auth/providers/credentials";
+import { z } from "zod";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
+
+async function getUserById(id: string): Promise<Profile | undefined> {
+  try {
+    const user = await sql<Profile[]>`SELECT * FROM profiles WHERE id = ${id}::uuid`;
+    return user[0];
+  } catch (error) {
+    console.error("Failed to fetch user by ID:", error);
+    return undefined;
+  }
+}
+
+// const isDevOrPreview = process.env.VERCEL_ENV === "development" || process.env.VERCEL_ENV === "preview";
+const isProduction = process.env.VERCEL_ENV === "production";
+const isDevLogin = process.env.DEV_LOGIN === "true";
 
 export async function getUser(email: string): Promise<Profile | undefined> {
   try {
@@ -116,9 +132,55 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       clientId: process.env.AUTH_YANDEX_ID,
       clientSecret: process.env.AUTH_YANDEX_SECRET,
     }),
+    ...(isDevLogin && !isProduction
+      ? [
+          Credentials({
+            id: "dev-uuid",
+            name: "Dev UUID Login",
+            credentials: {
+              userId: { label: "User UUID", type: "text", placeholder: "Enter user UUID" },
+            },
+            async authorize(credentials) {
+              if (!isDevLogin && isProduction) {
+                throw new Error("This provider is only available in development");
+              }
+
+              const parsedCredentials = z.object({ userId: z.string().uuid() }).safeParse(credentials);
+
+              if (!parsedCredentials.success) {
+                console.error("Invalid UUID format");
+                return null;
+              }
+
+              const { userId } = parsedCredentials.data;
+
+              // Ищем пользователя в БД
+              const user = await getUserById(userId);
+
+              if (!user) {
+                console.error("User not found with UUID:", userId);
+                return null;
+              }
+
+              // Возвращаем объект пользователя для сессии
+              return {
+                id: user.id,
+                email: user.email,
+                name: user.username,
+                image: user.avatar_url,
+              };
+            },
+          }),
+        ]
+      : []),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
+      if (account?.provider === "dev-uuid" && isDevLogin && !isProduction) {
+        console.log("🔧 Dev UUID login - skipping DB check");
+        return true;
+      }
+
       try {
         console.log("user", user);
         console.log("account", account);
