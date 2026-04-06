@@ -11,7 +11,7 @@ export interface Friendship {
 }
 
 export interface GetFriendsOptions {
-  currentUserId?: string;
+  currentUserId: string;
   filter?: FriendsListType;
 
   search?: string;

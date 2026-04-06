@@ -50,6 +50,7 @@ export default function SearchMembersList({ options, initialData, choosedMembers
 
         const params = new URLSearchParams();
 
+
         params.set("filter", options.filter || "friends");
 
         if (options.search) {

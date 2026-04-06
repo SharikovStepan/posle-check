@@ -39,6 +39,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
   const friendsListOptions = useMemo<GetFriendsOptions>(
     () => ({
+		currentUserId:'Добавили поле для TS, но в API оно берется из session',
       filter: "friends",
       search: searchQuery,
       sortBy: sortByState,
