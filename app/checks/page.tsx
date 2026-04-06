@@ -1,4 +1,9 @@
 import PageHeader from "../ui/pageHeader";
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+	title: 'Чеки',
+ };
+
 
 export default function Page() {
   return (

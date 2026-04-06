@@ -15,6 +15,12 @@ import { ParticipantsProvider } from "@/app/ui/checks/participantsProvider";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+	title: 'Создать чек',
+ };
+
+
 export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   const session = await auth();

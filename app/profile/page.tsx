@@ -4,6 +4,11 @@ import PageHeader from "../ui/pageHeader";
 import ProfilePage from "../ui/profile/profilePage";
 import ThemeToggle from "../ui/themeToggle";
 
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Профиль",
+};
+
 export default function Page() {
   return (
     <>

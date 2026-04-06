@@ -5,7 +5,11 @@ import PageHeader from "@/app/ui/pageHeader";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Suspense } from "react";
-// import { usePathname } from "next/navigation";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+	title: 'Группа',
+ };
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;

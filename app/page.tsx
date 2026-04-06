@@ -3,6 +3,11 @@ import ButtonToCreate from "./ui/buttonToCreate";
 import PageHeader from "./ui/pageHeader";
 import Link from "next/link";
 
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Добро пожаловать",
+};
+
 export default async function Home() {
   return (
     <>
