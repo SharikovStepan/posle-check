@@ -467,7 +467,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
           </div>
         </div>
 
-        <div ref={tabsRef} className={`flex w-full h-8 bg-bg-secondary rounded-2xl lg:hidden`}>
+        <div ref={tabsRef} className={`flex w-full h-8 bg-bg-secondary rounded-lg lg:hidden`}>
           <TabButtonsUI tabs={tabs} currentTab={tabType} onTabChange={setTabType} />
         </div>
 

@@ -32,7 +32,7 @@ const friendsFilters: TabButtons<GroupListTabs>[] = [
   // { filterType: 'created_by_others', text: "Не мною", icon: PencilSquareIcon },
 ];
 
-export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
+export default function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
   return (
     <>
       <main className="main-div">
