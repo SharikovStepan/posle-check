@@ -5,6 +5,7 @@ import { CheckDetailsByUserType, SendPaymentType } from "@/app/lib/types/types.c
 import { UserCircleIcon } from "@heroicons/react/16/solid";
 import { useActionState, useEffect, useRef, useState } from "react";
 import Spinner from "../spinner";
+import ToggleParticipatingButton from "./toggleParticipatingButton";
 
 export default function CheckDetailsToUser({ checkData }: { checkData: CheckDetailsByUserType }) {
   const userData = checkData.participants[0];
@@ -46,17 +47,6 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
 
   const handleChangeAmount = (currentAmount: number) => {
     setPaymentAmount(currentAmount);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (paymentAmount == 0) {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-      setShowError(true);
-      return;
-    }
   };
 
   return (
@@ -156,6 +146,13 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
             <input type="hidden" name="checkId" value={checkData.id} />
           </form>
         </div>
+
+        {/* {userData.payments} */}
+        {/* <div className="w-full p-4 bg-bg-secondary mt-20 flex justify-center items-center rounded-md">
+          <ToggleParticipatingButton className="cursor-pointer px-2 py-0.5 bg-error/80 text-text-secondary min-w-30" checkId={checkData.id} memberId={userData.id} participating={"false"}>
+            Не участвовал в чеке
+          </ToggleParticipatingButton>
+        </div> */}
       </main>
     </>
   );

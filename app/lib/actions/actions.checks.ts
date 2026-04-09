@@ -320,3 +320,28 @@ export async function confirmPayment(prevState: ConfirmPaymentType, formData: Fo
     throw error;
   }
 }
+
+export type SelfCheckParticipatingType = {
+  success?: boolean;
+  error?: string;
+};
+
+export async function changeSelfCheckParticipating(prevState: SelfCheckParticipatingType, formData: FormData): Promise<SelfCheckParticipatingType> {
+  const session = await auth();
+
+  const currentUserId = session?.user?.id;
+
+  if (!currentUserId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const checkId = formData.get("checkId") as string;
+  const memberId = formData.get("memberId") as string;
+  const action = formData.get("participating") as "true" | "false";
+
+  console.log("checkId", checkId);
+  console.log("memberId", memberId);
+  console.log("action", action);
+
+  return prevState;
+}
