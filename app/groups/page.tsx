@@ -51,14 +51,20 @@ export default function Page(props: { searchParams?: Promise<{ query?: string; f
 
         <div className="control-div flex flex-col gap-2">
           <div className="w-full h-10">
-            <Search placeholder={`Введите название...`} />
+            <Suspense fallback={"load"}>
+              <Search placeholder={`Введите название...`} />
+            </Suspense>
           </div>
 
           <>
             <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
-              <FilterButtons filters={friendsFilters} />
+              <Suspense fallback={"load"}>
+                <FilterButtons filters={friendsFilters} />
+              </Suspense>
             </div>
-            <OrderSettings />
+            <Suspense fallback={"load"}>
+              <OrderSettings />
+            </Suspense>
           </>
         </div>
 
