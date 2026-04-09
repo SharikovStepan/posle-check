@@ -1,13 +1,13 @@
 import UserCard from "./userCard";
 import EmptyNotification from "./emptyNotification";
 import { User } from "@/app/lib/types/types.user";
-import { FriendsListType } from "@/app/lib/types/types.filters";
+import { FriendsListTabs } from "@/app/lib/types/types.filters";
 import { getFriendsList } from "@/app/lib/data/data.friendship";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
 import Pagination from "../paginaton";
 import FriendListSkeleton from "@/app/lib/fallbacks/friendsListSkeleton";
 
-export default async function FriendList({ options, filterType }: { options: GetFriendsOptions; filterType: FriendsListType }) {
+export default async function FriendList({ options, filterType }: { options: GetFriendsOptions; filterType: FriendsListTabs }) {
   const friendsListResult: FriendsListResult = await getFriendsList(options);
 
   return (

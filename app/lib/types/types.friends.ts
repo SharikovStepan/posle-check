@@ -1,4 +1,4 @@
-import { FriendsListType, SortBy, SortOrder } from "./types.filters";
+import { FriendsListTabs, SortBy, SortOrder } from "./types.filters";
 import { User } from "./types.user";
 
 export type FriendshipUiStatus = "friendly" | "pending" | "awaiting_confirm" | "none" | "declined" | "youDecline";
@@ -12,7 +12,7 @@ export interface Friendship {
 
 export interface GetFriendsOptions {
   currentUserId: string;
-  filter?: FriendsListType;
+  filter?: FriendsListTabs;
 
   search?: string;
 

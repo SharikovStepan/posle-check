@@ -1,5 +1,5 @@
 import { CheckByUserCardType, CheckToUserCardType } from "./types.checks";
-import { GroupListType } from "./types.filters";
+import { GroupListTabs } from "./types.filters";
 import { User } from "./types.user";
 
 export type GroupCardType = {
@@ -39,7 +39,7 @@ export interface GroupListResult {
 
 export type GetGroupsOptions = {
   currentUserId: string;
-  filter?: GroupListType;
+  filter?: GroupListTabs;
   search?: string;
   sortBy?: "date" | "name";
   order?: "asc" | "desc";

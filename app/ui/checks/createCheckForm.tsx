@@ -1,24 +1,23 @@
 "use client";
 
-import { PROFILE_UUID } from "@/app/lib/placeholders-data";
-import { useActionState, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Spinner from "../spinner";
 import ToggleButton from "../toggleButton";
-import Search from "../searchNavigation";
-import { CreateCheckActionData, CreateCheckPageTabs, CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
-import { FilterButton } from "@/app/lib/types/types.filters";
-import TabChangeButton from "../tabChangeButtons";
+import { CreateCheckActionData, CreateCheckPageTabs } from "@/app/lib/types/types.checks";
+import { TabButtons } from "@/app/lib/types/types.filters";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
-import { isAllAdded, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue, maxPossibleCreatorValue, sumParticipantsAmount } from "./utils";
+import { isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue } from "./utils";
 import { createCheckAction } from "@/app/lib/actions/actions.checks";
 import ErrorPop from "../error-pop";
 import ConfirmCreate from "./confirmCreate";
+import SearchUI from "../searchUI";
+import TabButtonsUI from "../tabButtonsUI";
 
-const tabs: FilterButton<CreateCheckPageTabs>[] = [
-  { filterType: "members", text: "Участники" },
-  { filterType: "amounts", text: "Суммы" },
+const tabs: TabButtons<CreateCheckPageTabs>[] = [
+  { tabType: "members", text: "Участники" },
+  { tabType: "amounts", text: "Суммы" },
 ];
 
 type LocalErrors = {
@@ -238,7 +237,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
           inline: "nearest",
         });
       } else if (tabsRef.current) {
-
         tabsRef.current.scrollIntoView({
           behavior: "smooth",
           block: "start", // 'start', 'center', 'end', 'nearest'
@@ -252,7 +250,6 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         setLocalErrors({});
       }, 3000);
     }
-
 
     return () => {
       if (showErrorTmr.current) {
@@ -471,7 +468,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         </div>
 
         <div ref={tabsRef} className={`flex w-full h-8 bg-bg-secondary rounded-2xl lg:hidden`}>
-          <TabChangeButton tabs={tabs} currentTab={tabType} changeTab={setTabType} />
+          <TabButtonsUI tabs={tabs} currentTab={tabType} onTabChange={setTabType} />
         </div>
 
         <span className="block w-full bg-surface mt-6 h-0.5 "></span>
@@ -482,7 +479,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
         <p className="text-xl">Участники</p>
         <div className="h-10">
-          <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
+          <SearchUI onSearchChange={onSearchChange} placeholder="Поиск.. " searchText={searchQuery} />
         </div>
         <MembersList searchQuery={searchQuery} />
       </div>

@@ -4,7 +4,6 @@ import { TabButtons } from "@/app/lib/types/types.filters";
 import { Group, GroupPageTabs } from "@/app/lib/types/types.groups";
 import { useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import TabChangeButton from "../tabChangeButtons";
 import GroupdMember from "./GroupMemberCard";
 import CheckByUserCard from "../checks/checkCardByUser";
 import CheckToUserCard from "../checks/checkCardToUser";

@@ -1,7 +1,7 @@
 import postgres from "postgres";
 import { dbUserRow, User } from "../types/types.user";
 import { Friendship, FriendshipUiStatus, FriendsListResult, GetFriendsOptions } from "../types/types.friends";
-import { FriendsListType } from "../types/types.filters";
+import { FriendsListTabs } from "../types/types.filters";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -109,7 +109,7 @@ function getFriendshipUiStatusByFriendship(friendship: Friendship | null, curren
   return friendshipStatus;
 }
 
-function getFriendshipUiStatusByQueryStatus(queryStatus: FriendsListType, userFriendshipStatus: string): FriendshipUiStatus {
+function getFriendshipUiStatusByQueryStatus(queryStatus: FriendsListTabs, userFriendshipStatus: string): FriendshipUiStatus {
   if (queryStatus == "friends") return "friendly";
 
   if (queryStatus == "outgoing") {
