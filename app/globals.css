@@ -11,6 +11,8 @@
   --color-text-secondary: #1f1f1f;
 
   --color-bg-tertiary: #d6d6d6;
+  --color-bg-tertiary-off: #d6d6d600;
+
   --color-text-tertiary: #3d3d3d;
 
   --color-text-inverted: #ebebeb;
@@ -50,6 +52,8 @@ html.dark {
   --color-text-secondary: #e0e0e0;
 
   --color-bg-tertiary: #292929;
+  --color-bg-tertiary-off: #29292900;
+
   --color-text-tertiary: #c2c2c2;
 
   --color-text-inverted: #292929;

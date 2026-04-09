@@ -2,20 +2,22 @@
 
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMembersContext } from "./membersProvider";
-import Search from "../search";
+import Search from "../searchNavigation";
 import OrderSettings from "../orderSettings";
 import AddedMembersList from "./addedMembersList";
 import SearchMembersList from "./searchMembersList";
 import { FriendsListResult, GetFriendsOptions } from "@/app/lib/types/types.friends";
-import { FilterButton, SortBy, SortOrder } from "@/app/lib/types/types.filters";
+import { SortBy, SortOrder, TabButtons } from "@/app/lib/types/types.filters";
 import { createGroupAction, CreateGroupState } from "@/app/lib/actions/actions.groups";
 import Spinner from "../spinner";
-import TabChangeButton from "../tabChangeButtons";
 import { CreateGroupPageTabs } from "@/app/lib/types/types.groups";
+import OrderSettingsUI from "../orderSettingsUI";
+import SearchUI from "../searchUI";
+import TabButtonsUI from "../tabButtonsUI";
 
-const tabs: FilterButton<CreateGroupPageTabs>[] = [
-  { filterType: "friends", text: "Друзья" },
-  { filterType: "members", text: "Добавленные" },
+const tabs: TabButtons<CreateGroupPageTabs>[] = [
+  { tabType: "friends", text: "Друзья" },
+  { tabType: "members", text: "Добавленные" },
 ];
 
 export default function CreateGroupForm({ initialFriendsData, children }: { initialFriendsData: FriendsListResult; children?: React.ReactNode }) {
@@ -34,18 +36,18 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   const inputNameRef = useRef<HTMLInputElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortByState, setSortByState] = useState<SortBy>("date");
-  const [orderState, setOrderState] = useState<SortOrder>("asc");
+  const [sortBy, setSortBy] = useState<SortBy>("date");
+  const [order, setOrder] = useState<SortOrder>("asc");
 
   const friendsListOptions = useMemo<GetFriendsOptions>(
     () => ({
       currentUserId: "Добавили поле для TS, но в API оно берется из session",
       filter: "friends",
       search: searchQuery,
-      sortBy: sortByState,
-      order: orderState,
+      sortBy: sortBy,
+      order: order,
     }),
-    [searchQuery, sortByState, orderState]
+    [searchQuery, sortBy, order]
   );
 
   const onSearchChange = useCallback((query: string) => {
@@ -53,8 +55,8 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   }, []);
 
   const onOrderChange = useCallback((sortBy: SortBy, order: SortOrder) => {
-    setSortByState(sortBy);
-    setOrderState(order);
+    //  setSortByState(sortBy);
+    //  setOrderState(order);
   }, []);
 
   useEffect(() => {
@@ -140,15 +142,15 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
         </div>
 
         <div className={`lg:hidden grid grid-cols-[1fr_1fr] bg-surface h-8 rounded-xl `}>
-          <TabChangeButton currentTab={tabType} changeTab={setTabType} tabs={tabs} />
+          <TabButtonsUI tabs={tabs} currentTab={tabType} onTabChange={setTabType} />
         </div>
 
         <div className={`${tabType == "friends" ? "block" : "hidden"} lg:block lg:col-[1/2] row-[2/3]`}>
           <div className="control-div flex flex-col gap-3 mb-6">
             <div className="h-10">
-              <Search mode="state" onSearchChange={onSearchChange} placeholder="Поиск.. " />
+              <SearchUI placeholder="Поиск.. " searchText={searchQuery} onSearchChange={setSearchQuery} />
             </div>
-            <OrderSettings mode="state" onOrderChange={onOrderChange} />
+            <OrderSettingsUI sortBy={sortBy} sortOrder={order} onOrderChange={setOrder} onSortByChange={setSortBy} />
           </div>
           <SearchMembersList choosedMembers={membersContex.state} initialData={initialFriendsData} options={friendsListOptions} />
         </div>

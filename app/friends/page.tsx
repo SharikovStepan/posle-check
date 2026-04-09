@@ -1,10 +1,9 @@
 import FriendList from "../ui/friends/friendList";
 import PageHeader from "../ui/pageHeader";
-import Search from "../ui/search";
+import Search from "../ui/searchNavigation";
 import OrderSettings from "../ui/orderSettings";
-import { FilterButton, FriendsListType, SortBy, SortOrder } from "../lib/types/types.filters";
+import { FriendsListTabs, SortBy, SortOrder, TabButtons } from "../lib/types/types.filters";
 import { GetFriendsOptions } from "../lib/types/types.friends";
-import FilterButtons from "../ui/filterButtons";
 
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import ToggleFilterButton from "../ui/friends/toggleFilterButton";
@@ -16,6 +15,8 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 import { Metadata } from "next";
+import TabButtonsNavigation from "../ui/tabButtonsNavigation";
+import SearchNavigation from "../ui/searchNavigation";
 export const metadata: Metadata = {
   title: "Друзья",
 };
@@ -34,13 +35,13 @@ const ArrowDownRightIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" 
 </svg>
 `;
 
-const friendsFilters: FilterButton<FriendsListType>[] = [
-  { filterType: "friends", text: "Все", icon: UsersIcon },
-  { filterType: "incoming", text: "Заявки", icon: ArrowUpLeftIcon },
-  { filterType: "outgoing", text: "Ваши запросы", icon: ArrowDownRightIcon },
+const friendsTabs: TabButtons<FriendsListTabs>[] = [
+  { tabType: "friends", text: "Все", icon: UsersIcon },
+  { tabType: "incoming", text: "Заявки", icon: ArrowUpLeftIcon },
+  { tabType: "outgoing", text: "Ваши запросы", icon: ArrowDownRightIcon },
 ];
 
-export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: FriendsListType | "search"; sortBy?: string; order?: string; page?: string }> }) {
+export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: FriendsListTabs | "search"; sortBy?: string; order?: string; page?: string }> }) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -50,7 +51,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
   const searchParams = await props.searchParams;
 
   const query = searchParams?.query || "";
-  const filterType = searchParams?.filter || "friends";
+  const tabType = searchParams?.filter || "friends";
   const currentPage = Number(searchParams?.page) || 1;
 
   const order: SortOrder = (searchParams?.order as SortOrder) || null;
@@ -58,7 +59,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
 
   const options: GetFriendsOptions = {
     currentUserId: session.user.id,
-    filter: filterType !== "search" ? filterType : "friends",
+    filter: tabType !== "search" ? tabType : "friends",
     currentPage: currentPage,
     search: query,
   };
@@ -85,20 +86,20 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
               classNames1={"text-text-primary bg-surface w-fit px-2 h-10 rounded-lg hover:bg-surface-hover hover:text-text-secondary"}
               filterValue2={"friends"}
               classNames2={"text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary"}>
-              {filterType == "search" ? <p className="">Выйти из поиска</p> : <UserPlusIcon className=" w-8 h-8" />}
+              {tabType == "search" ? <p className="">Выйти из поиска</p> : <UserPlusIcon className=" w-8 h-8" />}
             </ToggleFilterButton>
           </div>
         </div>
 
         <div className="control-div flex flex-col gap-2">
           <div className="w-full h-10">
-            <Search placeholder={`${filterType == "search" ? "Введите полный email..." : "Найти друга..."}`} />
+            <SearchNavigation placeholder={`${tabType == "search" ? "Введите полный email..." : "Найти друга..."}`} />
           </div>
 
-          {filterType !== "search" && (
+          {tabType !== "search" && (
             <>
-              <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
-                <FilterButtons filters={friendsFilters} />
+              <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between">
+                <TabButtonsNavigation tabs={friendsTabs} />
               </div>
               <OrderSettings />
             </>
@@ -106,13 +107,13 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
         </div>
 
         <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center">
-          {filterType == "search" ? (
+          {tabType == "search" ? (
             <Suspense key={query} fallback={<SeachLoading />}>
               <SearchedNewFriend query={query} />
             </Suspense>
           ) : (
             <Suspense key={options.filter} fallback={<FriendListSkeleton count={5} />}>
-              <FriendList filterType={filterType} options={options} />
+              <FriendList filterType={tabType} options={options} />
             </Suspense>
           )}
         </section>

@@ -2,11 +2,11 @@ import { getGroupsList } from "@/app/lib/data/data.groups";
 import { GetGroupsOptions, GroupListResult } from "@/app/lib/types/types.groups";
 import GroupCard from "./groupCard";
 import InviteGroupCard from "./inviteGroupCard";
-import { GroupListType, SortBy, SortOrder } from "@/app/lib/types/types.filters";
+import { GroupListTabs, SortBy, SortOrder } from "@/app/lib/types/types.filters";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export default async function GroupsList({ searchParamsPromise }: { searchParamsPromise?: Promise<{ query?: string; filter: GroupListType; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
+export default async function GroupsList({ searchParamsPromise }: { searchParamsPromise?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -16,7 +16,7 @@ export default async function GroupsList({ searchParamsPromise }: { searchParams
   const searchParams = await searchParamsPromise;
 
   const query = searchParams?.query || "";
-  const filterType = searchParams?.filter || "all";
+  const tabType = searchParams?.filter || "all";
   const currentPage = Number(searchParams?.page) || 1;
 
   const order: SortOrder = (searchParams?.order as SortOrder) || null;
@@ -24,7 +24,7 @@ export default async function GroupsList({ searchParamsPromise }: { searchParams
 
   const options: GetGroupsOptions = {
     currentUserId: session.user.id,
-    filter: filterType,
+    filter: tabType,
     currentPage: currentPage,
     search: query,
   };

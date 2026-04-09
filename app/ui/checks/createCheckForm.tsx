@@ -4,7 +4,7 @@ import { PROFILE_UUID } from "@/app/lib/placeholders-data";
 import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import Spinner from "../spinner";
 import ToggleButton from "../toggleButton";
-import Search from "../search";
+import Search from "../searchNavigation";
 import { CreateCheckActionData, CreateCheckPageTabs, CreateCheckParticipantsCardsType } from "@/app/lib/types/types.checks";
 import { FilterButton } from "@/app/lib/types/types.filters";
 import TabChangeButton from "../tabChangeButtons";

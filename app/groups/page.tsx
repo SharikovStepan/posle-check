@@ -1,18 +1,16 @@
 import Link from "next/link";
 import PageHeader from "../ui/pageHeader";
-import { FilterButton, GroupListType, SortBy, SortOrder } from "../lib/types/types.filters";
-import { GetGroupsOptions } from "../lib/types/types.groups";
+import { GroupListTabs, SortBy, SortOrder, TabButtons } from "../lib/types/types.filters";
 import { Suspense } from "react";
-import Search from "../ui/search";
-import OrderSettings from "../ui/orderSettings";
-import GroupsList from "../ui/groups/groupsList";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import GroupsListSkeleton from "../lib/fallbacks/groupsListSkeleton";
-import FilterButtons from "../ui/filterButtons";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { GroupsListData } from "../ui/groups/groupsListData";
+import OrderSettingsNavigation from "../ui/orderSettingsNavigation";
+import SearchNavigation from "../ui/searchNavigation";
+import TabButtonsNavigation from "../ui/tabButtonsNavigation";
+import SearchSkeleton from "../lib/fallbacks/searchSkeleton";
+import OrderSettingsSkeleton from "../lib/fallbacks/orderSkeleton";
 
 export const metadata: Metadata = {
   title: "Группы",
@@ -28,13 +26,13 @@ const PencilSquareIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" vi
 </svg>
 `;
 
-const friendsFilters: FilterButton<GroupListType>[] = [
-  { filterType: "all", text: "Все", icon: UserGroupIcon },
-  { filterType: "created_by_me", text: "Созданные мною", icon: PencilSquareIcon },
+const friendsFilters: TabButtons<GroupListTabs>[] = [
+  { tabType: "all", text: "Все", icon: UserGroupIcon },
+  { tabType: "created_by_me", text: "Созданные мною", icon: PencilSquareIcon },
   // { filterType: 'created_by_others', text: "Не мною", icon: PencilSquareIcon },
 ];
 
-export default function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListType; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
+export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
   return (
     <>
       <main className="main-div">
@@ -52,19 +50,19 @@ export default function Page(props: { searchParams?: Promise<{ query?: string; f
 
         <div className="control-div flex flex-col gap-2">
           <div className="w-full h-10">
-            <Suspense fallback={"load"}>
-              {/* <Search placeholder={`Введите название...`} /> */}
+            <Suspense fallback={<SearchSkeleton />}>
+              <SearchNavigation placeholder={`Введите название...`} />
             </Suspense>
           </div>
 
           <>
             <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
-              <Suspense fallback={"load"}>
-                {/* <FilterButtons filters={friendsFilters} /> */}
+              <Suspense fallback={<div className="shimmer w-full h-full"></div>}>
+                <TabButtonsNavigation tabs={friendsFilters} />
               </Suspense>
             </div>
-            <Suspense fallback={"load"}>
-              {/* <OrderSettings /> */}
+            <Suspense fallback={<OrderSettingsSkeleton />}>
+              <OrderSettingsNavigation />
             </Suspense>
           </>
         </div>
