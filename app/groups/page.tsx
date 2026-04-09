@@ -12,6 +12,7 @@ import FilterButtons from "../ui/filterButtons";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { GroupsListData } from "../ui/groups/groupsListData";
 
 export const metadata: Metadata = {
   title: "Группы",
@@ -52,25 +53,25 @@ export default function Page(props: { searchParams?: Promise<{ query?: string; f
         <div className="control-div flex flex-col gap-2">
           <div className="w-full h-10">
             <Suspense fallback={"load"}>
-              <Search placeholder={`Введите название...`} />
+              {/* <Search placeholder={`Введите название...`} /> */}
             </Suspense>
           </div>
 
           <>
             <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
               <Suspense fallback={"load"}>
-                <FilterButtons filters={friendsFilters} />
+                {/* <FilterButtons filters={friendsFilters} /> */}
               </Suspense>
             </div>
             <Suspense fallback={"load"}>
-              <OrderSettings />
+              {/* <OrderSettings /> */}
             </Suspense>
           </>
         </div>
 
         <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center">
           <Suspense fallback={<GroupsListSkeleton count={5} />}>
-            <GroupsList searchParamsPromise={props.searchParams} />
+            <GroupsListData searchParamsPromise={props.searchParams} />
           </Suspense>
         </section>
       </main>
