@@ -40,7 +40,7 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
             <p className="text-text-tertiary text-xs md:text-sm">{formattedDate}</p>
           </div>
 
-          <div className="grid grid-rows-[1fr_auto] justify-items-end items-center">
+          <div className="grid grid-rows-[1fr_auto] justify-items-end items-center gap-y-1">
             {checkData.payment_status != "confirmed" && (checkData.share_amount || checkData.payment_amount) ? (
               <div className="flex gap-1 justify-center items-center text-xl font-bold tracking-wide">
                 <p className="text-text-primary self-end justify-self-end">{checkData.share_amount || checkData.payment_amount}</p>
@@ -50,24 +50,53 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
               ""
             )}
 
-            <div className={`text-xs md:text-sm text-nowrap ${checkData.payment_status == "confirmed" || !checkData.participated ? "row-[1/3]" : "row-[2/3]"}`}>
-              {!checkData.participated ? (
-                <p className="text-text-tertiary">Не участвовал</p>
-              ) : checkData.payment_status == "unpaid" ? (
-                <p className="text-warning">Не оплачен</p>
-              ) : checkData.payment_status == "pending" ? (
-                <p className="text-warning">Подтверждается</p>
-              ) : checkData.payment_status == "declined" ? (
-                <p className="text-error">Платёж отклонен</p>
-              ) : (
-                <p className="text-success text-lg">Оплачен</p>
-              )}
+            <div className={`${checkData.payment_status == "confirmed" || !checkData.participated || !checkData.share_amount ? "row-[1/3]" : "row-[2/3]"}`}>
+              <PayStatusView status={checkData.payment_status} participated={checkData.participated} />
             </div>
           </div>
 
           {/* <ProgressBar current={checkData.paid_participants_count} total={checkData.participants_count} /> */}
         </div>
       </Link>
+    </>
+  );
+}
+
+export function PayStatusView({ status, participated }: { status: "confirmed" | "pending" | "declined" | "unpaid"; participated: boolean }) {
+  let text: string = "не участвовал";
+  let color: string = "var(--color-bg-tetriary)";
+
+  if (participated) {
+    switch (status) {
+      case "confirmed":
+        color = "var(--color-success)";
+        text = "Оплачен";
+        break;
+      case "declined":
+        color = "var(--color-error)";
+        text = "Платёж отклонен";
+        break;
+      case "pending":
+        color = "var(--color-warning)";
+        text = "Подтверждается";
+        break;
+      case "unpaid":
+        color = "var(--color-error)";
+        text = "Не оплачен";
+        break;
+      default:
+        break;
+    }
+  }
+
+  return (
+    <>
+      <div className="px-2 py-0.5 w-fit relative flex justify-center items-center">
+        <span style={{ backgroundColor: color }} className="z-0 opacity-10 absolute top-1/2 left-1/2 -translate-1/2 w-full h-full rounded-2xl bg-bg-tertiary"></span>
+        <p style={{ color: color }} className="z-0 text-success text-xs md:text-sm text-nowrap">
+          {text}
+        </p>
+      </div>
     </>
   );
 }

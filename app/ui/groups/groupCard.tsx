@@ -8,8 +8,10 @@ import { UserGroupIcon as UserGroupIconMicro, DocumentCurrencyDollarIcon } from 
 import AvatarsRow from "./avatarsRow";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { PendingDot } from "../checks/paidCounter";
 
 export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
+  console.log("groupData", groupData);
 
   return (
     <>
@@ -44,6 +46,12 @@ export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
               <p className="text-sm">Чеков</p>
             </div>
           </div>
+
+          {groupData.is_new_events && (
+            <div className="relative col-[2/3] row-[3/4] flex justify-end items-center">
+              <PendingDot className="block" />
+            </div>
+          )}
         </article>
       </Link>
     </>

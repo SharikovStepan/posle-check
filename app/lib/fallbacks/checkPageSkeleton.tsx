@@ -15,7 +15,7 @@ export default function CheckPageSkeleton() {
 export function CheckDetailsSkeleton() {
   return (
     <>
-      <div className="header-div h-21 flex justify-between gap-4 items-center mb-2">
+      <div className="header-div md:shrink-0 h-(--header-height) flex justify-between gap-4 items-center mb-2">
         <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </BackButton>

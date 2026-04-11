@@ -21,7 +21,7 @@ export default function AvatarsRow({ avatars, memberCount }: { avatars: (string 
         if (isLast && shouldShowExtra) {
           return (
             <div key={`${"icon"}-${index}`} className={`${baseClasses} bg-surface-hover text-sm font-medium flex justify-center items-center`}>
-              <div className="flex justify-center items-center -translate-0.5">
+              <div className="flex justify-center items-center ">
                 <p className="">+</p>
                 <p>{extraCount + 1}</p>
               </div>

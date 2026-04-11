@@ -15,6 +15,7 @@ export type GroupCardType = {
   members_count: number;
   checks_count: number;
   avatars: (string | null)[];
+  is_new_events: boolean;
 };
 
 export type GroupMemberCard = {

@@ -39,6 +39,7 @@ export default async function GroupsList({ searchParamsPromise }: { searchParams
 
   const groupsData: GroupListResult = await getGroupsList(options);
 
+
   const membered = groupsData.groups.filter((g) => g.current_user_status == "accepted");
   const requests = groupsData.groups.filter((g) => g.current_user_status == "pending");
 

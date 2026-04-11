@@ -4,52 +4,164 @@ import { CheckByUserCardType, CheckToUserCardType } from "../types/types.checks"
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
+// export async function getGroupsList(options: GetGroupsOptions): Promise<GroupListResult> {
+//   const { currentUserId, filter = "all", search, sortBy = "date", order = "desc", limit = 10, currentPage = 1 } = options;
+
+//   try {
+//     let whereCondition;
+
+//     switch (filter) {
+//       case "all":
+//         whereCondition = sql`
+// 			  gm.profile_id = ${currentUserId}
+// 			`;
+//         break;
+
+//       case "created_by_me":
+//         whereCondition = sql`
+// 			  gm.profile_id = ${currentUserId}
+// 			  AND g.created_by = ${currentUserId}
+// 			`;
+//         break;
+
+//       case "created_by_others":
+//         whereCondition = sql`
+// 			  gm.profile_id = ${currentUserId}
+// 			  AND g.created_by != ${currentUserId}
+// 			`;
+//         break;
+
+//       default:
+//         throw new Error("Invalid groups filter");
+//     }
+
+//     const searchCondition = search
+//       ? sql`
+// 			AND LOWER(g.title) LIKE ${"%" + search.toLowerCase() + "%"}
+// 		 `
+//       : sql``;
+
+//     // 1️⃣ COUNT
+//     const [{ count }] = await sql<{ count: number }[]>`
+// 		 SELECT COUNT(DISTINCT g.id)::int as count
+// 		 FROM groups g
+// 		 JOIN group_members gm ON gm.group_id = g.id
+// 		 WHERE ${whereCondition}
+// 		 ${searchCondition}
+// 	  `;
+
+//     const total = count ?? 0;
+//     const totalPages = Math.ceil(total / limit);
+//     const offset = limit * (currentPage - 1);
+
+//     const sortColumn = sortBy === "name" ? sql`g.title` : sql`g.created_at`;
+//     const sortOrder = order === "asc" ? sql`ASC` : sql`DESC`;
+
+//     // 2️⃣ DATA
+//     const groups = await sql<GroupCardType[]>`
+//          SELECT
+//             g.id,
+//             g.title,
+//             g.description,
+//             g.icon_url,
+
+//             json_build_object(
+//               'id', creator.id,
+//               'username', creator.username,
+//               'full_name', creator.full_name,
+//               'avatar_url', creator.avatar_url
+//             ) AS created_by,
+
+//             g.created_at,
+//             g.updated_at,
+
+//             gm.role AS current_user_role,
+// 				gm.status AS current_user_status,
+
+//             COUNT(DISTINCT gm_all.profile_id)::int AS members_count,
+//             COUNT(DISTINCT c.id)::int AS checks_count,
+
+//             ARRAY(
+//               SELECT p.avatar_url
+//               FROM (
+//                 SELECT g.created_by AS profile_id, 0 AS sort_order, g.created_at
+
+//                 UNION ALL
+
+//                 SELECT gm2.profile_id, 1 AS sort_order, gm2.joined_at
+//                 FROM group_members gm2
+//                 WHERE gm2.group_id = g.id
+//                   AND gm2.profile_id != g.created_by
+//               ) AS members
+//               LEFT JOIN profiles p ON p.id = members.profile_id
+//               ORDER BY members.sort_order ASC, members.created_at ASC
+//               LIMIT 3
+//             ) AS avatars
+
+//          FROM groups g
+
+//          JOIN group_members gm
+//            ON gm.group_id = g.id
+//           AND gm.profile_id = ${currentUserId}
+
+//          LEFT JOIN group_members gm_all ON gm_all.group_id = g.id
+//          LEFT JOIN checks c ON c.group_id = g.id
+//          LEFT JOIN profiles creator ON creator.id = g.created_by
+
+//          WHERE ${whereCondition}
+//          ${searchCondition}
+
+//          GROUP BY g.id, creator.id, gm.role, gm.status
+
+//          ORDER BY ${sortColumn} ${sortOrder}
+//          LIMIT ${limit}
+//          OFFSET ${offset}
+//         `;
+
+//     return {
+//       groups: groups,
+//       total,
+//       totalPages,
+//       page: currentPage,
+//     };
+//   } catch (error) {
+//     console.error("Ошибка при получении групп:", error);
+//     throw new Error("Не удалось получить группы");
+//   }
+// }
+
 export async function getGroupsList(options: GetGroupsOptions): Promise<GroupListResult> {
   const { currentUserId, filter = "all", search, sortBy = "date", order = "desc", limit = 10, currentPage = 1 } = options;
-
   try {
     let whereCondition;
-
     switch (filter) {
       case "all":
-        whereCondition = sql`
-			  gm.profile_id = ${currentUserId}
-			`;
+        whereCondition = sql`gm.profile_id = ${currentUserId}`;
         break;
-
       case "created_by_me":
         whereCondition = sql`
 			  gm.profile_id = ${currentUserId}
 			  AND g.created_by = ${currentUserId}
 			`;
         break;
-
       case "created_by_others":
         whereCondition = sql`
 			  gm.profile_id = ${currentUserId}
 			  AND g.created_by != ${currentUserId}
 			`;
         break;
-
       default:
         throw new Error("Invalid groups filter");
     }
-
-    const searchCondition = search
-      ? sql`
-			AND LOWER(g.title) LIKE ${"%" + search.toLowerCase() + "%"}
-		 `
-      : sql``;
+    const searchCondition = search ? sql`AND LOWER(g.title) LIKE ${"%" + search.toLowerCase() + "%"}` : sql``;
 
     // 1️⃣ COUNT
     const [{ count }] = await sql<{ count: number }[]>`
-		 SELECT COUNT(DISTINCT g.id)::int as count
+		 SELECT COUNT(DISTINCT g.id)::int AS count
 		 FROM groups g
-		 JOIN group_members gm ON gm.group_id = g.id
-		 WHERE ${whereCondition}
+		 JOIN group_members gm ON gm.group_id = g.id AND ${whereCondition}
 		 ${searchCondition}
 	  `;
-
     const total = count ?? 0;
     const totalPages = Math.ceil(total / limit);
     const offset = limit * (currentPage - 1);
@@ -57,73 +169,77 @@ export async function getGroupsList(options: GetGroupsOptions): Promise<GroupLis
     const sortColumn = sortBy === "name" ? sql`g.title` : sql`g.created_at`;
     const sortOrder = order === "asc" ? sql`ASC` : sql`DESC`;
 
-    // 2️⃣ DATA
+    // 2️⃣ DATA with isNewEvents
     const groups = await sql<GroupCardType[]>`
-         SELECT
-            g.id,
-            g.title,
-            g.description,
-            g.icon_url,
-        
-            json_build_object(
-              'id', creator.id,
-              'username', creator.username,
-              'full_name', creator.full_name,
-              'avatar_url', creator.avatar_url
-            ) AS created_by,
-        
-            g.created_at,
-            g.updated_at,
-        
-            gm.role AS current_user_role,
-				gm.status AS current_user_status,
-        
-            COUNT(DISTINCT gm_all.profile_id)::int AS members_count,
-            COUNT(DISTINCT c.id)::int AS checks_count,
-        
-            ARRAY(
-              SELECT p.avatar_url
-              FROM (
-                SELECT g.created_by AS profile_id, 0 AS sort_order, g.created_at
-        
-                UNION ALL
-        
-                SELECT gm2.profile_id, 1 AS sort_order, gm2.joined_at
-                FROM group_members gm2
-                WHERE gm2.group_id = g.id
-                  AND gm2.profile_id != g.created_by
-              ) AS members
-              LEFT JOIN profiles p ON p.id = members.profile_id
-              ORDER BY members.sort_order ASC, members.created_at ASC
-              LIMIT 3
-            ) AS avatars
-        
-         FROM groups g
-        
-         JOIN group_members gm 
-           ON gm.group_id = g.id
-          AND gm.profile_id = ${currentUserId}
-        
-         LEFT JOIN group_members gm_all ON gm_all.group_id = g.id
-         LEFT JOIN checks c ON c.group_id = g.id
-         LEFT JOIN profiles creator ON creator.id = g.created_by
-        
-         WHERE ${whereCondition}
-         ${searchCondition}
-        
-         GROUP BY g.id, creator.id, gm.role, gm.status
-        
-         ORDER BY ${sortColumn} ${sortOrder}
-         LIMIT ${limit}
-         OFFSET ${offset}
-        `;
-
-    return {
-      groups: groups,
-      total,
-      totalPages,
-      page: currentPage,
-    };
+		 SELECT
+			g.id,
+			g.title,
+			g.description,
+			g.icon_url,
+			json_build_object(
+			  'id', creator.id,
+			  'username', creator.username,
+			  'full_name', creator.full_name,
+			  'avatar_url', creator.avatar_url
+			) AS created_by,
+			g.created_at,
+			g.updated_at,
+			gm.role AS current_user_role,
+			gm.status AS current_user_status,
+			COUNT(DISTINCT gm_all.profile_id)::int AS members_count,
+			COUNT(DISTINCT c.id)::int AS checks_count,
+			ARRAY(
+			  SELECT p.avatar_url
+			  FROM (
+				 SELECT g.created_by AS profile_id, 0 AS sort_order, g.created_at
+				 UNION ALL
+				 SELECT gm2.profile_id, 1 AS sort_order, gm2.joined_at
+				 FROM group_members gm2
+				 WHERE gm2.group_id = g.id
+					AND gm2.profile_id != g.created_by
+			  ) AS members
+			  LEFT JOIN profiles p ON p.id = members.profile_id
+			  ORDER BY members.sort_order ASC, members.sort_order ASC
+			  LIMIT 3
+			) AS avatars,
+			(
+			  /* Сценарий 1: есть чужие чеки с моим участием без оплаты или отклонённой оплатой */
+			  EXISTS(
+				 SELECT 1
+				 FROM checks c1
+				 JOIN check_participants cp ON cp.check_id = c1.id
+				 LEFT JOIN payments p1 ON p1.check_id = c1.id AND p1.payer_id = cp.profile_id
+				 WHERE c1.group_id = g.id
+					AND c1.created_by != ${currentUserId}
+					AND cp.profile_id = ${currentUserId}
+					AND cp.participated = TRUE
+					AND (p1.id IS NULL OR p1.status = 'declined')
+			  )
+			  /* OR Сценарий 2: есть мои чеки с оплатами в статусе pending */
+			  OR EXISTS(
+				 SELECT 1
+				 FROM checks c2
+				 LEFT JOIN payments p2 ON p2.check_id = c2.id
+				 WHERE c2.group_id = g.id
+					AND c2.created_by = ${currentUserId}
+					AND p2.status = 'pending'
+			  )
+			) AS is_new_events
+		 FROM groups g
+		 JOIN group_members gm
+			ON gm.group_id = g.id
+		  AND gm.profile_id = ${currentUserId}
+		 LEFT JOIN group_members gm_all ON gm_all.group_id = g.id
+		 LEFT JOIN checks c ON c.group_id = g.id
+		 LEFT JOIN profiles creator ON creator.id = g.created_by
+		 WHERE ${whereCondition}
+			${searchCondition}
+		 GROUP BY g.id, creator.id, gm.role, gm.status
+		 ORDER BY ${sortColumn} ${sortOrder}
+		 LIMIT ${limit}
+		 OFFSET ${offset}
+	  `;
+    return { groups, total, totalPages, page: currentPage };
   } catch (error) {
     console.error("Ошибка при получении групп:", error);
     throw new Error("Не удалось получить группы");
@@ -307,35 +423,3 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
     throw error;
   }
 }
-
-//  const unpaidIdsByUsers = await sql`
-//    SELECT
-//      cp.profile_id,
-
-//      json_agg(c.id) AS unpaid_checks
-
-//    FROM check_participants cp
-
-//    JOIN checks c ON c.id = cp.check_id
-
-//    -- ❗ ключевая часть
-//    LEFT JOIN payments p
-//      ON p.check_id = cp.check_id
-//     AND p.payer_id = cp.profile_id
-//     AND p.status = 'confirmed'
-
-//    WHERE c.group_id = ${groupId}
-//      AND cp.participated = true
-
-//      -- 💥 только те, где НЕТ платежа
-//      AND p.id IS NULL
-
-//    GROUP BY cp.profile_id
-//  `;
-
-//  const unpaidIdsMap = new Map(unpaidIdsByUsers.map((u) => [u.profile_id, u.unpaid_checks]));
-
-//  const membersWithUnpaid = members.map((member) => ({
-//    ...member,
-//    unpaid_checks: unpaidIdsMap.get(member.id) ?? [],
-//  }));

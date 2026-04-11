@@ -41,7 +41,9 @@ export function ToggleButton({ currentTab, onClick }: { currentTab: string | nul
         whileHover={{ backgroundColor: "var(--color-accent-hover)", transition: { duration: 0.2 } }}
         whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
         animate={
-          currentTab !== "search" ? { backgroundColor: "var(--color-accent)", width: "60px", borderRadius: "50%" } : { backgroundColor: "var(--color-surface)", width: "160px", borderRadius: "8px" }
+          currentTab !== "search"
+            ? { backgroundColor: "var(--color-accent)", width: "60px", borderRadius: "50%", x: 0 }
+            : { backgroundColor: "var(--color-surface)", width: "160px", borderRadius: "8px", x: -5 }
         }
         onClick={onClick}
         className={`cursor-pointer flex justify-center items-center h-15 will-change-transform`}>
@@ -52,7 +54,7 @@ export function ToggleButton({ currentTab, onClick }: { currentTab: string | nul
                 className="absolute top-1/2 left-1/2 -translate-1/2 w-full flex justify-center items-center"
                 key={"search-mode"}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: { delay: 0.3 } }}
+                animate={{ opacity: 1, transition: { delay: 0.1 } }}
                 exit={{ opacity: 0 }}>
                 <UserPlusIcon className="text-text-inverted w-8 h-8" />{" "}
               </motion.p>

@@ -9,8 +9,9 @@ export const metadata: Metadata = {
   title: "Профиль",
 };
 
-export default function Page() {
-  return (
+export default async function Page() {
+
+	return (
     <>
       <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3 w-full">
         <PageHeader title={"Профиль"} />

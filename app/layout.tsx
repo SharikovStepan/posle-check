@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SideNavWrapper from "./ui/sidenav/sidenavWrapper";
-import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,12 +49,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col md:grid md:grid-cols-[220_auto] gap-3 p-4 bg-bg-primary text-text-primary">
-        <div className="fixed z-50 md:static bottom-0 md:bottom-auto md:left-auto left-0 w-full md:w-auto md:grid md:grid-rows-[100_auto] gap-3 md:col-[1/2]">
+        <SideNavWrapper />
+        {/* <div className="fixed z-50 md:static bottom-0 md:bottom-auto md:left-auto left-0 w-full md:w-auto md:grid md:grid-rows-[100_auto] gap-3 md:col-[1/2]">
           <Link href={'/'}>
             <h1 className="hidden p-4 h-(--header-height) rounded-md text-4xl md:flex justify-center items-center bg-accent text-primary shadow-sm border border-border">ПослеЧек</h1>
           </Link>
           <SideNavWrapper />
-        </div>
+        </div> */}
         {children}
       </body>
     </html>

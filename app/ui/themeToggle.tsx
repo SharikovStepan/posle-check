@@ -49,11 +49,11 @@ export default function ThemeToggle() {
       <AnimatePresence>
         <div className="absolute top-1/2 left-1/2 -translate-1/2 flex justify-center items-center w-full">
           {theme === "dark" ? (
-            <motion.p key={"dark"} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
+            <motion.p key={"dark"} initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
               {"☀️ Светлая"}
             </motion.p>
           ) : (
-            <motion.p key={"light"} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
+            <motion.p key={"light"} initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
               {"🌙 Тёмная"}
             </motion.p>
           )}
