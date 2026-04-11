@@ -163,6 +163,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               }
 
               // Возвращаем объект пользователя для сессии
+              console.log("logined");
+
               return {
                 id: user.id,
                 email: user.email,

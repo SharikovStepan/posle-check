@@ -10,21 +10,20 @@ type errors = {
   amount?: string | null;
 };
 
-export default function ParticipantCardAmount({ participantData }: { participantData: CreateCheckParticipantsCardsType; }) {
+export default function ParticipantCardAmount({ participantData }: { participantData: CreateCheckParticipantsCardsType }) {
   const { state, remindAmount, dispatch } = useParticipantsContext();
 
   const [cardLocalError, setCardError] = useState<errors>({});
   const showErrorTmrRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleCustomAmount = () => {
-
     if (state.total == 0) {
       setCardError((prev) => ({ ...prev, isCustomAmount: "Введите сумму чека" }));
     } else if (state.creator.participating && state.creator.amount < 1) {
       setCardError((prev) => ({ ...prev, isCustomAmount: "Введите вашу часть суммы" }));
     } else if (participantData.amount <= 0 && isEmptyParticipantsAmounts(state.participanstList) >= 1) {
       setCardError((prev) => ({ ...prev, isCustomAmount: "Заполните пустое значение другого участника" }));
-    } else if (participantData.amount < 1&&participantData.amount !=0.1 && isNotCustomParticipantsAmounts(state.participanstList) == 1) {
+    } else if (participantData.amount < 1 && participantData.amount != 0.1 && isNotCustomParticipantsAmounts(state.participanstList) == 1) {
       dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: remindAmount } });
     } else if (participantData.amount > 0) {
       dispatch({ type: "CLEAR_AMOUNT", payload: { id: participantData.id } });
@@ -106,7 +105,7 @@ export default function ParticipantCardAmount({ participantData }: { participant
             className={`absolute top-0 w-20 h-full flex flex-col justify-between items-center gap-1 transition-all duration-300 ${
               !!participantData.amount ? "translate-y-0" : "translate-y-[calc(100%+10px)]"
             }`}>
-            <label htmlFor="title" className="block text-sm text-text-primary">
+            <label htmlFor={`participant-${participantData.username}-amount`} className="block text-sm text-text-primary">
               Сумма Р
             </label>
             <div className="flex justify-center items-center">
@@ -115,9 +114,9 @@ export default function ParticipantCardAmount({ participantData }: { participant
                 disabled={!participantData.amount}
                 type="text"
                 inputMode="decimal" // мобильная клавиатура с цифрами
-                name="participant-amount"
+                name={`participant-${participantData.username}-amount`}
                 min="0"
-                id="participant-amount"
+                id={`participant-${participantData.username}-amount`}
                 onChange={(e) => {
                   const onlyDigits = e.target.value.replace(/\D/g, "");
 
@@ -130,13 +129,13 @@ export default function ParticipantCardAmount({ participantData }: { participant
                 value={participantData.amount < 1 ? "" : participantData.amount}
                 autoComplete="off"
                 // aria-invalid={!!state.errors?.title}
-                aria-describedby={cardLocalError.amount ? "participant-amount-error" : undefined}
+                aria-describedby={cardLocalError.amount ? `participant-${participantData.username}-amount-error` : undefined}
                 className={` block w-20 h-8 bg-bg-tertiary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus ${false ? "focus:ring-error!" : ""}`}
               />
             </div>
             {cardLocalError.amount && (
               <div
-                id="participant-amount-error"
+                id={`participant-${participantData.username}-amount-error`}
                 role="alert"
                 className={`absolute top-1/2 left-1/2 ml-2 h-3/4 -translate-1/2 z-50 flex justify-center w-2/3 items-center text-center bg-error text-text-primary px-3 py-2 rounded-lg shadow-[0px_0px_20px_#000] transition-all`}>
                 {cardLocalError.amount}
@@ -145,12 +144,12 @@ export default function ParticipantCardAmount({ participantData }: { participant
           </div>
         </div>
 
-        <label className=" inline-flex w-fit h-full items-center justify-between">
+        <label htmlFor={`is-custom-amount-for-${participantData.username}`} className="inline-flex w-fit h-full items-center justify-between">
           <span className="select-none hidden text-lg font-medium text-text-primary">{"Ввести сумму"}</span>
           <input
-            aria-describedby={cardLocalError.isCustomAmount ? "is-custom-amount-error" : undefined}
-            name="is-custom-amount"
-            id="is-custom-amount"
+            aria-describedby={cardLocalError.isCustomAmount ? `is-custom-amount-for-${participantData.username}-error` : undefined}
+            name={`is-custom-amount-for-${participantData.username}`}
+            id={`is-custom-amount-for-${participantData.username}`}
             type="checkbox"
             checked={!!participantData.amount}
             onChange={toggleCustomAmount}
@@ -160,7 +159,7 @@ export default function ParticipantCardAmount({ participantData }: { participant
 
           {cardLocalError.isCustomAmount && (
             <div
-              id="is-custom-amount-error"
+              id={`is-custom-amount-for-${participantData.username}-error`}
               role="alert"
               className={`absolute top-1/2 left-1/2 ml-2 h-3/4 -translate-1/2 z-50 flex justify-center w-2/3 items-center text-center bg-error text-text-primary px-3 py-2 rounded-lg shadow-[0px_0px_20px_#000] transition-all`}>
               {cardLocalError.isCustomAmount}

@@ -5,22 +5,19 @@ import PageHeader from "@/app/ui/pageHeader";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: 'Группа',
- };
+  title: "Группа",
+};
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const id = params.id;
+export default function Page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <>
       <main className="main-div">
-
         <Suspense fallback={<GroupSkeleton />}>
-          <GroupPage id={id} />
+          <GroupPage pageParams={props.params} />
         </Suspense>
       </main>
     </>

@@ -1,17 +1,14 @@
-"use client";
-
-import { useSession } from "next-auth/react";
+import ProfileCardSkeleton from "@/app/lib/fallbacks/profileCardSkeleton";
 import ProfileCard from "./profileCard";
+import { Suspense } from "react";
 
 export default function ProfilePage() {
-  const session = useSession();
-  console.log("session", session);
-
   return (
     <>
       <div className="flex flex-col gap-2 justify-center items-center">
-        <ProfileCard name={session.data?.user.name || "noname"} avatar_url={session.data?.user.image || ""} />
-
+        <Suspense fallback={<ProfileCardSkeleton />}>
+          <ProfileCard />
+        </Suspense>
         <h3 className="text-text-primary text-lg text-center">Позже здесь будет страница профиля</h3>
         <p className="text-text-tertiary/80 text-sm">А пока можно сменить тему </p>
       </div>

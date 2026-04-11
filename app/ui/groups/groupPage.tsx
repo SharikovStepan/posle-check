@@ -7,12 +7,15 @@ import GroupDetails from "./groupDetails";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export default async function GroupPage({ id }: { id: string }) {
+export default async function GroupPage({ pageParams }: { pageParams: Promise<{ id: string }> }) {
   const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/login");
   }
+
+  const params = await pageParams;
+  const id = params.id;
 
   const groupDetails = await getGroupDetails(id, session.user.id);
 
@@ -20,7 +23,7 @@ export default async function GroupPage({ id }: { id: string }) {
 
   return (
     <>
-      <div className="header-div h-full flex justify-between items-start mb-2">
+      <div className="header-div h-full flex justify-between items-start md:items-center mb-2">
         <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </Link>

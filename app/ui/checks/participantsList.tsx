@@ -1,6 +1,5 @@
 import ParticipantCardAmount from "./participantCardAmount";
 import { useParticipantsContext } from "./participantsProvider";
-import { useSession } from "next-auth/react";
 
 export default function ParticipantsList() {
   const participantsContext = useParticipantsContext();

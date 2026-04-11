@@ -17,6 +17,8 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import TabButtonsNavigation from "../ui/tabButtonsNavigation";
 import SearchNavigation from "../ui/searchNavigation";
+import OrderSettingsNavigation from "../ui/orderSettingsNavigation";
+import ToggleSearchModeButton, { ToggleButtonSkeleton } from "../ui/friends/toggleSearchModeButton";
 export const metadata: Metadata = {
   title: "Друзья",
 };
@@ -42,6 +44,7 @@ const friendsTabs: TabButtons<FriendsListTabs>[] = [
 ];
 
 export default async function Page(props: { searchParams?: Promise<{ query?: string; filter: FriendsListTabs | "search"; sortBy?: string; order?: string; page?: string }> }) {
+
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -79,7 +82,11 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
           <PageHeader title={"Друзья"} />
 
           <div className="h-full flex justify-center items-center">
-            <ToggleFilterButton
+            <Suspense fallback={<ToggleButtonSkeleton />}>
+              <ToggleSearchModeButton />
+            </Suspense>
+
+            {/* <ToggleFilterButton
               classNamesCommon={"flex justify-center items-center transition-all duration-200 cursor-pointer"}
               filterType={"filter"}
               filterValue1={"search"}
@@ -87,7 +94,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
               filterValue2={"friends"}
               classNames2={"text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary"}>
               {tabType == "search" ? <p className="">Выйти из поиска</p> : <UserPlusIcon className=" w-8 h-8" />}
-            </ToggleFilterButton>
+            </ToggleFilterButton> */}
           </div>
         </div>
 
@@ -101,7 +108,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
               <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between">
                 <TabButtonsNavigation tabs={friendsTabs} />
               </div>
-              <OrderSettings />
+              <OrderSettingsNavigation />
             </>
           )}
         </div>

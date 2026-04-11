@@ -8,13 +8,15 @@ import BackButton from "../backButton";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export default async function CheckPage({ checkId }: { checkId: string }) {
+export default async function CheckPage({ pageParams }: { pageParams: Promise<{ id: string }> }) {
+  const session = await auth();
 
-	const session = await auth();
-  
-	if (!session?.user?.id) {
-	  redirect('/login');
-	}
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const params = await pageParams;
+  const checkId = params.id;
 
   const checkDetails = await getCheckDetails(checkId, session.user.id);
 
@@ -40,7 +42,7 @@ export default async function CheckPage({ checkId }: { checkId: string }) {
         <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </BackButton>
-		  
+
         <div className="flex flex-col gap-2 w-fit items-center self-start">
           <PageHeader title={checkDetails.title} />
           <div className="flex gap-2 text-xs text-text-tertiary items-center">

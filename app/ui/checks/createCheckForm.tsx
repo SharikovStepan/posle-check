@@ -14,6 +14,8 @@ import ErrorPop from "../error-pop";
 import ConfirmCreate from "./confirmCreate";
 import SearchUI from "../searchUI";
 import TabButtonsUI from "../tabButtonsUI";
+import { useMediaQuery } from "react-responsive";
+import { motion, AnimatePresence } from "motion/react";
 
 const tabs: TabButtons<CreateCheckPageTabs>[] = [
   { tabType: "members", text: "Участники" },
@@ -59,6 +61,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [isMobile, setIsMobile] = useState(false);
   const showErrorTmr = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -342,8 +345,17 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
     throw new Error(serverError);
   }
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12">
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-12 w-full">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-6">
         <div className="relative h-full flex flex-col gap-1">
           <label htmlFor="title" className="block text-lg text-text-primary">
@@ -383,7 +395,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         </div>
 
         <div className="relative h-full flex justify-between items-center gap-1">
-          <label htmlFor="title" className="block text-lg text-text-primary">
+          <label htmlFor="total-amount" className="block text-lg text-text-primary">
             Сумма
           </label>
 
@@ -419,7 +431,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         </div>
 
         <div className={`${contextstate.creator.participating ? "" : "opacity-20"} relative h-full flex justify-between items-center gap-1`}>
-          <label htmlFor="title" className="block text-lg text-text-primary">
+          <label htmlFor="creator-share" className="block text-lg text-text-primary">
             Моя часть
           </label>
 
@@ -474,33 +486,74 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         <span className="block w-full bg-surface mt-6 h-0.5 "></span>
       </div>
 
-      <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
-        {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
+      {isMobile ? (
+        <AnimatePresence mode="wait">
+          {tabType === "members" ? (
+            <motion.div
+              key="members"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              ref={membersListhRef}
+              className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
+              {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
 
-        <p className="text-xl">Участники</p>
-        <div className="h-10">
-          <SearchUI onSearchChange={onSearchChange} placeholder="Поиск.. " searchText={searchQuery} />
-        </div>
-        <MembersList searchQuery={searchQuery} />
-      </div>
+              <p className="text-xl">Участники</p>
+              <div className="h-10">
+                <SearchUI onSearchChange={onSearchChange} placeholder="Поиск.. " searchText={searchQuery} />
+              </div>
+              <MembersList searchQuery={searchQuery} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="amounts"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className={`${tabType == "amounts" ? "flex" : "hidden"} relative lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
+              <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
 
-      <div className={`${tabType == "amounts" ? "flex" : "hidden"} relative lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
-        <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
+              <div className="flex justify-between items-center">
+                <p className="text-xl">Суммы</p>
+                <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} ₽</p>
+              </div>
+              <ParticipantsList />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      ) : (
+        <>
+          <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
+            {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
 
-        <div className="flex justify-between items-center">
-          <p className="text-xl">Суммы</p>
-          <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} ₽</p>
-        </div>
-        <ParticipantsList />
-      </div>
+            <p className="text-xl">Участники</p>
+            <div className="h-10">
+              <SearchUI onSearchChange={onSearchChange} placeholder="Поиск.. " searchText={searchQuery} />
+            </div>
+            <MembersList searchQuery={searchQuery} />
+          </div>
+
+          <div className={`${tabType == "amounts" ? "flex" : "hidden"} relative lg:h-full lg:flex flex-col lg:col-[2/3] row-[1/3] justify-self-start self-start w-full gap-2 min-h-100 mb-14`}>
+            <span className="absolute top-0 -left-6 block w-0.5 h-full bg-surface "></span>
+
+            <div className="flex justify-between items-center">
+              <p className="text-xl">Суммы</p>
+              <p className={`text-md ${remindAmount < 0 ? "text-error" : remindAmount == 0 ? "text-success" : "text-warning"}`}>Не распределено: {remindAmount} ₽</p>
+            </div>
+            <ParticipantsList />
+          </div>
+        </>
+      )}
 
       <button
         type="submit"
         disabled={isPending}
+        name="submitButton"
+        id="submitButton"
         className={`${
           isPending ? "" : ""
-        } fixed bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
-        <p>Создать Чек</p>
+        } fixed z-50 bottom-3 left-1/2 md:left-full -translate-x-1/2 md:-translate-x-[calc(100%+1rem)] md:bottom-4 inline-flex cursor-pointer justify-center items-center rounded-lg border font-medium border-border-focus bg-accent py-3 px-8 w-60 h-14 text-text-inverted text-xl md:text-2xl shadow-lg hover:bg-accent-hover hover:text-text-secondary hover:shadow-[2px_2px_10px_var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200`}>
+        <label htmlFor="submitButton">Создать Чек</label>
       </button>
 
       {localErrors.participantAmount && (

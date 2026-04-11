@@ -9,11 +9,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-import { Metadata } from 'next';
+import { Metadata } from "next";
+import { CreateGroupFormSkeleton } from "@/app/lib/fallbacks/createGroupSkeleton";
 export const metadata: Metadata = {
-	title: 'Создать группу',
- };
-
+  title: "Создать группу",
+};
 
 export default async function Page() {
   const session = await auth();
@@ -26,17 +26,19 @@ export default async function Page() {
 
   return (
     <main className="flex flex-col gap-3">
-      <div className="header-div h-full md:h-(--header-height) flex justify-between items-center mb-2">
+      <div className="header-div md:shrink-0 h-full md:h-(--header-height) flex justify-between items-center mb-2">
         <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </Link>
-        <PageHeader title={"Создание группы"} />
+        <div className="w-fit text-center">
+          <PageHeader title={"Создание группы"} />
+        </div>
       </div>
 
       {friendsListResult.users.length != 0 ? (
         <div className="h-full">
           <MembersProvider>
-            <Suspense fallback={<div>Загрузка...</div>}>
+            <Suspense fallback={<CreateGroupFormSkeleton />}>
               <CreateGroupForm initialFriendsData={friendsListResult} />
             </Suspense>
           </MembersProvider>

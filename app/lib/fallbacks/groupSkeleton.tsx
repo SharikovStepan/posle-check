@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function GroupSkeleton() {
   return (
     <>
-      <div className="header-div h-full flex justify-between items-start mb-2">
+      <div className="header-div h-full flex justify-between items-start md:items-center mb-2">
         <Link href={"/groups"} className="w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </Link>
@@ -17,7 +17,7 @@ export default function GroupSkeleton() {
           <div className="shimmer flex justify-center items-center transition-all duration-200 cursor-pointer text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary"></div>
         </div>
       </div>
-      <div className="shimmer flex w-full bg-surface rounded-2xl h-8"></div>
+      <div className="shimmer flex w-full bg-surface rounded-lg h-8"></div>
     </>
   );
 }

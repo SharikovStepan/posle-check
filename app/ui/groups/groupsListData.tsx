@@ -2,11 +2,13 @@ import { GroupListTabs, SortBy, SortOrder } from "@/app/lib/types/types.filters"
 import { GetGroupsOptions, GroupListResult } from "@/app/lib/types/types.groups";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { GroupsListView } from "./groupListView";
+import { GroupsListView } from "./groupsListView";
 import { getGroupsList } from "@/app/lib/data/data.groups";
 
 export async function GroupsListData({ searchParamsPromise }: { searchParamsPromise?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
-  const session = await auth();
+  
+const session = await auth();
+
 
   if (!session?.user?.id) {
     redirect("/login");

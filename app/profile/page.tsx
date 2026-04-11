@@ -15,9 +15,7 @@ export default function Page() {
       <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3 w-full">
         <PageHeader title={"Профиль"} />
         <div className="rounded-md h-full p-3 bg-bg-secondary flex flex-col justify-center items-center gap-3">
-          <SessionProvider>
-            <ProfilePage />
-          </SessionProvider>
+          <ProfilePage />
           <ThemeToggle />
 
           <SignOut />

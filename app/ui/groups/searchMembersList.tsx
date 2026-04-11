@@ -50,7 +50,6 @@ export default function SearchMembersList({ options, initialData, choosedMembers
 
         const params = new URLSearchParams();
 
-
         params.set("filter", options.filter || "friends");
 
         if (options.search) {
@@ -114,18 +113,17 @@ export default function SearchMembersList({ options, initialData, choosedMembers
   const marked = markChoosedMembers(usersData, choosedMembers);
 
   return (
-    <div>
-      <div className="flex flex-col gap-3 w-full min-h-150">
+    <div className="flex flex-col justify-between items-center">
+      <div className="flex flex-col gap-3 w-full h-114">
         {marked.length > 0
           ? marked.map((user, index) => {
               const isMarked = user.marked || false;
               return <EditMemberCard key={user.id} marked={isMarked} userData={user} />;
             })
           : ""}
-
-        <div className={`${responseInfo.totalPages == 1 ? "hidden" : "block self-center"}`}>
-          <Pagination mode="state" onPageChange={setPaginatonPage} totalPages={responseInfo.totalPages} currentPage={responseInfo.page} />
-        </div>
+      </div>
+      <div className={`${responseInfo.totalPages == 1 ? "hidden" : " self-center w-full flex justify-center items-center"}`}>
+        <Pagination mode="state" onPageChange={setPaginatonPage} totalPages={responseInfo.totalPages} currentPage={responseInfo.page} />
       </div>
     </div>
   );

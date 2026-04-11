@@ -30,6 +30,8 @@ export default function SearchUI({ searchText, placeholder, onSearchChange }: { 
         Search
       </label>
       <input
+        id="search"
+        name="search"
         className="peer border-0 focus:border-0 focus block w-full rounded-md pl-10 text-sm text-foreground placeholder:text-muted-foreground bg-transparent"
         placeholder={placeholder}
         onChange={(e) => setCurrentText(e.target.value)}

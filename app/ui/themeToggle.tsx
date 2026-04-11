@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 type Theme = "light" | "dark";
 
@@ -41,11 +42,23 @@ export default function ThemeToggle() {
     applyTheme(newTheme);
   };
 
-  if (!theme) return null;
+  //   if (!theme) return null;
 
   return (
-    <button onClick={toggleTheme} className="px-4 py-2 rounded-lg bg-bg-tertiary border border-border hover:bg-surface-hover transition">
-      {theme === "dark" ? "☀️ Светлая" : "🌙 Тёмная"}
+    <button onClick={toggleTheme} className={`relative px-4 py-2 w-35 h-10 rounded-lg bg-bg-tertiary border border-border hover:bg-surface-hover transition`}>
+      <AnimatePresence>
+        <div className="absolute top-1/2 left-1/2 -translate-1/2 flex justify-center items-center w-full">
+          {theme === "dark" ? (
+            <motion.p key={"dark"} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
+              {"☀️ Светлая"}
+            </motion.p>
+          ) : (
+            <motion.p key={"light"} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}>
+              {"🌙 Тёмная"}
+            </motion.p>
+          )}
+        </div>
+      </AnimatePresence>
     </button>
   );
 }

@@ -3,20 +3,19 @@ export default function OrderSettingsSkeleton() {
     <div className="flex gap-2 h-10 w-full">
       <div className="relative w-full">
         <div
-          className="shimmer h-full w-full
+          className="shimmer-dark h-full w-full
         px-2
         flex justify-start items-center
         appearance-none
         bg-surface
         border border-border
         rounded-md
-        cursor-pointer
+        pointer-events-none
         font-medium
         text-text-primary
         hover:bg-surface-hover
         focus
-        shadow-sm
-        transition-all duration-200"></div>
+        shadow-sm"></div>
 
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-0.5 text-muted-foreground">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,6 +28,7 @@ export default function OrderSettingsSkeleton() {
         type="button"
         className="
 		  w-10
+		  shimmer-dark
       bg-surface
       text-foreground
       border border-border
@@ -40,11 +40,11 @@ export default function OrderSettingsSkeleton() {
       items-center
       gap-1
       h-full
-      cursor-pointer
+      pointer-events-none
       shadow-sm
       transition-all duration-200
     ">
-        <div className="shimmer w-8 h-2/3 text-muted-foreground"></div>
+        <div className="w-8 h-2/3 text-muted-foreground"></div>
       </button>
     </div>
   );

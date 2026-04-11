@@ -1,6 +1,12 @@
+import { auth } from "@/auth";
 import { UserCircleIcon } from "@heroicons/react/16/solid";
 
-export default function ProfileCard({ name, avatar_url }: { name: string; avatar_url: string }) {
+export default async function ProfileCard() {
+  const session = await auth();
+
+  const name = session?.user.name || "noname";
+  const avatar_url = session?.user.image || "";
+
   return (
     <>
       <div className="flex flex-col gap-1 justify-center items-center mb-4">

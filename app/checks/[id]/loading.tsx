@@ -1,10 +1,10 @@
-import CreateGroupSkeleton from "@/app/lib/fallbacks/createGroupSkeleton";
+import CheckPageSkeleton from "@/app/lib/fallbacks/checkPageSkeleton";
 import SpinnerLoadingPage from "@/app/lib/fallbacks/spinnerLoadingPage";
 
 export default function Loading() {
   return (
     <>
-      <CreateGroupSkeleton />
+      <CheckPageSkeleton />
     </>
   );
 }

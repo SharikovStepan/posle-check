@@ -6,7 +6,7 @@ export default function SearchSkeleton() {
       <label htmlFor="search" className="sr-only">
         Search
       </label>
-      <div className="shimmer peer border-0 focus:border-0 focus block w-full rounded-md pl-10 text-sm text-foreground placeholder:text-muted-foreground bg-transparent"></div>
+      <div className="shimmer-dark peer border-0 focus:border-0 focus block w-full rounded-md pl-10 text-sm text-foreground placeholder:text-muted-foreground bg-transparent"></div>
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-full w-4.5 -translate-y-1/2 text-muted-foreground peer-focus:text-foreground" />
     </div>
   );

@@ -1,16 +1,16 @@
 import Link from "next/link";
-import PageHeader from "../ui/pageHeader";
-import { GroupListTabs, SortBy, SortOrder, TabButtons } from "../lib/types/types.filters";
+import PageHeader from "../../ui/pageHeader";
+import { GroupListTabs, SortBy, SortOrder, TabButtons } from "../../lib/types/types.filters";
 import { Suspense } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import GroupsListSkeleton from "../lib/fallbacks/groupsListSkeleton";
+import GroupsListSkeleton from "../../lib/fallbacks/groupsListSkeleton";
 import { Metadata } from "next";
-import { GroupsListData } from "../ui/groups/groupsListData";
-import OrderSettingsNavigation from "../ui/orderSettingsNavigation";
-import SearchNavigation from "../ui/searchNavigation";
-import TabButtonsNavigation from "../ui/tabButtonsNavigation";
-import SearchSkeleton from "../lib/fallbacks/searchSkeleton";
-import OrderSettingsSkeleton from "../lib/fallbacks/orderSkeleton";
+import { GroupsListData } from "../../ui/groups/groupsListData";
+import OrderSettingsNavigation from "../../ui/orderSettingsNavigation";
+import SearchNavigation from "../../ui/searchNavigation";
+import TabButtonsNavigation from "../../ui/tabButtonsNavigation";
+import SearchSkeleton from "../../lib/fallbacks/searchSkeleton";
+import OrderSettingsSkeleton from "../../lib/fallbacks/orderSkeleton";
 
 export const metadata: Metadata = {
   title: "Группы",
@@ -26,19 +26,19 @@ const PencilSquareIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" vi
 </svg>
 `;
 
-const friendsFilters: TabButtons<GroupListTabs>[] = [
+const groupFilters: TabButtons<GroupListTabs>[] = [
   { tabType: "all", text: "Все", icon: UserGroupIcon },
   { tabType: "created_by_me", text: "Созданные мною", icon: PencilSquareIcon },
   // { filterType: 'created_by_others', text: "Не мною", icon: PencilSquareIcon },
 ];
 
 export default function Page(props: { searchParams?: Promise<{ query?: string; filter: GroupListTabs; sortBy?: SortBy; order?: SortOrder; page?: string }> }) {
+
   return (
     <>
       <main className="main-div">
         <div className="header-div h-full flex justify-between items-center">
           <PageHeader title={"Группы"} />
-
           <div className="h-full flex justify-center items-center">
             <Link
               className=" flex justify-center items-center transition-all duration-200 cursor-pointer text-text-inverted bg-accent rounded-full w-15 h-15 hover:bg-accent-hover hover:text-text-primary"
@@ -55,16 +55,14 @@ export default function Page(props: { searchParams?: Promise<{ query?: string; f
             </Suspense>
           </div>
 
-          <>
-            <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
-              <Suspense fallback={<div className="shimmer w-full h-full"></div>}>
-                <TabButtonsNavigation tabs={friendsFilters} />
-              </Suspense>
-            </div>
-            <Suspense fallback={<OrderSettingsSkeleton />}>
-              <OrderSettingsNavigation />
+          <div className="flex bg-bg-secondary rounded-md w-full h-10 justify-between ">
+            <Suspense fallback={<div className="shimmer w-full h-full"></div>}>
+              <TabButtonsNavigation tabs={groupFilters} />
             </Suspense>
-          </>
+          </div>
+          <Suspense fallback={<OrderSettingsSkeleton />}>
+            <OrderSettingsNavigation />
+          </Suspense>
         </div>
 
         <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center">

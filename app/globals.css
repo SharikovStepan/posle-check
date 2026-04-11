@@ -78,6 +78,8 @@ html.dark {
   --shadow-lg: 0 12px 24px -8px rgb(50 50 50 / 0.4);
 
   --ring: #4dbd58;
+  --sidebar-width: 220px;
+  --header-height: 100px;
 }
 /* ================= TAILWIND ================= */
 @theme inline {
@@ -140,6 +142,13 @@ body {
   background-size: 200% 100%;
   animation: shimmer 0.8s infinite;
 }
+
+.shimmer-dark {
+  background: linear-gradient(105deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 50%, var(--color-bg-secondary) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 0.8s infinite;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }

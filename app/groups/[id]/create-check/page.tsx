@@ -17,11 +17,13 @@ import { redirect } from "next/navigation";
 
 import { Metadata } from "next";
 import BackButton from "@/app/ui/backButton";
+import { CreateCheckFormSkeleton } from "@/app/lib/fallbacks/createCheckSkeleton";
 export const metadata: Metadata = {
   title: "Создать чек",
 };
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -48,17 +50,17 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   };
 
   return (
-    <main className="flex flex-col gap-3">
-      <div className="header-div h-full md:h-(--header-height) flex justify-between items-center mb-2">
+    <main className="flex flex-col gap-3 ">
+      <div className="header-div md:h-(--header-height) flex md:shrink-0 justify-between items-center mb-2">
         <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
           <ArrowLeftIcon className="w-1/2 h-1/2" />
         </BackButton>
         <PageHeader title={"Новый чек"} />
       </div>
 
-      <div className="h-full">
+      <div className="h-full min-h-120">
         <ParticipantsProvider initialState={{ participanstList: checkParticipants, creator: creator, lastDispatch: { type: "ADD_ALL" }, total: 0 }}>
-          <Suspense fallback={<div>Загрузка...</div>}>
+          <Suspense fallback={<CreateCheckFormSkeleton />}>
             <CreateCheckForm groupId={id} />
           </Suspense>
         </ParticipantsProvider>
