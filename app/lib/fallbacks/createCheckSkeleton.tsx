@@ -7,7 +7,7 @@ export default function CreateCheckPageSkeleton() {
     <>
       <main className="flex flex-col gap-3">
         <div className="header-div h-full md:shrink-0 md:h-(--header-height) flex justify-between items-center mb-2">
-          <BackButton className="pointer-events-none w-15 h-15 rounded-full bg-surface flex justify-center items-center">
+          <BackButton className="cursor-pointer w-15 h-15 rounded-full bg-surface flex justify-center items-center">
             <ArrowLeftIcon className="w-1/2 h-1/2" />
           </BackButton>
           <PageHeader title={"Новый чек"} />

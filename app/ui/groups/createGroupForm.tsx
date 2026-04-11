@@ -137,7 +137,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   const membersContent = (
     <>
       <AddedMembersList usersData={membersContex.state} />
-      <input id='members' name="members" type="hidden" value={JSON.stringify(membersContex.ids)} />
+      <input id="members" name="members" type="hidden" value={JSON.stringify(membersContex.ids)} />
     </>
   );
 
@@ -151,7 +151,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   }, []);
 
   return (
-    <form action={formAction} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr] lg:gap-x-12 overflow-hidden">
+    <form action={formAction} className="flex flex-col gap-3 items-center lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr] lg:gap-x-12">
       <div className="inputs-div w-full lg:row-[1/2] lg:col-[1/2] flex flex-col gap-2">
         <div className="relative h-full mb-4 flex flex-col gap-1">
           <label htmlFor="title" className="block text-lg text-text-primary">
@@ -214,9 +214,9 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
             {tabType === "friends" ? (
               <motion.div
                 key="friends"
-                initial={{ opacity: 0, x: 30 }}
+                initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 30 }}
+                exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.2 }}
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-full">
                 {friendsContent}
@@ -224,9 +224,9 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
             ) : (
               <motion.div
                 key="members"
-                initial={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
+                exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-full">
                 {membersContent}

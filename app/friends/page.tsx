@@ -113,7 +113,7 @@ export default async function Page(props: { searchParams?: Promise<{ query?: str
           )}
         </div>
 
-        <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center">
+        <section className="content-div rounded-md h-full mt-4 flex flex-col gap-3 items-center ">
           {tabType == "search" ? (
             <Suspense key={query} fallback={<SeachLoading />}>
               <SearchedNewFriend query={query} />

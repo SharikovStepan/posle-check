@@ -32,7 +32,7 @@ export default function Pagination({
 
     if (mode == "navigation") {
       params.set("page", targetPage.toString());
-      replace(`${pathname}?${params.toString()}`);
+      replace(`${pathname}?${params.toString()}`, { scroll: false });
     } else if (mode == "state" && onPageChange) {
       onPageChange(targetPage);
     }

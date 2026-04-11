@@ -29,7 +29,7 @@ export default function GroupCard({ groupData }: { groupData: GroupCardType }) {
             <AvatarsRow avatars={groupData.avatars} memberCount={groupData.members_count} />
           </div>
 
-          <h4 className="text-text-primary font-bold text-lg row-[2/3] col-[1/2]">{groupData.title}</h4>
+          <h4 className="text-text-primary font-bold text-lg row-[2/3] col-[1/2] text-nowrap">{groupData.title}</h4>
 
           <div className="flex justify-center items-center gap-4 col-[1/3] row-[3/4] justify-self-start">
             <div className="flex justify-center items-center gap-1 text-text-tertiary">

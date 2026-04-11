@@ -17,11 +17,10 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
 
   const formatAmount = parseFloat(checkData.total_amount).toString();
 
-
   return (
     <>
       <Link href={`/checks/${checkData.id}`} className="block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl">
-        <div className="w-full bg-surface p-4 rounded-2xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 grid-rows-[1fr_auto]">
+        <div className="w-full bg-surface px-2 py-3 md:px-3 rounded-2xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 grid-rows-[1fr_auto]">
           <div className="flex justify-center items-center w-full h-full bg-bg-tertiary rounded-lg">
             {checkData.icon_url ? (
               <div className={`h-12 rounded-full overflow-hidden`}>
@@ -33,8 +32,8 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
           </div>
 
           <div className="flex flex-col justify-between items-start">
-            <h3 className="text-text-primary text-xl font-medium">{checkData.title}</h3>
-            <p className="text-text-tertiary text-sm">{formattedDate}</p>
+            <h3 className="text-text-primary text-lg md:text-xl font-medium max-h-14 overflow-hidden text-ellipsis">{checkData.title}</h3>
+            <p className="text-text-tertiary text-xs md:text-sm">{formattedDate}</p>
           </div>
 
           <div className="flex flex-col justify-between items-end">

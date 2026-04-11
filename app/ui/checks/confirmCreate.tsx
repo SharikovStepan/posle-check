@@ -120,7 +120,7 @@ export default function ConfirmCreate({
           <button  onClick={onCancel} type="button" className={`${isPending ? "opacity-50" : ""} btn-cancel button bg-error w-27`}>
             Отклонить
           </button>
-          <button disabled={isPending} onClick={onConfirm} type="button" className="btn-confirm button bg-accent w-27 text-text-inverted">
+          <button disabled={isPending} onClick={onConfirm} type="button" className="btn-confirm button bg-accent w-30 text-text-inverted text-nowrap">
             <p className={`${isPending ? "hidden" : ""}`}>Создать Чек</p>
             <Spinner className={`${isPending ? "block" : "hidden!"}`} />
           </button>

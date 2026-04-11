@@ -24,7 +24,7 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
         className={`${
           !checkData.participated ? "pointer-events-none cursor-default opacity-55" : ""
         } block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl`}>
-        <div className="w-full bg-surface p-4 rounded-xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 ">
+        <div className="w-full bg-surface px-2 py-3 md:px-3 rounded-xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 ">
           <div className="flex justify-center items-center w-full h-full bg-bg-tertiary rounded-lg">
             {checkData.icon_url ? (
               <div className={`h-12 rounded-full overflow-hidden`}>
@@ -35,9 +35,9 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
             )}
           </div>
 
-          <div className="flex flex-col justify-center items-start">
-            <h3 className="text-text-primary text-xl font-medium">{checkData.title}</h3>
-            <p className="text-text-tertiary text-sm">{formattedDate}</p>
+          <div className="flex flex-col justify-between items-start">
+            <h3 className="text-text-primary text-md md:text-xl font-medium max-h-14 overflow-hidden text-ellipsis">{checkData.title}</h3>
+            <p className="text-text-tertiary text-xs md:text-sm">{formattedDate}</p>
           </div>
 
           <div className="grid grid-rows-[1fr_auto] justify-items-end items-center">
@@ -50,7 +50,7 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
               ""
             )}
 
-            <div className={`text-xs text-nowrap ${checkData.payment_status == "confirmed" || !checkData.participated ? "row-[1/3]" : "row-[2/3]"}`}>
+            <div className={`text-xs md:text-sm text-nowrap ${checkData.payment_status == "confirmed" || !checkData.participated ? "row-[1/3]" : "row-[2/3]"}`}>
               {!checkData.participated ? (
                 <p className="text-text-tertiary">Не участвовал</p>
               ) : checkData.payment_status == "unpaid" ? (
