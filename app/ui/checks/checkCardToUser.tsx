@@ -23,8 +23,8 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
         href={`/checks/${checkData.id}`}
         className={`${
           !checkData.participated ? "pointer-events-none cursor-default opacity-55" : ""
-        } block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl`}>
-        <div className="w-full bg-surface px-2 py-3 md:px-3 rounded-xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 ">
+        } block hover:border-border-focus border border-transparent cursor-pointer transition-all duration-200 focus rounded-2xl`}>
+        <div className="w-full bg-surface px-2 py-3 md:px-3 rounded-2xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 ">
           <div className="flex justify-center items-center w-full h-full bg-bg-tertiary rounded-lg">
             {checkData.icon_url ? (
               <div className={`h-12 rounded-full overflow-hidden`}>

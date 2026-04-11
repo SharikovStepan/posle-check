@@ -19,7 +19,7 @@ export default function CheckByUserCard({ checkData }: { checkData: CheckByUserC
 
   return (
     <>
-      <Link href={`/checks/${checkData.id}`} className="block hover:border-border-focus border border-surface cursor-pointer transition-all duration-200 focus rounded-2xl">
+      <Link href={`/checks/${checkData.id}`} className="block hover:border-border-focus border border-transparent cursor-pointer transition-all duration-200 focus rounded-2xl">
         <div className="w-full bg-surface px-2 py-3 md:px-3 rounded-2xl grid grid-cols-[auto_2fr_1fr] gap-x-3 gap-y-4 grid-rows-[1fr_auto]">
           <div className="flex justify-center items-center w-full h-full bg-bg-tertiary rounded-lg">
             {checkData.icon_url ? (

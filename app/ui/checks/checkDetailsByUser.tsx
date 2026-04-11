@@ -1,10 +1,10 @@
+"use client";
 import { CheckDetailsByUserType } from "@/app/lib/types/types.checks";
 import PaidCounter from "./paidCounter";
 import CheckDetailsParticpantCard from "./checkDetailsParticpantCard";
+import { motion } from "motion/react";
 
 export default function CheckDetailsByUser({ checkData }: { checkData: CheckDetailsByUserType }) {
-  console.log("checkData", checkData);
-
   return (
     <>
       <main className="flex flex-col gap-2">
@@ -16,7 +16,7 @@ export default function CheckDetailsByUser({ checkData }: { checkData: CheckDeta
         </div>
         <span className="block w-full bg-surface mt-6 h-0.5 "></span>
 
-        <div className="flex flex-col gap-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2">
           <div className="flex justify-between px-2 items-center text-text-tertiary">
             <div className="flex gap-2">
               <p>Оплачено:</p>
@@ -26,12 +26,12 @@ export default function CheckDetailsByUser({ checkData }: { checkData: CheckDeta
             <PaidCounter total={checkData.participants.length} paid={checkData.paid_count} />
           </div>
 
-          <div className="flex flex-col gap-3 mb-14">
+          <div className="will-change-transform flex flex-col gap-3 mb-14">
             {checkData.participants.map((p) => {
               return <CheckDetailsParticpantCard key={`${p.id}-${checkData.id}`} checkId={checkData.id} participantData={p} />;
             })}
           </div>
-        </div>
+        </motion.div>
       </main>
     </>
   );

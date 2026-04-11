@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 	return (
     <>
       <div className="flex flex-col md:grid md:grid-rows-[100_auto] gap-3 w-full">
