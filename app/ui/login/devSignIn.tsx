@@ -4,7 +4,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-export default function DevSignIn() {
+export default function DevSignIn({ callbackUrl }: { callbackUrl: string | null }) {
   const [uuid, setUuid] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ export default function DevSignIn() {
       const result = await signIn("dev-uuid", {
         userId: userId,
         redirect: false,
-        callbackUrl: "/profile",
+        callbackUrl: callbackUrl || "/profile",
       });
 
       // Если ошибка - показываем сообщение

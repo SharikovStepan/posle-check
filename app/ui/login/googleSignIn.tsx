@@ -1,12 +1,12 @@
 import { signIn } from "@/auth";
 import Image from "next/image";
 
-export default function GoogleSignIn() {
+export default function GoogleSignIn({ callbackUrl }: { callbackUrl: string | null }) {
   return (
     <form
       action={async () => {
         "use server";
-        await signIn("google");
+        await signIn("google", { redirectTo: callbackUrl || "/profile" });
       }}>
       <button
         type="submit"
