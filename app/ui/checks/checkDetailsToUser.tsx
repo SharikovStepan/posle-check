@@ -141,7 +141,7 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
                   className={`${status == "pending" || isPending ? "opacity-30 cursor-default!" : ""} ${
                     status == "declined" ? "text-xs!" : ""
                   } px-0.5 rounded-md cursor-pointer bg-success text-text-inverted col-[3/4] h-8 w-26 justify-self-end self-center`}>
-                  {isPending ? <Spinner /> : status == "declined" ? "Оплатить ещё раз" : "Оплатить"}
+                  {isPending ? <Spinner /> : status == "declined" ? "Оплатил ещё раз" : "Оплатил"}
                 </button>
               )}
 
