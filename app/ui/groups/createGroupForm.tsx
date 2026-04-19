@@ -137,7 +137,6 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
   const membersContent = (
     <>
       <AddedMembersList usersData={membersContex.state} />
-      <input id="members" name="members" type="hidden" value={JSON.stringify(membersContex.ids)} />
     </>
   );
 
@@ -240,6 +239,7 @@ export default function CreateGroupForm({ initialFriendsData, children }: { init
 
       <div style={{ height: `${addedContainerHeight}px` }} className={`hidden lg:not-first-of-type:block w-full min-h-120 relative lg:col-[2/3] row-[1/4] mb-12 MEMBERS self-start`}>
         {!isMobile && <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full">{membersContent}</div>}
+        <input id="members" name="members" type="hidden" value={JSON.stringify(membersContex.ids)} />
       </div>
 
       {state.errors?.members && visibleErrors.members && (
