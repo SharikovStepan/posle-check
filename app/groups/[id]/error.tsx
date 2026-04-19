@@ -11,7 +11,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
   return (
     <main className="flex h-full flex-col items-center justify-center">
-      <h2 className="text-center">Something went wrong With Group page</h2>
+      <h2 className="text-center text-text-tertiary/90 text-lg mb-3">Ошибка получения страницы группы:</h2>
+      <p className="text-center">{error.message}</p>
 
       <Link href={"/groups"} className="mt-4 rounded-md bg-accent px-4 py-2 text-sm text-text-inverted transition-colors hover:bg-accent-hover">
         К списку групп

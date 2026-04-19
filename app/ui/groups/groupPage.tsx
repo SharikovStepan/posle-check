@@ -17,9 +17,8 @@ export default async function GroupPage({ pageParams }: { pageParams: Promise<{ 
   const params = await pageParams;
   const id = params.id;
 
+  
   const groupDetails = await getGroupDetails(id, session.user.id);
-
-  console.log(groupDetails);
 
   return (
     <>
@@ -49,6 +48,7 @@ export default async function GroupPage({ pageParams }: { pageParams: Promise<{ 
           </Link>
         </div>
       </div>
+
 
       <GroupDetails currentUserId={session.user.id} groupData={groupDetails} />
     </>

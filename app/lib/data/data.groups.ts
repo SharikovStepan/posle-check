@@ -268,12 +268,13 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
 			 FROM group_members gm2
 			 WHERE gm2.group_id = g.id
 				AND gm2.profile_id = ${currentUserId}
+				AND gm2.status = 'accepted'
 		  )
 	 
 		GROUP BY g.id
 	 `;
 
-    if (!group) throw new Error("Нет доступа к группе");
+    if (!group) throw new Error("Нет доступа к группе, возможно нужно принять приглашение");
 
     const members = (await sql`
       SELECT
