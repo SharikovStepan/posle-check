@@ -25,7 +25,7 @@ export default function ConfirmCreate({
 }) {
   const memberTips = tipsAmount > 0 ? tipsAmount / (members.filter((m) => m.participating).length + (creator.participating ? 1 : 0)) : 0;
 
-  const creatorAmountText: string = memberTips == 0 ? `${creator.amount} ₽` : `${creator.amount} ₽ + ${parseFloat(memberTips.toFixed(0))} ₽`;
+  const creatorAmountText: string = memberTips == 0 ? `${creator.amount} ₽` : `${creator.amount} + ${parseFloat(memberTips.toFixed(0))} ₽`;
 
   return (
     <>
@@ -61,7 +61,7 @@ export default function ConfirmCreate({
                 <tbody>
                   {members.map((member) => {
                     if (member.participating && member.amount > 0) {
-                      const amountText: string = memberTips == 0 ? `${member.amount} ₽` : `${member.amount} ₽ + ${parseFloat(memberTips.toFixed(0))} ₽`;
+                      const amountText: string = memberTips == 0 ? `${member.amount} ₽` : `${member.amount} + ${parseFloat(memberTips.toFixed(0))} ₽`;
                       return (
                         <tr key={member.id} className="last:border-0 border-b border-text-tertiary/20">
                           <td className="py-2 px-3">

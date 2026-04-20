@@ -69,24 +69,30 @@ export function CreateCheckFormSkeleton() {
             </div>
           </div>
 
+          <label className="inline-flex w-full items-center justify-between gap-2">
+            <span className="select-none text-lg font-medium text-text-primary">{"Добавить всех"}</span>
+            <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
+          </label>
+
+          <span className="block w-full bg-surface mt-0 h-0.5 "></span>
+
           <div className="flex flex-col gap-4">
             <label className="inline-flex w-full items-center justify-between gap-2">
-              <span className="select-none text-lg font-medium text-text-primary">{"Добавить всех"}</span>
+              <span className="select-none text-lg font-medium text-text-primary">{"Поделить всю сумму"}</span>
+
               <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
             </label>
 
-            <div>
-              <label className="inline-flex w-full items-center justify-between gap-2">
-                <span className="select-none text-lg font-medium text-text-primary">{"Поделить всю сумму"}</span>
+            <label className="inline-flex w-full items-center justify-between gap-2">
+              <span className="select-none text-lg font-medium text-text-primary">{"Включить меня"}</span>
 
-                <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
-              </label>
-            </div>
+              <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
+            </label>
           </div>
 
-          <div className={`flex flex-col gap-3`}>
-            <span className="block w-full bg-surface mt-0 h-0.5 "></span>
+          <span className="block w-full bg-surface mt-0 h-0.5"></span>
 
+          <div className={`flex flex-col gap-3`}>
             <label className="inline-flex w-full items-center justify-between gap-2">
               <span className="select-none text-lg font-medium text-text-primary">{"Поделить доставку/чаевые"}</span>
 
@@ -104,14 +110,14 @@ export function CreateCheckFormSkeleton() {
                 <div className={`shimmer block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end`} />
               </div>
             </div>
-            <span className="block w-full bg-surface mt-0 h-0.5 "></span>
           </div>
+          <span className="block w-full bg-surface mb-3 h-0.5 "></span>
 
-          <div className={`shimmer-dark flex w-full h-8 bg-bg-secondary rounded-lg lg:hidden`}></div>
+          <div className={`shimmer-dark flex w-full h-8 bg-bg-secondary rounded-lg lg:hidden mb-2`}></div>
 
-          <span className="block w-full bg-surface mt-6 h-0.5 "></span>
+          {/* <span className="block w-full bg-surface mt-6 h-0.5 "></span> */}
         </div>
-
+        <div className="lg:col-[2/3] row-[1/3]"></div>
         {/* <div ref={membersListhRef} className={`${tabType == "members" ? "flex" : "hidden"} relative lg:flex flex-col lg:col-[1/2] row-[2/3] gap-2 w-full min-h-100 mb-14`}>
       {localErrors.participants && <ErrorPop position="center" inputName={"participants"} errorText={localErrors.participants} />}
 
