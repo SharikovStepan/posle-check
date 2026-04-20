@@ -80,7 +80,8 @@ export async function getCheckDetails(checkId: string, currentUserId: string): P
 			 pr.full_name,
 		
 			 cp.participated AS creator_participating,
-			 cp.share_amount::float8 AS creator_amount
+			 cp.share_amount::float8 AS creator_amount,
+			 cp.tips_amount::float8 AS creator_tips
 		
 		  FROM checks c
 		  JOIN profiles pr ON pr.id = c.created_by
@@ -120,6 +121,7 @@ export async function getCheckDetails(checkId: string, currentUserId: string): P
 			pr.full_name,
 			pr.avatar_url,
 			cp.share_amount::float8 AS share_amount,
+			cp.tips_amount::float8 AS tips_amount,
 	  
 			-- payments
 			COALESCE((
@@ -168,7 +170,7 @@ export async function getCheckDetails(checkId: string, currentUserId: string): P
         full_name: check.full_name,
         avatar_url: check.avatar_url,
         participating: check.creator_participating ?? false,
-        amount: check.creator_amount ?? 0,
+        amount: (check.creator_amount ?? 0) + (check.creator_tips ?? 0),
       },
 
       participants: participants,

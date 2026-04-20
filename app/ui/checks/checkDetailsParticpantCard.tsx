@@ -26,7 +26,12 @@ export default function CheckDetailsParticpantCard({ participantData, checkId }:
 
   const name = participantData.full_name ? transformString(participantData.full_name) : participantData.username;
 
-  const amountToShow = firstPayment && (status == "confirmed" || status == "pending") ? firstPayment.amount : participantData.share_amount;
+  const amountToShow =
+    firstPayment && (status == "confirmed" || status == "pending")
+      ? firstPayment.amount
+      : participantData.share_amount
+      ? participantData.share_amount + (participantData.tips_amount ? participantData.tips_amount : 0)
+      : null;
 
   return (
     <div
@@ -57,6 +62,14 @@ export default function CheckDetailsParticpantCard({ participantData, checkId }:
               <span className="absolute top-0 right-0 translate-x-[calc(100%+4px)]">₽</span>
             </p>
           )}
+
+          {!amountToShow && participantData.tips_amount && (
+            <p className={`${status != "pending" ? "row-[1/3]" : ""} ${status == "unpaid" ? "text-error/80" : ""} relative text-lg font-medium mr-2`}>
+              {`(${participantData.tips_amount})`}
+              <span className="absolute top-0 right-0 translate-x-[calc(100%+4px)]">₽</span>
+            </p>
+          )}
+
           {status == "pending" ? (
             <div className="relative flex gap-1 justify-center">
               <div className="absolute top-0 left-0 -translate-x-[calc(100%+4px)]">

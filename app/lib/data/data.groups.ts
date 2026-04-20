@@ -382,6 +382,7 @@ export async function getGroupDetails(groupId: string, currentUserId: string): P
 		  cp.participated,
 	 
 		  cp.share_amount::float8 AS share_amount,
+		  cp.tips_amount::float8 AS tips_amount,
 	 
 		  -- статус платежа
 		  COALESCE(p_last.status, 'unpaid') AS payment_status,

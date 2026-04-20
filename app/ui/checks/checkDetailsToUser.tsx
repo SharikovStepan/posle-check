@@ -15,7 +15,9 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
 
   const status = firstPayment?.status || "unpaid";
 
-  const [paymentAmount, setPaymentAmount] = useState<number>(firstPayment ? firstPayment.amount : userData.share_amount || 0);
+  const shareAmountWithTips = userData.share_amount && userData.tips_amount ? userData.share_amount + userData.tips_amount : userData.share_amount || null;
+
+  const [paymentAmount, setPaymentAmount] = useState<number>(firstPayment ? firstPayment.amount : shareAmountWithTips || 0);
 
   const [state, formAction, isPending] = useActionState<SendPaymentType, FormData>(createPaymentAction, {});
 
@@ -91,16 +93,19 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
                     htmlFor="payment-amount"
                     className={`${state.error?.payment_amount ? "text-error!" : ""} ${
                       status == "pending" ? "text-warning" : status == "confirmed" ? "text-success text-xl!" : status == "declined" ? "text-error" : "text-text-primary"
-                    } block text-sm col-[1/2] `}>
-                    {status == "unpaid" && userData.share_amount
-                      ? "Вам указали сумму"
-                      : status == "unpaid" && !userData.share_amount
-                      ? "Введите сумму"
-                      : status == "pending"
-                      ? "Вы ожидаете подтверждения"
-                      : status == "confirmed"
-                      ? "Вы оплатили"
-                      : "Оплата не подтвеждена"}
+                    } col-[1/2] flex flex-col gap-1`}>
+                    <p className="text-sm">
+                      {status == "unpaid" && userData.share_amount
+                        ? "Вам указали сумму"
+                        : status == "unpaid" && !userData.share_amount
+                        ? "Укажите сумму"
+                        : status == "pending"
+                        ? "Вы ожидаете подтверждения"
+                        : status == "confirmed"
+                        ? "Вы оплатили"
+                        : "Оплата не подтвеждена"}
+                    </p>
+                    {userData.tips_amount && !userData.share_amount && status == "unpaid" && <p className="text-text-tertiary/70 text-xs text-nowrap">{`+ ${userData.tips_amount} ₽`}</p>}
                   </label>
 
                   <div className="relative">

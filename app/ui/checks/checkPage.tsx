@@ -20,6 +20,8 @@ export default async function CheckPage({ pageParams }: { pageParams: Promise<{ 
 
   const checkDetails = await getCheckDetails(checkId, session.user.id);
 
+  console.log("checkDetails", checkDetails);
+
   const date = new Date(checkDetails.created_at);
 
   const formattedDate = date

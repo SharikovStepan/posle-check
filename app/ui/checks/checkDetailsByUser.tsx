@@ -18,9 +18,17 @@ export default function CheckDetailsByUser({ checkData }: { checkData: CheckDeta
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2">
           <div className="flex justify-between px-2 items-center text-text-tertiary">
-            <div className="flex gap-2">
-              <p>Оплачено:</p>
-              <p>{checkData.paid_amount} ₽</p>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <p>Оплачено:</p>
+                <p>{checkData.paid_amount} ₽</p>
+              </div>
+              {checkData.creator.participating && (
+                <div className="flex gap-2 text-text-tertiary/80">
+                  <p>Моя часть:</p>
+                  <p>{checkData.creator.amount} ₽</p>
+                </div>
+              )}
             </div>
 
             <PaidCounter total={checkData.participants.length} paid={checkData.paid_count} />

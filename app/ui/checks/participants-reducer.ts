@@ -15,6 +15,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: action.payload.id == state.creator.id ? { ...state.creator, participating: true, amount: 0 } : { ...state.creator, amount: 0 },
         total: state.total,
+        tips: state.tips,
       };
 
     case "DELETE_FROM_PARTICIPANTS":
@@ -29,6 +30,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: action.payload.id == state.creator.id ? { ...state.creator, participating: false, amount: 0 } : { ...state.creator, amount: 0 },
         total: state.total,
+        tips: state.tips,
       };
     case "SET_AMOUNT":
       return {
@@ -42,6 +44,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: state.creator,
         total: state.total,
+        tips: state.tips,
       };
     case "SET_AMOUNT_CREATOR":
       return {
@@ -49,6 +52,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         participanstList: [...state.participanstList],
         creator: { ...state.creator, amount: parseFloat(action.payload.amount.toFixed(1)) },
         total: state.total,
+        tips: state.tips,
       };
     case "CLEAR_AMOUNT":
       return {
@@ -62,6 +66,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: action.payload.id == state.creator.id ? { ...state.creator, amount: 0 } : { ...state.creator },
         total: state.total,
+        tips: state.tips,
       };
     case "SHARE_AMOUNT":
       return {
@@ -71,8 +76,9 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: state.creator,
         total: state.total,
+        tips: state.tips,
       };
-   
+
     case "CANCEL_SHARE":
       return {
         lastDispatch: { type: "CANCEL_SHARE" },
@@ -81,6 +87,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: state.creator,
         total: state.total,
+        tips: state.tips,
       };
 
     case "ADD_ALL":
@@ -91,6 +98,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: { ...state.creator, participating: true },
         total: state.total,
+        tips: state.tips,
       };
     case "DELETE_ALL":
       return {
@@ -100,6 +108,7 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         }),
         creator: { ...state.creator, participating: false },
         total: state.total,
+        tips: state.tips,
       };
     case "SET_TOTAL":
       return {
@@ -107,6 +116,15 @@ export const participantsReducer = (state: ParticipantState, action: Participant
         participanstList: state.participanstList,
         creator: state.creator,
         total: action.payload.amount,
+        tips: state.tips,
+      };
+    case "SET_TIPS":
+      return {
+        lastDispatch: { type: "SET_TOTAL" },
+        participanstList: state.participanstList,
+        creator: state.creator,
+        total: state.total,
+        tips: action.payload.amount,
       };
     default:
       return state;

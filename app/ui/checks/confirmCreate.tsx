@@ -4,6 +4,7 @@ import Spinner from "../spinner";
 
 export default function ConfirmCreate({
   totalAmount,
+  tipsAmount,
   title,
   creator,
   members,
@@ -13,6 +14,7 @@ export default function ConfirmCreate({
   onConfirm,
 }: {
   totalAmount: number;
+  tipsAmount: number;
   title: string;
   creator: CreateCheckParticipantsCardsType;
   members: CreateCheckParticipantsCardsType[];
@@ -21,6 +23,10 @@ export default function ConfirmCreate({
   onConfirm: () => void;
   isPending: boolean;
 }) {
+  const memberTips = tipsAmount > 0 ? tipsAmount / (members.filter((m) => m.participating).length + (creator.participating ? 1 : 0)) : 0;
+
+  const creatorAmountText: string = memberTips == 0 ? `${creator.amount} ₽` : `${creator.amount} ₽ + ${parseFloat(memberTips.toFixed(0))} ₽`;
+
   return (
     <>
       <dialog className="flex flex-col gap-4 rounded-lg p-4 bg-bg-secondary border-2 border-accent w-full text-text-primary">
@@ -35,7 +41,7 @@ export default function ConfirmCreate({
           </div>
           <div className="flex gap-2">
             <p className="font-medium">Моя часть:</p>
-            <p>{creator.participating ? `${creator.amount} ₽` : "Не участвую"}</p>
+            <p>{creator.participating ? `${creatorAmountText}` : "Не участвую"}</p>
           </div>
         </div>
 
@@ -55,6 +61,7 @@ export default function ConfirmCreate({
                 <tbody>
                   {members.map((member) => {
                     if (member.participating && member.amount > 0) {
+                      const amountText: string = memberTips == 0 ? `${member.amount} ₽` : `${member.amount} ₽ + ${parseFloat(memberTips.toFixed(0))} ₽`;
                       return (
                         <tr key={member.id} className="last:border-0 border-b border-text-tertiary/20">
                           <td className="py-2 px-3">
@@ -67,7 +74,7 @@ export default function ConfirmCreate({
                               <span>{member.full_name || member.username}</span>
                             </div>
                           </td>
-                          <td className="text-right py-2 px-3 font-medium">{member.amount} ₽</td>
+                          <td className="text-right py-2 px-3 font-medium">{amountText}</td>
                         </tr>
                       );
                     }
@@ -82,7 +89,7 @@ export default function ConfirmCreate({
           <>
             <div className="flex flex-col justify-center gap-2 bg-bg-tertiary rounded-lg p-2 shadow">
               <h3 className="font-semibold mb-2 text-center">Сумма на усмотрение участника</h3>
-
+              {memberTips > 0 && <p className="text-center text-text-tertiary/80">{`+ ${parseFloat(memberTips.toFixed(0))} ₽`}</p>}
               <ul className="flex flex-wrap gap-2">
                 {members.map((member) => {
                   if (member.participating && (!member.amount || member.amount === 0)) {
@@ -117,7 +124,7 @@ export default function ConfirmCreate({
         )}
 
         <div className="dialog-buttons flex w-full justify-center gap-5 mt-4">
-          <button  onClick={onCancel} type="button" className={`${isPending ? "opacity-50" : ""} btn-cancel button bg-error w-27`}>
+          <button onClick={onCancel} type="button" className={`${isPending ? "opacity-50" : ""} btn-cancel button bg-error w-27`}>
             Отклонить
           </button>
           <button disabled={isPending} onClick={onConfirm} type="button" className="btn-confirm button bg-accent w-30 text-text-inverted text-nowrap">

@@ -34,6 +34,7 @@ export default function GroupDetails({ groupData, currentUserId }: { currentUser
     params.set("tab", newTab);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
+  console.log("groupData", groupData);
 
   return (
     <>

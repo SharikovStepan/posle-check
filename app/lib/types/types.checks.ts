@@ -27,6 +27,7 @@ export type CheckToUserCardType = {
   payment_amount: number | null;
 
   share_amount: number | null;
+  tips_amount: number | null;
 };
 
 export type CreateCheckPageTabs = "members" | "amounts";
@@ -45,7 +46,8 @@ export type ParticipantsActions =
   | { type: "CANCEL_SHARE" }
   | { type: "ADD_ALL" }
   | { type: "DELETE_ALL" }
-  | { type: "SET_TOTAL"; payload: { amount: number } };
+  | { type: "SET_TOTAL"; payload: { amount: number } }
+  | { type: "SET_TIPS"; payload: { amount: number } };
 
 export type ParticipantsActionsTypes =
   | "ADD_TO_PARTICIPANTS"
@@ -57,7 +59,8 @@ export type ParticipantsActionsTypes =
   | "CANCEL_SHARE"
   | "ADD_ALL"
   | "DELETE_ALL"
-  | "SET_TOTAL";
+  | "SET_TOTAL"
+  | "SET_TIPS";
 
 export type LastDispatchInfo = {
   type: ParticipantsActionsTypes;
@@ -69,6 +72,7 @@ export type CreateCheckActionData = {
   title: string;
   description: string | null;
   totalAmount: number;
+  tipsForParticipant: number;
   creator: { id: string; participating: boolean; amount: number };
   participants: { id: string; amount: number }[];
 };
@@ -86,6 +90,7 @@ export type CheckDetailsParticipant = {
   avatar_url: string | null;
 
   share_amount: number | null;
+  tips_amount: number | null;
   payments: ParticipantPayment[];
 };
 

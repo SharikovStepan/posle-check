@@ -43,7 +43,7 @@ export default function CheckToUserCard({ checkData }: { checkData: CheckToUserC
           <div className="grid grid-rows-[1fr_auto] justify-items-end items-center gap-y-1">
             {checkData.payment_status != "confirmed" && (checkData.share_amount || checkData.payment_amount) ? (
               <div className="flex gap-1 justify-center items-center text-xl font-bold tracking-wide">
-                <p className="text-text-primary self-end justify-self-end">{checkData.share_amount || checkData.payment_amount}</p>
+                <p className="text-text-primary self-end justify-self-end">{(checkData.share_amount || 0) + (checkData.tips_amount || 0) || checkData.payment_amount}</p>
                 <p className="text-text-primary">₽</p>
               </div>
             ) : (

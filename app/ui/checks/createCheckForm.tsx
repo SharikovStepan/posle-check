@@ -8,13 +8,12 @@ import { TabButtons } from "@/app/lib/types/types.filters";
 import MembersList from "./membersList";
 import { useParticipantsContext } from "./participantsProvider";
 import ParticipantsList from "./participantsList";
-import { isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue } from "./utils";
+import { calculateTips, isAllParticipantsCustomAmounts, isEqualParticipantsAmounts, isNotCustomParticipantsAmounts, maxPossibeAmountValue } from "./utils";
 import { createCheckAction } from "@/app/lib/actions/actions.checks";
 import ErrorPop from "../error-pop";
 import ConfirmCreate from "./confirmCreate";
 import SearchUI from "../searchUI";
 import TabButtonsUI from "../tabButtonsUI";
-import { useMediaQuery } from "react-responsive";
 import { motion, AnimatePresence } from "motion/react";
 
 const tabs: TabButtons<CreateCheckPageTabs>[] = [
@@ -45,6 +44,8 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
   const [isAddAll, setIsAddAll] = useState<boolean>(true);
   const [shareAmount, setShareAmount] = useState<boolean>(false);
+
+  const [shareTips, setShareTips] = useState<boolean>(false);
 
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -89,7 +90,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
   useEffect(() => {
     if (contextstate.lastDispatch.type == "SET_AMOUNT") {
-      if (isEqualParticipantsAmounts(contextstate.participanstList)) {
+      if (isEqualParticipantsAmounts(contextstate.participanstList, contextstate.creator)) {
         setShareAmount(true);
       } else {
         setShareAmount(false);
@@ -128,16 +129,19 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
   }, [contextstate.creator]);
 
   useEffect(() => {
+    dispatch({ type: "CANCEL_SHARE" });
     if (isAddAll) {
       dispatch({ type: "ADD_ALL" });
     } else if (!isAddAll && contextstate.lastDispatch.type != "DELETE_FROM_PARTICIPANTS") {
       dispatch({ type: "DELETE_ALL" });
-      setShareAmount(false);
     }
   }, [isAddAll]);
 
   useEffect(() => {
+    console.log("AMOUNT SHARE");
+
     if (shareAmount) {
+      setShareTips(false);
       const participatedCount = contextstate.participanstList.filter((member) => member.participating).length;
 
       if (contextstate.creator.participating) {
@@ -158,6 +162,14 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
     }
   }, [shareAmount]);
 
+  useEffect(() => {
+    if (!shareTips) {
+      dispatch({ type: "SET_TIPS", payload: { amount: 0 } });
+    } else {
+      setShareAmount(false);
+    }
+  }, [shareTips]);
+
   const handleChangeMyShare = (currentValue: number) => {
     if (!contextstate.creator.participating) return;
 
@@ -167,12 +179,12 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
     if (currentValue <= maxAllowed) {
       dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: currentValue } });
     } else {
-      const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
+      const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList) - contextstate.tips;
       dispatch({ type: "SET_AMOUNT_CREATOR", payload: { amount: maxValue } });
     }
   };
 
-  const handleChangeAmount = (currentValue: number) => {
+  const handleChangeTotalAmount = (currentValue: number) => {
     dispatch({ type: "SET_TOTAL", payload: { amount: currentValue } });
 
     if (shareAmount) {
@@ -180,9 +192,29 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
     }
   };
 
+  const handleChangeTipsAmount = (currentValue: number) => {
+    const prevAmount = contextstate.tips;
+    const maxAllowed = prevAmount + remindAmount - isNotCustomParticipantsAmounts(contextstate.participanstList);
+
+    if (currentValue <= maxAllowed) {
+      dispatch({ type: "SET_TIPS", payload: { amount: currentValue } });
+    } else {
+      // const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList);
+      const maxValue = maxPossibeAmountValue(contextstate.total, contextstate.participanstList, contextstate.creator);
+
+      dispatch({ type: "SET_TIPS", payload: { amount: maxValue } });
+    }
+  };
+
   const handleToggleAddAll = () => {
     setIsAddAll((prev) => {
       setShareAmount(false);
+      return !prev;
+    });
+  };
+
+  const handleToggleShareTips = () => {
+    setShareTips((prev) => {
       return !prev;
     });
   };
@@ -309,7 +341,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
       const title = formData.get("title")?.toString() || "";
       const description = formData.get("description")?.toString() || null;
       const totalAmount = Number(formData.get("total-amount"));
-
+      const tipsAmount = Number(formData.get("tips-amount")) || 0;
       const creator = { id: contextstate.creator.id, participating: contextstate.creator.participating, amount: contextstate.creator.amount };
 
       const participants = contextstate.participanstList.filter((member) => {
@@ -322,7 +354,9 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
         }
       }) as { id: string; amount: number }[];
 
-      const full: CreateCheckActionData = { title, description, totalAmount, creator, participants };
+      const tipsForParticipant = calculateTips(tipsAmount, participants, creator);
+
+      const full: CreateCheckActionData = { title, description, totalAmount, tipsForParticipant, creator, participants };
 
       const result = await createCheckAction(full, groupId);
 
@@ -413,9 +447,9 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
                 const onlyDigits = e.target.value.replace(/\D/g, "");
 
                 if (onlyDigits == "0" || onlyDigits == "") {
-                  handleChangeAmount(0);
+                  handleChangeTotalAmount(0);
                 } else {
-                  handleChangeAmount(Number(onlyDigits));
+                  handleChangeTotalAmount(Number(onlyDigits));
                 }
               }}
               value={contextstate.total < 1 ? "" : contextstate.total}
@@ -468,15 +502,51 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
 
         <div className="flex flex-col gap-4">
           <ToggleButton error={null} labelText={"Добавить всех"} toggleChange={handleToggleAddAll} toggleState={isAddAll} inputName={"add-all"} />
-          <div>
-            <ToggleButton
-              error={localErrors.shareMember || localErrors.shareAmount || null}
-              labelText={"Поделить сумму"}
-              toggleChange={handleToggleShare}
-              toggleState={shareAmount}
-              inputName={"share-amount"}
-            />
+          <ToggleButton
+            error={localErrors.shareMember || localErrors.shareAmount || null}
+            labelText={"Поделить всю сумму"}
+            toggleChange={handleToggleShare}
+            toggleState={shareAmount}
+            inputName={"share-amount"}
+          />
+        </div>
+
+        <div className={`${shareAmount ? "opacity-40 pointer-events-none" : ""} flex flex-col gap-3`}>
+          <span className="block w-full bg-surface mt-0 h-0.5 "></span>
+
+          <ToggleButton error={null} labelText={"Поделить доставку/чаевые"} toggleChange={handleToggleShareTips} toggleState={shareTips} inputName={"add-tips"} />
+
+          <div className={`${!shareTips ? "opacity-40" : ""} relative h-full flex justify-between items-center gap-1`}>
+            <label htmlFor="tips-amount" className="block text-lg text-text-primary">
+              Сумма
+            </label>
+
+            <div className="flex justify-center items-center gap-2">
+              <p>₽</p>
+
+              <input
+                //  ref={inputMyShareRef}
+                disabled={!shareTips}
+                type="text"
+                inputMode="decimal"
+                min="0"
+                name="tips-amount"
+                id="tips-amount"
+                onChange={(e) => {
+                  const onlyDigits = e.target.value.replace(/\D/g, "");
+                  if (onlyDigits == "0" || onlyDigits == "") {
+                    handleChangeTipsAmount(0);
+                  } else {
+                    handleChangeTipsAmount(Number(onlyDigits));
+                  }
+                }}
+                value={contextstate.tips == 0 ? "" : contextstate.tips}
+                autoComplete="off"
+                className={`${!shareTips ? "opacity-40" : ""} block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end focus`}
+              />
+            </div>
           </div>
+          <span className="block w-full bg-surface mt-0 h-0.5 "></span>
         </div>
 
         <div ref={tabsRef} className={`flex w-full h-8 bg-bg-secondary rounded-lg lg:hidden`}>
@@ -590,6 +660,7 @@ export default function CreateCheckForm({ groupId }: { groupId: string }) {
               remindAmount={remindAmount}
               title={title}
               totalAmount={contextstate.total}
+              tipsAmount={contextstate.tips}
               creator={contextstate.creator}
               members={contextstate.participanstList}
             />

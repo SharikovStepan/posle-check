@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useEffect, useReducer, useState }
 import { participantsReducer } from "./participants-reducer";
 import { sumParticipantsAmount } from "./utils";
 
-export type ParticipantState = { lastDispatch: LastDispatchInfo; participanstList: CreateCheckParticipantsCardsType[]; creator: CreateCheckParticipantsCardsType; total: number };
+export type ParticipantState = { lastDispatch: LastDispatchInfo; participanstList: CreateCheckParticipantsCardsType[]; creator: CreateCheckParticipantsCardsType; total: number; tips: number };
 
 interface ParticipatsContextValue {
   state: ParticipantState;
@@ -28,9 +28,8 @@ export const ParticipantsProvider: React.FC<ParticipantsProviderProp> = ({ child
   useEffect(() => {
     const participantsValue = sumParticipantsAmount(state.participanstList);
 
-    setRemindAmount(parseFloat((state.total - (participantsValue + state.creator.amount)).toFixed()));
-
-  }, [state.creator, state.participanstList, state.total]);
+    setRemindAmount(parseFloat((state.total - (participantsValue + state.creator.amount)).toFixed()) - state.tips);
+  }, [state.creator, state.participanstList, state.total, state.tips]);
 
   return <ParticipantsContext.Provider value={{ state, remindAmount, dispatch }}>{children}</ParticipantsContext.Provider>;
 };

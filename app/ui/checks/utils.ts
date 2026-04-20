@@ -4,12 +4,18 @@ export const isAllAdded = (members: CreateCheckParticipantsCardsType[]): boolean
   return members.every((member) => member.amount != 0);
 };
 
-export const isEqualParticipantsAmounts = (members: CreateCheckParticipantsCardsType[]): boolean => {
+export const isEqualParticipantsAmounts = (members: CreateCheckParticipantsCardsType[], creator: CreateCheckParticipantsCardsType): boolean => {
   const participatedMembers = members.filter((member) => member.participating);
 
-  return participatedMembers.every((member) => member.amount == participatedMembers[0].amount && member.amount >= 1);
+  const withCreator = creator.participating ? [...participatedMembers, creator] : [...participatedMembers];
+  return withCreator.every((member) => member.amount == participatedMembers[0].amount && member.amount >= 1);
 };
 
+export const calculateTips = (tipsAmount: number, members: { id: string; amount: number }[], creator: { id: string; participating: boolean; amount: number }): number => {
+  const memberTips = tipsAmount > 0 ? tipsAmount / (members.length + (creator.participating ? 1 : 0)) : 0;
+
+  return parseFloat(memberTips.toFixed(1));
+};
 export const isAllParticipantsCustomAmounts = (members: CreateCheckParticipantsCardsType[]) => {
   const filtered = members.filter((member) => member.participating);
 

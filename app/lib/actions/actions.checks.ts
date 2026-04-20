@@ -24,6 +24,7 @@ const CreatorSchema = z.object({
 const CreateCheckSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().nullable(),
+  tipsForParticipant: z.number(),
   totalAmount: z.number().refine((val) => val !== 0, {
     message: "Amount must not be 0",
   }),
@@ -42,7 +43,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
     };
   }
 
-  const { title, description, totalAmount, creator, participants } = parsed.data;
+  const { title, description, totalAmount, tipsForParticipant, creator, participants } = parsed.data;
 
   try {
     const newCheckId = await sql.begin(async (tx: any): Promise<string> => {
@@ -75,6 +76,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
 			  profile_id,
 			  participated,
 			  share_amount,
+			  tips_amount,
 			  added_by
 			)
 			VALUES (
@@ -82,6 +84,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
 			  ${creator.id},
 			  ${creator.participating},
 			  ${creator.participating ? (creator.amount !== 0 ? creator.amount : null) : null},
+			  ${creator.participating ? (tipsForParticipant !== 0 ? tipsForParticipant : null) : null},
 			  ${creator.id}
 			)
 		 `;
@@ -90,7 +93,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
       const filtered = participants.filter((p) => p.id !== creator.id);
 
       if (filtered.length > 0) {
-        const values = filtered.map((p) => [checkId, p.id, true, p.amount !== 0 ? p.amount : null, creator.id]);
+        const values = filtered.map((p) => [checkId, p.id, true, p.amount !== 0 ? p.amount : null, tipsForParticipant !== 0 ? tipsForParticipant : null, creator.id]);
 
         await tx`
 			  INSERT INTO check_participants (
@@ -98,6 +101,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
 				 profile_id,
 				 participated,
 				 share_amount,
+				 tips_amount,
 				 added_by
 			  )
 			  VALUES ${tx(values)}
@@ -119,7 +123,7 @@ export async function createCheckAction(data: CreateCheckActionData, groupId: st
           VALUES (
             ${checkId},
             ${creator.id},
-            ${creator.amount},
+            ${creator.amount + tipsForParticipant},
             'creator',
             'confirmed',
             ${creator.id},

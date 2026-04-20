@@ -77,11 +77,34 @@ export function CreateCheckFormSkeleton() {
 
             <div>
               <label className="inline-flex w-full items-center justify-between gap-2">
-                <span className="select-none text-lg font-medium text-text-primary">{"Поделить сумму"}</span>
+                <span className="select-none text-lg font-medium text-text-primary">{"Поделить всю сумму"}</span>
 
                 <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
               </label>
             </div>
+          </div>
+
+          <div className={`flex flex-col gap-3`}>
+            <span className="block w-full bg-surface mt-0 h-0.5 "></span>
+
+            <label className="inline-flex w-full items-center justify-between gap-2">
+              <span className="select-none text-lg font-medium text-text-primary">{"Поделить доставку/чаевые"}</span>
+
+              <div className="shimmer pointer-events-none relative w-16 h-8 bg-bg-tertiary peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-(--ring) rounded-full"></div>
+            </label>
+
+            <div className="relative h-full flex justify-between items-center gap-1">
+              <label htmlFor="title" className="block text-lg text-text-primary opacity-40">
+                Сумма
+              </label>
+
+              <div className="flex justify-center items-center gap-2">
+                <p className="opacity-40">₽</p>
+
+                <div className={`shimmer block w-30 h-8 bg-bg-secondary rounded-lg justify-self-end shadow-sm sm:text-sm px-3 text-end`} />
+              </div>
+            </div>
+            <span className="block w-full bg-surface mt-0 h-0.5 "></span>
           </div>
 
           <div className={`shimmer-dark flex w-full h-8 bg-bg-secondary rounded-lg lg:hidden`}></div>

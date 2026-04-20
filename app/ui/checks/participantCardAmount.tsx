@@ -46,7 +46,7 @@ export default function ParticipantCardAmount({ participantData }: { participant
     if (currentAmount <= maxAllowed) {
       dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: currentAmount } });
     } else {
-      const maxValue = maxPossibeAmountValue(state.total, state.participanstList, state.creator, participantData.id);
+      const maxValue = maxPossibeAmountValue(state.total, state.participanstList, state.creator, participantData.id) - state.tips;
 
       dispatch({ type: "SET_AMOUNT", payload: { id: participantData.id, amount: maxValue } });
     }
