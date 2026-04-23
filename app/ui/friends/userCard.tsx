@@ -12,7 +12,7 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
   const friendStatusDesc = userData.id === "" ? "Это вы" : friendText(userData.friendship_status);
   return (
     <>
-      <div className="relative py-2 px-4 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
+      <div className="relative py-2 px-2 sm:px-4 rounded-2xl bg-surface h-20 flex gap-1 justify-between items-center border border-border shadow-md">
         <div className="h-full flex justify-start items-center gap-2">
           <div className={`${friendStatusDesc == "" ? "h-full" : ""} flex items-center gap-3`}>
             <div className={`${friendStatusDesc == "" ? "h-12 w-12" : "h-10 w-10"} rounded-full overflow-hidden`}>
@@ -24,7 +24,7 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
             </div>
           </div>
 
-          <div>
+          <div className="overflow-visible">
             <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
             {friendStatusDesc != "" && <div className="text-text-tertiary/80 text-xs">{friendStatusDesc}</div>}
           </div>
@@ -38,23 +38,23 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
           ) : userData.friendship_status == "pending" && friendshipId ? (
             <>
               <RequestFriendButton action={"accept"} friendshipId={friendshipId} className="cursor-pointer bg-success text-text-inverted w-full hover:bg-success/70 ">
-                <p className="">Принять</p>
+                <p className="h-full text-nowrap flex justify-center items-center">Принять</p>
               </RequestFriendButton>
               <RequestFriendButton action={"decline"} friendshipId={friendshipId} className="cursor-pointer bg-error text-text-inverted/80 hover:bg-error/70">
-                <p>Отклонить</p>
+                <p className="h-full text-nowrap flex justify-center items-center">Отклонить</p>
               </RequestFriendButton>
             </>
           ) : userData.friendship_status == "awaiting_confirm" && friendshipId ? (
             <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer bg-error text-text-secondary hover:bg-error/70">
-              <p>Удалить заявку</p>
+              <p className="h-full text-nowrap text-sm flex justify-center items-center">Удалить заявку</p>
             </RequestFriendButton>
           ) : userData.friendship_status == "declined" && friendshipId ? (
             <>
               <RequestFriendButton action={"send"} friendshipId={friendshipId} className="cursor-pointer bg-success text-success-foreground hover:bg-success/70">
-                <p>Отправить ещё раз</p>
+                <p className="h-full text-nowrap text-xs flex justify-center items-center">Отправить ещё раз</p>
               </RequestFriendButton>
               <RequestFriendButton action={"cancel"} friendshipId={friendshipId} className="cursor-pointer bg-error w-full text-text-secondary hover:bg-destructive/70">
-                <p>Удалить заявку</p>
+                <p className="h-full text-nowrap text-sm flex justify-center items-center">Удалить заявку</p>
               </RequestFriendButton>
             </>
           ) : userData.friendship_status == "friendly" && friendshipId ? (

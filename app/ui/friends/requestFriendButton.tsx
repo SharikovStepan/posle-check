@@ -16,7 +16,7 @@ export default function RequestFriendButton({ className, friendshipId, action, c
       <input type="hidden" name="friendshipId" value={friendshipId} />
       <input type="hidden" name="currentPath" value={pathname} />
       <input type="hidden" name="searchParams" value={searchParams.toString()} />
-      <SubmitButton disabled={isPending} className={`${className}`}>
+      <SubmitButton disabled={isPending} className={`${className} h-7`}>
         {children}
       </SubmitButton>
     </form>
