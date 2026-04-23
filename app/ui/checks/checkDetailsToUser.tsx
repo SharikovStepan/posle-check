@@ -70,13 +70,13 @@ export default function CheckDetailsToUser({ checkData }: { checkData: CheckDeta
             <div className={`relative p-1 rounded-2xl bg-surface h-14 flex gap-3 justify-between items-center border border-border shadow-md`}>
               <div className="h-full flex flex-col justify-between">
                 <div className={` h-full flex items-center gap-3`}>
-                  {checkData.creator.avatar_url ? (
-                    <div className={`h-12 rounded-full overflow-hidden`}>
+                  <div className={`h-12 w-12 rounded-full overflow-hidden`}>
+                    {checkData.creator.avatar_url ? (
                       <img src={checkData.creator.avatar_url} alt="user icon" className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <UserCircleIcon className={`h-12 w-full text-accent/80 overflow-hidden`} />
-                  )}
+                    ) : (
+                      <UserCircleIcon className={`h-full w-full text-accent/80 overflow-hidden`} />
+                    )}
+                  </div>
                   <p className="text-text-primary text-lg">{checkData.creator.full_name || checkData.creator.username}</p>
                 </div>
               </div>
