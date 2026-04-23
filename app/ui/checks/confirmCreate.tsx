@@ -64,7 +64,7 @@ export default function ConfirmCreate({
                       const amountText: string = memberTips == 0 ? `${member.amount} ₽` : `${member.amount} + ${parseFloat(memberTips.toFixed(0))} ₽`;
                       return (
                         <tr key={member.id} className="last:border-0 border-b border-text-tertiary/20">
-                          <td className="py-2 px-3">
+                          <td className="py-2">
                             <div className="flex items-center gap-3">
                               {member.avatar_url ? (
                                 <img src={member.avatar_url} alt={member.username} className="w-8 h-8 rounded-full object-cover" />
@@ -74,7 +74,7 @@ export default function ConfirmCreate({
                               <span>{member.full_name || member.username}</span>
                             </div>
                           </td>
-                          <td className="text-right py-2 px-3 font-medium">{amountText}</td>
+                          <td className="text-right font-medium text-nowrap">{amountText}</td>
                         </tr>
                       );
                     }
