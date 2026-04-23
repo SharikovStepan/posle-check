@@ -30,14 +30,15 @@ export default function EditMemberCard({ userData, choosedList = false, marked =
           !choosedList && marked ? divClassNames.notChoosedListMarked : !choosedList && !marked ? divClassNames.notChoosedListNotMarked : ""
         } ${!choosedList && "cursor-pointer"}`}>
         <div className="h-full flex flex-col justify-between">
-          <div className={` h-full flex items-center gap-3`}>
-            {userData.avatar_url ? (
-              <div className={`h-12 rounded-full overflow-hidden`}>
+          <div className={`h-full flex items-center gap-3 justify-between`}>
+            <div className={`h-12 w-12 rounded-full overflow-hidden`}>
+              {userData.avatar_url ? (
                 <img src={userData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <UserCircleIcon className={`h-12 w-full text-accent/80 overflow-hidden`} />
-            )}
+              ) : (
+                <UserCircleIcon className={`h-full w-full text-accent/80 overflow-hidden`} />
+              )}
+            </div>
+
             <p className="text-text-primary text-lg">{userData.full_name || userData.username}</p>
           </div>
         </div>

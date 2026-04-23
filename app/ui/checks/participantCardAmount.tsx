@@ -71,25 +71,25 @@ export default function ParticipantCardAmount({ participantData }: { participant
   }, [cardLocalError]);
   return (
     <div className={`overflow-hidden relative p-2 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center transition-all duration-200 border border-border shadow-md`}>
-      <div className="h-full grid grid-cols-[auto_1fr_80_auto] gap-x-1 w-full">
+      <div className="h-full grid grid-cols-[auto_1fr_80_auto] gap-x-2 w-full">
         <input type="hidden" readOnly name="participant" value={participantData.id} />
         <div className={`h-full flex items-center gap-3`}>
-          {participantData.avatar_url ? (
-            <div className={`h-12 rounded-full overflow-hidden`}>
+          <div className={`h-12 w-12 rounded-full overflow-hidden`}>
+            {participantData.avatar_url ? (
               <img src={participantData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <UserCircleIcon className={`h-12 w-full text-accent/80 overflow-hidden`} />
-          )}
+            ) : (
+              <UserCircleIcon className={`h-full w-full text-accent/80 overflow-hidden`} />
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col justify-between items-start h-full">
-          <p className=" text-text-primary text-sm text-ellipsis ">{participantData.full_name || participantData.username}</p>
+        <div className="grid grid-rows-[1fr_1fr_auto] justify-start items-center h-full">
+          <p className=" text-text-primary text-sm text-ellipsis row-[1/3]">{participantData.full_name || participantData.username}</p>
           <p
             className={`${
               participantData.amount > 0 && participantData.amount < 1 ? "text-error text-shadow-2xs" : participantData.amount >= 1 ? "text-success	" : "text-warning"
-            } opacity-80 text-xs justify-self-end`}>
-            {participantData.amount > 0 && participantData.amount < 1 ? "Введите сумму" : participantData.amount >= 1 ? "Вы ввели сумму" : "Выберет сумму сам"}
+            } opacity-80 text-xs row-[3/4]`}>
+            {participantData.amount > 0 && participantData.amount < 1 ? "Введите сумму" : participantData.amount >= 1 ? "Вы ввели сумму" : "Укажет сумму сам"}
           </p>
         </div>
 

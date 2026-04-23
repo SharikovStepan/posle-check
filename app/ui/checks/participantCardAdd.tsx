@@ -20,14 +20,15 @@ export default function ParticipantCardAdd({ participantData }: { participantDat
       } cursor-pointer relative p-2 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center transition-all duration-200 border border-border shadow-md`}>
       <div className="h-full flex flex-col justify-between">
         <div className={` h-full flex items-center gap-3`}>
-          {participantData.avatar_url ? (
-            <div className={`h-12 rounded-full overflow-hidden`}>
+          <div className={`h-12 w-12 rounded-full overflow-hidden`}>
+            {participantData.avatar_url ? (
               <img src={participantData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <UserCircleIcon className={`h-12 w-full text-accent/80 overflow-hidden`} />
-          )}
-          <p className="text-text-primary text-lg">{participantData.full_name || participantData.username}</p>
+            ) : (
+              <UserCircleIcon className={`h-full w-full text-accent/80 overflow-hidden`} />
+            )}
+          </div>
+
+          <p className="text-text-primary text-lg grow">{participantData.full_name || participantData.username}</p>
         </div>
       </div>
     </div>

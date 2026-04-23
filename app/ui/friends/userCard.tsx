@@ -15,13 +15,13 @@ export default function UserCard({ userData, friendshipId }: { friendshipId: str
       <div className="relative py-2 px-4 rounded-2xl bg-surface h-20 flex gap-3 justify-between items-center border border-border shadow-md">
         <div className="h-full flex justify-start items-center gap-2">
           <div className={`${friendStatusDesc == "" ? "h-full" : ""} flex items-center gap-3`}>
-            {userData.avatar_url ? (
-              <div className={`${friendStatusDesc == "" ? "h-12" : "h-10"} rounded-full overflow-hidden`}>
+            <div className={`${friendStatusDesc == "" ? "h-12 w-12" : "h-10 w-10"} rounded-full overflow-hidden`}>
+              {userData.avatar_url ? (
                 <img src={userData.avatar_url} alt="group icon" className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <UserCircleIcon className={`${friendStatusDesc == "" ? "h-12" : "h-10"} w-full text-accent/80 overflow-hidden`} />
-            )}
+              ) : (
+                <UserCircleIcon className={`h-full w-full text-accent/80 overflow-hidden`} />
+              )}
+            </div>
           </div>
 
           <div>
